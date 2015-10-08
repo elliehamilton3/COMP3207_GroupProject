@@ -1,6 +1,7 @@
 # COMP3207 Group Project
 
 **Deadline**: 1600 on Monday 4 January 2016 (the final week of the semester)
+
 **Presentation**: all day Monday 11 January 2016 (all students MUST be available this day)
 
 This group assignment is designed for you to demonstrate your ability to use Python and JavaScript effectively. You will be working as part of a team of seven (or possibly six) students and the marks for this assignment will be awarded as agreed by each team.
