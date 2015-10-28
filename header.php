@@ -18,7 +18,16 @@
         <link rel="stylesheet" href="css/main.css">
 
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+        <!-- Full Calendar imports -->
+        	<link rel='stylesheet' href='js/fullcalendar/fullcalendar.css' />
+			<script src='js/moment.js'></script>
+			<script src='js/fullcalendar/fullcalendar.js'></script>
     </head>
+
+
     <body>
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
