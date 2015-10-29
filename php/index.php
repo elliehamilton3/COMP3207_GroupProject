@@ -13,12 +13,20 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                <div class="btn-group" role="group" aria-label="...">
-                  <button type="button" class="btn btn-default">Module Timetable</button>
-                  <button type="button" class="btn btn-default">Events</button>
-                  <button type="button" class="btn btn-default">Deadlines</button>
-                  <button type="button" class="btn btn-default">Group Work Deadlines</button>
+            <div class="col-xs-9">
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Module Timetable</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Events</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Deadlines</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Group Work Deadlines</button>
+                  </div>
                 </div>
             </div>
         </div>
@@ -35,9 +43,101 @@
                   <div class="panel-heading">Add/ edit contents</div>
                   <div class="panel-body">
                     <ul>
-                        <li><a href="#">Add modules</a></li>
-                        <li><a href="#">Add events</a></li>
-                        <li><a href="#">Add assignment</a></li>
+                      <li><a href="#" data-toggle="modal" data-target="#addModuleModal">Add modules</a></li>
+
+                      <!-- Modal -->
+                      <div id="addModuleModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Modules</h4>
+                            </div>
+                            <div class="modal-body">
+
+                              
+                              <!-- Form within Modal -->
+                              <form class="form-horizontal" role="form">
+                                <div class="dropdown">
+                                  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Dropdown
+                                    <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a href="#">Module 1</a></li>
+                                    <li><a href="#">Module 2</a></li>
+                                    <li><a href="#">Module 3</a></li>
+                                    <li><a href="#">Module 4</a></li>
+                                  </ul>
+                                </div>
+                                <div class="form-group"> 
+                                  <div class="col-sm-11">
+                                    <button type="submit" class="btn btn-default pull-right">Submit</button>
+                                  </div>
+                                </div>
+                              </form>
+                              <!-- //Form within Modal -->
+
+
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
+
+
+                      <li><a href="#" data-toggle="modal" data-target="#addEventsModal">Add events</a></li>
+                      <!-- Modal -->
+                      <div id="addEventsModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Events</h4>
+                            </div>
+                            <div class="modal-body">
+                              <p>Some text in the modal.</p>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
+
+
+                      <li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add assignment</a></li>
+                      <!-- Modal -->
+                      <div id="addAssignmentModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Assignments</h4>
+                            </div>
+                            <div class="modal-body">
+                              <p>Some text in the modal.</p>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
                     </ul>
                   </div>
                 </div>
