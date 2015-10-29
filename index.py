@@ -138,7 +138,7 @@ class Test(webapp2.RequestHandler):
 	def get(self):
 		self.response.write(TEST_HTML)
 
-
+'''
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
 # We set a parent key on the 'Greetings' to ensure that they are all
@@ -155,39 +155,39 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
 
 
 class Event(ndb.Model):
-    """Sub model for representing an individual event."""
+    #Sub model for representing an individual event.
     name = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
     # ID? assigned automatically by gae
-    event_type = db.StringProperty(
+    event_type = ndb.StringProperty(
         choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = db.ReferenceProperty(User,
+    user = ndb.ReferenceProperty(User,
                                    collection_name='events')
-    group = db.ReferenceProperty(Group,
+    group = ndb.ReferenceProperty(Group,
                                    collection_name='events')
    
 
 
 class Task(ndb.Model):
-    """A main model for representing an individual task."""
+    #A main model for representing an individual task.
     name = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
     # id? assigned by gae
-    task_type = db.StringProperty(
-        choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = db.ReferenceProperty(User,
-                                   collection_name='tasks')
-    group = db.ReferenceProperty(Group,
-                                   collection_name='events')
+    task_type = ndb.StringProperty(choices=('home', 'work', 'fax', 'mobile', 'other'))
+    user = ndb.ReferenceProperty(User, collection_name='tasks')
+    group = ndb.ReferenceProperty(Group, collection_name='events')
 
 class User(ndb.Model):
-    """A main model for representing an individual task."""
+
+    """ A main model for representing an individual task. """
     identity = ndb.StringProperty(indexed=False)
+
     email = ndb.StringProperty(indexed=False)
     name = ndb.StringProperty(indexed=False)
 
     # Group affiliation
-      groups = db.ListProperty(db.Key)
+	# BUG: Something on the next line is fucked up, please fix
+    # groups = ndb.ListProperty(ndb.Key)
 
 
 class Group(ndb.Model):
@@ -236,7 +236,7 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(MAIN_PAGE_FOOTER_TEMPLATE %
                             (sign_query_params, cgi.escape(guestbook_name),
                              url, url_linktext))
-
+'''
 '''class (webapp2.RequestHandler):
     def post(self):
         # We set the same parent key on the 'Greeting' to ensure each
@@ -260,9 +260,9 @@ class MainPage(webapp2.RequestHandler):
         self.redirect('/?' + urllib.urlencode(query_params))
 '''
 '''class League(BaseModel):
-    name = db.StringProperty()    
-    managers = db.ListProperty(db.Key) #all the users who can view/edit this league
-    coaches = db.ListProperty(db.Key) #all the users who are able to view this league
+    name = ndb.StringProperty()    
+    managers = ndb.ListProperty(ndb.Key) #all the users who can view/edit this league
+    coaches = ndb.ListProperty(ndb.Key) #all the users who are able to view this league
 
     def get_managers(self):
         # This returns the models themselves, not just the keys that are stored in teams
@@ -285,9 +285,9 @@ class MainPage(webapp2.RequestHandler):
             team.delete()            
         super(League, self).delete()
 
-class UserPrefs(db.Model):
-    user = db.UserProperty()
-    league_ref = db.ReferenceProperty(reference_class=League,
+class UserPrefs(ndb.Model):
+    user = ndb.UserProperty()
+    league_ref = ndb.ReferenceProperty(reference_class=League,
                             collection_name='users') #league the users are managing
 
     def __str__(self):
