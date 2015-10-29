@@ -166,9 +166,9 @@ class Event(ndb.Model):
     uni_event_type = ndb.StringProperty(
         choices=('home', 'work', 'fax', 'mobile', 'other'))
     user = ndb.ReferenceProperty(User,
-                                   collection_name='events')
+                                   collection_name='users')
     group = ndb.ReferenceProperty(Group,
-                                   collection_name='events')
+                                   collection_name='groups')
     # ID? assigned automatically by gae
 
 
@@ -179,9 +179,9 @@ class Task(ndb.Model):
     task_type = ndb.StringProperty(
         choices=('home', 'work', 'fax', 'mobile', 'other'))
     user = ndb.ReferenceProperty(User,
-                                   collection_name='tasks')
+                                   collection_name='users')
     group = ndb.ReferenceProperty(Group,
-                                   collection_name='events')
+                                   collection_name='groups')
     # id? assigned by gae
 
 class User(ndb.Model):
