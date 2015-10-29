@@ -190,9 +190,9 @@ class User(ndb.Model):
       groups = db.ListProperty(db.Key)
 
 
-class Group(db.Model):
-    name = db.StringProperty()
-    description = db.TextProperty()
+class Group(ndb.Model):
+    name = ndb.StringProperty()
+    description = ndb.TextProperty()
     # key
 
 
