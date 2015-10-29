@@ -198,7 +198,7 @@ class Group(ndb.Model):
     name = ndb.StringProperty()
     description = ndb.TextProperty()
     # check is this a link on the front end
-    # key
+    # unique id assigned by gae and only accessible 
     # refer back to users?
     @property
     def members(self):
