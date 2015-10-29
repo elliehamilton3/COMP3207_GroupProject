@@ -157,28 +157,32 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
 class Event(ndb.Model):
     """Sub model for representing an individual event."""
     name = ndb.StringProperty(indexed=False)
-    date = ndb.DateTimeProperty(auto_now_add=True)
-    # ID? assigned automatically by gae
-    event_type = db.StringProperty(
+    datetimestart = ndb.DateTimeProperty(auto_now_add=True)
+    datetimestart = ndb.DateTimeProperty(auto_now_add=True)
+    module = ndb.StringProperty(indexed=False)
+    location = ndb.StringProperty(indexed=False)
+    event_type = ndb.StringProperty(
         choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = db.ReferenceProperty(User,
+    uni_event_type = ndb.StringProperty(
+        choices=('home', 'work', 'fax', 'mobile', 'other'))
+    user = ndb.ReferenceProperty(User,
                                    collection_name='events')
-    group = db.ReferenceProperty(Group,
+    group = ndb.ReferenceProperty(Group,
                                    collection_name='events')
-   
+    # ID? assigned automatically by gae
 
 
 class Task(ndb.Model):
     """A main model for representing an individual task."""
     name = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
-    # id? assigned by gae
-    task_type = db.StringProperty(
+    task_type = ndb.StringProperty(
         choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = db.ReferenceProperty(User,
+    user = ndb.ReferenceProperty(User,
                                    collection_name='tasks')
-    group = db.ReferenceProperty(Group,
+    group = ndb.ReferenceProperty(Group,
                                    collection_name='events')
+    # id? assigned by gae
 
 class User(ndb.Model):
     """A main model for representing an individual task."""
@@ -187,13 +191,18 @@ class User(ndb.Model):
     name = ndb.StringProperty(indexed=False)
 
     # Group affiliation
-      groups = db.ListProperty(db.Key)
+    groups = ndb.ListProperty(db.Key)
 
 
-class Group(db.Model):
-    name = db.StringProperty()
-    description = db.TextProperty()
+class Group(ndb.Model):
+    name = ndb.StringProperty()
+    description = ndb.TextProperty()
+    # check is this a link on the front end
     # key
+    # refer back to users?
+    @property
+    def members(self):
+        return User.gql("WHERE groups = :1", self.key())
 
 
 class MainPage(webapp2.RequestHandler):
