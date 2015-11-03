@@ -2,7 +2,7 @@ import cgi
 import urllib
 
 from google.appengine.api import users
-from google.appengine.ext import ndb
+from google.appengine.ext import ndb, db
 
 import webapp2
 
@@ -138,7 +138,7 @@ class Test(webapp2.RequestHandler):
 	def get(self):
 		self.response.write(TEST_HTML)
 
-'''
+
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
 # We set a parent key on the 'Greetings' to ensure that they are all
@@ -153,48 +153,47 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
     """
     return ndb.Key('Guestbook', guestbook_name)
 
-
-class Event(ndb.Model):
-    #Sub model for representing an individual event.
-    name = ndb.StringProperty(indexed=False)
-    date = ndb.DateTimeProperty(auto_now_add=True)
-    # ID? assigned automatically by gae
-    event_type = ndb.StringProperty(
-        choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = ndb.ReferenceProperty(User,
-                                   collection_name='events')
-    group = ndb.ReferenceProperty(Group,
-                                   collection_name='events')
-   
-
-
-class Task(ndb.Model):
-    #A main model for representing an individual task.
-    name = ndb.StringProperty(indexed=False)
-    date = ndb.DateTimeProperty(auto_now_add=True)
-    # id? assigned by gae
-    task_type = ndb.StringProperty(choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = ndb.ReferenceProperty(User, collection_name='tasks')
-    group = ndb.ReferenceProperty(Group, collection_name='events')
-
-class User(ndb.Model):
+class User(db.Model):
 
     """ A main model for representing an individual task. """
-    identity = ndb.StringProperty(indexed=False)
+    identity = db.StringProperty(indexed=False)
 
-    email = ndb.StringProperty(indexed=False)
-    name = ndb.StringProperty(indexed=False)
+    email = db.StringProperty(indexed=False)
+    name = db.StringProperty(indexed=False)
 
     # Group affiliation
 	# BUG: Something on the next line is fucked up, please fix
     # groups = ndb.ListProperty(ndb.Key)
 
-
-class Group(ndb.Model):
-    name = ndb.StringProperty()
-    description = ndb.TextProperty()
+class Group(db.Model):
+    name = db.StringProperty()
+    description = db.TextProperty()
     # key
 
+
+
+class Event(db.Model):
+    #Sub model for representing an individual event.
+    name = db.StringProperty(indexed=False)
+    date = db.DateTimeProperty(auto_now_add=True)
+    # ID? assigned automatically by gae
+    event_type = db.StringProperty(
+        choices=('home', 'work', 'fax', 'mobile', 'other'))
+    user = db.ReferenceProperty(User,
+                                   collection_name='users')
+    group = db.ReferenceProperty(Group,
+                                   collection_name='events')
+   
+
+
+class Task(db.Model):
+    #A main model for representing an individual task.
+    name = db.StringProperty(indexed=False)
+    date = db.DateTimeProperty(auto_now_add=True)
+    # id? assigned by gae
+    task_type = db.StringProperty(choices=('home', 'work', 'fax', 'mobile', 'other'))
+    user = db.ReferenceProperty(User, collection_name='tasks')
+    group = db.ReferenceProperty(Group, collection_name='groups')
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -236,8 +235,7 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(MAIN_PAGE_FOOTER_TEMPLATE %
                             (sign_query_params, cgi.escape(guestbook_name),
                              url, url_linktext))
-'''
-'''class (webapp2.RequestHandler):
+class Guestbook (webapp2.RequestHandler):
     def post(self):
         # We set the same parent key on the 'Greeting' to ensure each
         # Greeting is in the same entity group. Queries across the
@@ -258,8 +256,7 @@ class MainPage(webapp2.RequestHandler):
 
         query_params = {'guestbook_name': guestbook_name}
         self.redirect('/?' + urllib.urlencode(query_params))
-'''
-'''class League(BaseModel):
+"""class League(BaseModel):
     name = ndb.StringProperty()    
     managers = ndb.ListProperty(ndb.Key) #all the users who can view/edit this league
     coaches = ndb.ListProperty(ndb.Key) #all the users who are able to view this league
@@ -312,8 +309,8 @@ class UserPrefs(ndb.Model):
             coach.coaches.remove(self.key())
             coaches.put()            
         super(UserPrefs, self).delete()    
-'''
 
+"""
 app = webapp2.WSGIApplication([
     ('/', Test),
 ], debug=True)
