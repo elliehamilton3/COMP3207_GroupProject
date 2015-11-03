@@ -146,13 +146,6 @@ DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 # will be consistent.  However, the write rate should be limited to
 # ~1/second.
 
-def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
-    '''Constructs a Datastore key for a Guestbook entity.
-
-    We use guestbook_name as the key.
-    '''
-    return ndb.Key('Guestbook', guestbook_name)
-
 class User(db.Model):
     #Model for representing a user.
     identity = db.StringProperty(indexed=False)
