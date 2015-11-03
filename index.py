@@ -147,95 +147,48 @@ DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 # ~1/second.
 
 def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
-    """Constructs a Datastore key for a Guestbook entity.
+    '''Constructs a Datastore key for a Guestbook entity.
 
     We use guestbook_name as the key.
-    """
+    '''
     return ndb.Key('Guestbook', guestbook_name)
 
 class User(db.Model):
-
-    """ A main model for representing an individual task. """
+    #Model for representing a user.
     identity = db.StringProperty(indexed=False)
-
     email = db.StringProperty(indexed=False)
     name = db.StringProperty(indexed=False)
+    groups = db.ListProperty(db.Key)
 
-    # Group affiliation
-	# BUG: Something on the next line is fucked up, please fix
-    # groups = ndb.ListProperty(ndb.Key)
 
 class Group(db.Model):
+    #Model for representing a group.
     name = db.StringProperty()
     description = db.TextProperty()
-    # key
-
 
 
 class Event(db.Model):
-    #Sub model for representing an individual event.
+    #Model for representing an individual event.
     name = db.StringProperty(indexed=False)
-    date = db.DateTimeProperty(auto_now_add=True)
-    # ID? assigned automatically by gae
+    date = db.DateTimeProperty(auto_now_add=False)
+    location = db.StringProperty(indexed=False)
     event_type = db.StringProperty(
-        choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = db.ReferenceProperty(User,
-                                   collection_name='users')
-    group = db.ReferenceProperty(Group,
-                                   collection_name='events')
-   
+        choices=('module', 'sporting', 'society', 'job', 'other'))
+    user = db.ReferenceProperty(User, collection_name='event_user')
+    group = db.ReferenceProperty(Group, collection_name='event_group')
 
 
 class Task(db.Model):
-    #A main model for representing an individual task.
+    #Model for representing an individual task.
     name = db.StringProperty(indexed=False)
-    date = db.DateTimeProperty(auto_now_add=True)
-    # id? assigned by gae
-    task_type = db.StringProperty(choices=('home', 'work', 'fax', 'mobile', 'other'))
-    user = db.ReferenceProperty(User, collection_name='tasks')
-    group = db.ReferenceProperty(Group, collection_name='groups')
+    deadline = db.DateTimeProperty(auto_now_add=False)
+    task_type = db.StringProperty(choices=('assignment', 'work', 'other'))
+    user = db.ReferenceProperty(User, collection_name='task_user')
+    group = db.ReferenceProperty(Group, collection_name='task_group')
+    event = db.ReferenceProperty(Event, collection_name='linked_event')
 
-class MainPage(webapp2.RequestHandler):
-    def get(self):
-        self.response.write('<html><body>')
-        
-
-        # Ancestor Queries, as shown here, are strongly consistent
-        # with the High Replication Datastore. Queries that span
-        # entity groups are eventually consistent. If we omitted the
-        # ancestor from this query there would be a slight chance that
-        # Greeting that had just been written would not show up in a
-        # query.
-        greetings_query = Greeting.query(
-            ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
-        greetings = greetings_query.fetch(10)
-
-        user = users.get_current_user()
-        for greeting in greetings:
-            if greeting.author:
-                author = greeting.author.email
-                if user and user.user_id() == greeting.author.identity:
-                    author += ' (You)'
-                self.response.write('<b>%s</b> wrote:' % author)
-            else:
-                self.response.write('An anonymous person wrote:')
-            self.response.write('<blockquote>%s</blockquote>' %
-                                cgi.escape(greeting.content))
-
-        if user:
-            url = users.create_logout_url(self.request.uri)
-            url_linktext = 'Logout'
-        else:
-            url = users.create_login_url(self.request.uri)
-            url_linktext = 'Login'
-
-        # Write the submission form and the footer of the page
-        sign_query_params = urllib.urlencode({'guestbook_name':
-                                              guestbook_name})
-        self.response.write(MAIN_PAGE_FOOTER_TEMPLATE %
-                            (sign_query_params, cgi.escape(guestbook_name),
-                             url, url_linktext))
-class Guestbook (webapp2.RequestHandler):
+# Here for reference only
+'''class Guestbook (webapp2.RequestHandler):
     def post(self):
         # We set the same parent key on the 'Greeting' to ensure each
         # Greeting is in the same entity group. Queries across the
@@ -256,7 +209,7 @@ class Guestbook (webapp2.RequestHandler):
 
         query_params = {'guestbook_name': guestbook_name}
         self.redirect('/?' + urllib.urlencode(query_params))
-"""class League(BaseModel):
+class League(BaseModel):
     name = ndb.StringProperty()    
     managers = ndb.ListProperty(ndb.Key) #all the users who can view/edit this league
     coaches = ndb.ListProperty(ndb.Key) #all the users who are able to view this league
@@ -310,7 +263,7 @@ class UserPrefs(ndb.Model):
             coaches.put()            
         super(UserPrefs, self).delete()    
 
-"""
+'''
 app = webapp2.WSGIApplication([
     ('/', Test),
 ], debug=True)
