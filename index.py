@@ -32,6 +32,17 @@ TEST_HTML = """<html class="no-js" lang="">
         	<link rel='stylesheet' href='js/fullcalendar/fullcalendar.css' />
 			<script src='js/moment.js'></script>
 			<script src='js/fullcalendar/fullcalendar.js'></script>
+			<script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
+
+			<script>
+			  function signOut() {
+			    var auth2 = gapi.auth2.getAuthInstance();
+			    auth2.signOut().then(function () {
+			      console.log('User signed out.');
+			    });
+			  }
+			</script>
     </head>
 
 
@@ -56,6 +67,7 @@ TEST_HTML = """<html class="no-js" lang="">
               <input type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
+            <a href="#" onclick="signOut();">Sign out</a>
           </form>
         </div><!--/.navbar-collapse -->
       </div>
@@ -167,7 +179,19 @@ SPLASH_HTML = """<!DOCTYPE html>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
 
+    <script>
+    function onSignIn(googleUser) {
+	  var profile = googleUser.getBasicProfile();
+	  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+	  console.log('Name: ' + profile.getName());
+	  console.log('Image URL: ' + profile.getImageUrl());
+	  console.log('Email: ' + profile.getEmail());
+
+	}
+	</script>
 </head>
 
 <body id="page-top">
@@ -178,6 +202,7 @@ SPLASH_HTML = """<!DOCTYPE html>
                 <h1 style="color:black">Sort My Life Out</h1>
                 <hr>
                 <p style="color:black">Blah blah bio Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 <a href="login" class="btn btn-primary btn-xl page-scroll">Start Organising</a>
             </div>
         </div>
@@ -206,7 +231,40 @@ SPLASH_HTML = """<!DOCTYPE html>
 
 class Test(webapp2.RequestHandler):
 	def get(self):
-		user = users.get_current_user()
+		from google.appengine.api import oauth
+		scope = 'https://www.googleapis.com/auth/userinfo.email'
+		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
+		try:
+			user = oauth.get_current_user(scope)
+			if user:
+				allowed_clients = ['407408718192.apps.googleusercontent.com'] # list your client ids here
+				token_audience = oauth.get_client_id(scope)
+				if token_audience not in allowed_clients:
+				raise oauth.OAuthRequestError('audience of token \'%s\' is not in allowed list (%s)' % (token_audience, allowed_clients))
+
+				self.response.write(' = %s\n' % user)
+				self.response.write('- auth_domain = %s\n' % user.auth_domain())
+				self.response.write('- email       = %s\n' % user.email())
+				self.response.write('- nickname    = %s\n' % user.nickname())
+				self.response.write('- user_id     = %s\n' % user.user_id())
+
+				'''userObj = db.get(id)
+				if userObj:
+					self.response.write("<h1>USER FOUND</h1>")
+					self.response.write(TEST_HTML)
+				else:
+					userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
+					userObj.put()
+					self.response.write("<h1>USER CREATED</h1>")
+					self.response.write(SPLASH_HTML)'''
+			else:
+				self.response.write(SPLASH_HTML)
+		except oauth.OAuthRequestError, e:
+			self.response.set_status(401)
+			self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
+			logging.warn(traceback.format_exc())
+		
+		'''user = users.get_current_user()
 		if user:
 			id = db.Key.from_path('User', user.user_id())
 			
@@ -222,7 +280,7 @@ class Test(webapp2.RequestHandler):
 				self.response.write("<h1>USER CREATED</h1>")
 				self.response.write(SPLASH_HTML)
 		else:
-			self.response.write(SPLASH_HTML)
+			self.response.write(SPLASH_HTML)'''
 
 # We set a parent key on the 'Greetings' to ensure that they are all
 # in the same entity group. Queries across the single entity group
@@ -284,6 +342,7 @@ class Task(db.Model):
 
         query_params = {'guestbook_name': guestbook_name}
         self.redirect('/?' + urllib.urlencode(query_params))
+
 class League(BaseModel):
     name = ndb.StringProperty()    
     managers = ndb.ListProperty(ndb.Key) #all the users who can view/edit this league
@@ -341,5 +400,5 @@ class UserPrefs(ndb.Model):
 '''
 
 app = webapp2.WSGIApplication([
-    ('/', Test),('/splash', Splash),
+    ('/', Test),
 ], debug=True)
