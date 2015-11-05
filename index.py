@@ -178,7 +178,7 @@ SPLASH_HTML = """<!DOCTYPE html>
                 <h1 style="color:black">Sort My Life Out</h1>
                 <hr>
                 <p style="color:black">Blah blah bio Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a href="php/login.php" class="btn btn-primary btn-xl page-scroll">Start Organising</a>
+                <a href="login" class="btn btn-primary btn-xl page-scroll">Start Organising</a>
             </div>
         </div>
     </header>
@@ -339,12 +339,6 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
-
-
-class Splash(webapp2.RequestHandler):
-    def get(self):
-        self.response.write(SPLASH_HTML)
-
 
 app = webapp2.WSGIApplication([
     ('/', Test),('/splash', Splash),
