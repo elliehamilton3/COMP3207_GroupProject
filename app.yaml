@@ -9,9 +9,15 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /js
-  static_dir: js
- 
+- url: /less
+  static_dir: less
+
+- url: /img
+  static_dir: img
+
+- url: /font-awesome
+  static_dir: font-awesome
+
 - url: /css
   static_dir: css
   
@@ -23,6 +29,9 @@ handlers:
 
 - url: .*
   script: index.app
+
+- url: /splash
+  script: splash.app
 
 libraries:
 - name: webapp2
