@@ -14,21 +14,14 @@ $eventList = array();            // Assemble list of all events here
     //     );         
     // endforeach;
 
-    $eventList[] = array(              // Add our event as the next element in the event list
-            'id'    => 12,
-            'title' => 'My event',
-            'start' => '2015-11-05',
-            'end'   => '2015-11-05',
-            'url'   => "event_detail.php"
-        );         
+$eventList[] = array(              // Add our event as the next element in the event list
+        'id'    => 12,
+        'title' => 'My event',
+        'start' => '2015-11-05T09:20:22+00:00',
+        'end' => '2015-11-05T17:20:22+00:00',
+        'className' => 'css_class'
+    );         
 
-        $eventList[] = array(              // Add our event as the next element in the event list
-            'id'    => 13,
-            'title' => 'Firework Night',
-            'start' => '2015-11-05',
-            'end'   => '2015-11-05',
-            'url'   => "event_detail.php"
-        );  
 
-    echo json_encode($eventList);       // encode and output the whole list.
+echo json_encode($eventList);       // encode and output the whole list.
 ?>
