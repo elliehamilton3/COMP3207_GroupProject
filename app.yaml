@@ -20,6 +20,9 @@ handlers:
 
 - url: /css
   static_dir: css
+
+- url: /js
+  static_dir: js
   
 - url: /php
   static_dir: php
