@@ -32,6 +32,13 @@ TEST_HTML = """<html class="no-js" lang="">
         	<link rel='stylesheet' href='js/fullcalendar/fullcalendar.css' />
 			<script src='js/moment.js'></script>
 			<script src='js/fullcalendar/fullcalendar.js'></script>
+
+        <!-- DatePicker -->
+        <link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.css' />
+        <link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.min.css' />
+        <script src='js/datepicker/js/bootstrap-datepicker.js'></script>
+        <script src='js/datepicker/js/bootstrap-datepicker.min.js'></script>
+        <script src='js/datepicker/locales/bootstrap-datepicker.uk.min.js'></script>
     </head>
 
 
@@ -65,12 +72,20 @@ TEST_HTML = """<html class="no-js" lang="">
 
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                <div class="btn-group" role="group" aria-label="...">
-                  <button type="button" class="btn btn-default">Module Timetable</button>
-                  <button type="button" class="btn btn-default">Events</button>
-                  <button type="button" class="btn btn-default">Deadlines</button>
-                  <button type="button" class="btn btn-default">Group Work Deadlines</button>
+            <div class="col-xs-9">
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Module Timetable</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Events</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Deadlines</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Group Work Deadlines</button>
+                  </div>
                 </div>
             </div>
         </div>
@@ -87,9 +102,111 @@ TEST_HTML = """<html class="no-js" lang="">
                   <div class="panel-heading">Add/ edit contents</div>
                   <div class="panel-body">
                     <ul>
-                        <li><a href="#">Add modules</a></li>
-                        <li><a href="#">Add events</a></li>
-                        <li><a href="#">Add assignment</a></li>
+                      <li><a href="#" data-toggle="modal" data-target="#addModuleModal">Add Events</a></li>
+
+                      <!-- Modal -->
+                      <div id="addModuleModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Modules</h4>
+                            </div>
+                            <div class="modal-body">
+
+                              
+                              <!-- Form within Modal -->
+                              <form class="form-horizontal" role="form">
+                                <div class="row">
+
+                                  <div class="col-lg-6">
+                                    <div class="input-group">
+                                      <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
+                                      <div class="input-group-btn">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Type <span class="caret"></span></button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                          <li><a href="#">Module</a></li>
+                                          <li><a href="#">Society</a></li>
+                                          <li><a href="#">Job</a></li>
+                                          <li><a href="#">Other</a></li>
+                                          <!--<li role="separator" class="divider"></li>
+                                          <li><a href="#">Separated link</a></li>-->
+                                        </ul>
+                                      </div><!-- /btn-group -->
+                                    </div><!-- /input-group -->
+                                    <br>
+                                    <div class="input-group" style="width:100%">
+                                      <input type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
+                                      <div class="input-group-btn">
+                                      </div><!-- /btn-group -->
+                                    </div><!-- /input-group -->
+
+                                  </div><!-- /.col-lg-6 -->
+                                </div><!-- /.row -->
+                              </form>
+                              <!-- //Form within Modal -->
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default">Submit</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
+
+
+                      <li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add assignment</a></li>
+                      <!-- Modal -->
+                      <div id="addAssignmentModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Assignments</h4>
+                            </div>
+                            <div class="modal-body">
+
+                            <!-- Form within Modal -->
+                            <form class="form-horizontal" role="form">
+                              <div class="row">
+
+                                <div class="col-lg-6">
+                                  <div class="input-group">
+                                    <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
+                                    <div class="input-group-btn">
+                                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Type<span class="caret"></span></button>
+                                      <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="#">Assignment</a></li>
+                                        <li><a href="#">Task</a></li>
+                                        <li><a href="#">Other</a></li>
+                                      </ul>
+                                    </div><!-- /btn-group -->
+                                  </div><!-- /input-group -->
+
+                                  <input type="text" class="span2" value="02-16-2012" id="dp1">
+                                    <script>
+                                    $('.datepicker').datepicker()
+                                    </script>
+
+                                </div><!-- /.col-lg-6 -->
+                              </div><!-- /.row -->
+                            </form>
+                            <!-- //Form within Modal -->
+
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
                     </ul>
                   </div>
                 </div>
