@@ -39,6 +39,29 @@ TEST_HTML = """<html class="no-js" lang="">
         <script src='js/datepicker/js/bootstrap-datepicker.js'></script>
         <script src='js/datepicker/js/bootstrap-datepicker.min.js'></script>
         <script src='js/datepicker/locales/bootstrap-datepicker.uk.min.js'></script>
+
+        <!-- TimePicker -->
+        <script src='js/timepicker/js/bootstrap-timepicker.min.js'></script>
+        <link rel='stylesheet' href='js/timepicker/css/bootstrap-timepicker.min.css' />
+
+        <!-- Drop Down Picker -->
+        <script>
+        $( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
+
+           var $target = $( event.currentTarget );
+
+           $target.closest( '.btn-group' )
+              .find( '[data-bind="label"]' ).text( $target.text() )
+                 .end()
+              .children( '.dropdown-toggle' ).dropdown( 'toggle' );
+
+           return false;
+
+        });
+    
+
+        </script>
+
     </head>
 
 
@@ -122,19 +145,20 @@ TEST_HTML = """<html class="no-js" lang="">
                                 <div class="row">
 
                                   <div class="col-lg-6">
-                                    <div class="input-group">
+                                    <div style="width:100%" class="input-group">
                                       <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
-                                      <div class="input-group-btn">
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Type <span class="caret"></span></button>
-                                        <ul class="dropdown-menu dropdown-menu-right">
-                                          <li><a href="#">Module</a></li>
-                                          <li><a href="#">Society</a></li>
-                                          <li><a href="#">Job</a></li>
-                                          <li><a href="#">Other</a></li>
-                                          <!--<li role="separator" class="divider"></li>
-                                          <li><a href="#">Separated link</a></li>-->
-                                        </ul>
-                                      </div><!-- /btn-group -->
+                                      <div style="width:100%" class="btn-group btn-input clearfix">
+                                          <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
+                                              <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
+                                          </button>
+                                          <ul style="width:100%" class="dropdown-menu" role="menu">
+                                              <li><a href="#">Module</a></li>
+                                              <li><a href="#">Society</a></li>
+                                              <li><a href="#">Job</a></li>
+                                              <li><a href="#">Other</a></li>
+                                          </ul>
+                                      </div>
+
                                     </div><!-- /input-group -->
                                     <br>
                                     <div class="input-group" style="width:100%">
@@ -176,23 +200,39 @@ TEST_HTML = """<html class="no-js" lang="">
                               <div class="row">
 
                                 <div class="col-lg-6">
-                                  <div class="input-group">
+                                  <div style="width:100%" class="input-group">
                                     <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
-                                    <div class="input-group-btn">
-                                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Type<span class="caret"></span></button>
-                                      <ul class="dropdown-menu dropdown-menu-right">
-                                        <li><a href="#">Assignment</a></li>
-                                        <li><a href="#">Task</a></li>
-                                        <li><a href="#">Other</a></li>
-                                      </ul>
-                                    </div><!-- /btn-group -->
+                                    <div style="width:100%" class="btn-group btn-input clearfix">
+                                        <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
+                                            <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
+                                        </button>
+                                        <ul style="width:100%" class="dropdown-menu" role="menu">
+                                            <li><a href="#">Assignment</a></li>
+                                            <li><a href="#">Work</a></li>
+                                            <li><a href="#">Other</a></li>
+                                        </ul>
+                                    </div>
                                   </div><!-- /input-group -->
-
-                                  <input type="text" class="span2" value="02-16-2012" id="dp1">
-                                    <script>
-                                    $('.datepicker').datepicker()
+                                  <br>
+                                    <!-- date picker -->
+                                        <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                        <script>
+                                            $('.datepicker').datepicker()
+                                        </script>
+                                    <!-- date picker -->
+                                    <br>
+                                    <!-- time picker -->
+                                        <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                        <i class="icon-time"></i>
+                                    
+                                    <script type="text/javascript">
+                                        $('#timepicker5').timepicker({
+                                            template: false,
+                                            showInputs: false,
+                                            minuteStep: 5
+                                        });
                                     </script>
-
+                                    <!-- time picker -->
                                 </div><!-- /.col-lg-6 -->
                               </div><!-- /.row -->
                             </form>
@@ -200,7 +240,7 @@ TEST_HTML = """<html class="no-js" lang="">
 
                             </div>
                             <div class="modal-footer">
-                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
                             </div>
                           </div>
                           <!-- //Modal Content -->
@@ -251,95 +291,12 @@ TEST_HTML = """<html class="no-js" lang="">
     </body>
 </html>"""
 
-SPLASH_HTML = """<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Creative - Start Bootstrap Theme</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-
-    <!-- Custom Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" type="text/css">
-
-    <!-- Plugin CSS -->
-    <link rel="stylesheet" href="css/animate.min.css" type="text/css">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/creative.css" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body id="page-top">
-
-    <header>
-        <div class="header-content">
-            <div class="header-content-inner" >
-                <h1 style="color:black">Sort My Life Out</h1>
-                <hr>
-                <p style="color:black">Blah blah bio Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a href="#about" class="btn btn-primary btn-xl page-scroll">Start Organising</a>
-            </div>
-        </div>
-    </header>
-
-    
-
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="js/jquery.easing.min.js"></script>
-    <script src="js/jquery.fittext.js"></script>
-    <script src="js/wow.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="js/creative.js"></script>
-
-</body>
-
-</html>
-"""
-
 class Test(webapp2.RequestHandler):
 	def get(self):
-		user = users.get_current_user()
-		if user:
-			id = db.Key.from_path('User', user.user_id())
-			
-			self.response.write("<h1>User id is" + id.name() + "</h1>")
+		self.response.write(TEST_HTML)
 
-			userObj = db.get(id)
-			if userObj:
-				self.response.write("<h1>USER FOUND</h1>")
-				self.response.write(TEST_HTML)
-			else:
-				userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
-				userObj.put()
-				self.response.write("<h1>USER CREATED</h1>")
-				self.response.write(SPLASH_HTML)
-		else:
-			self.response.write(SPLASH_HTML)
+
+DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
 # We set a parent key on the 'Greetings' to ensure that they are all
 # in the same entity group. Queries across the single entity group
@@ -348,6 +305,7 @@ class Test(webapp2.RequestHandler):
 
 class User(db.Model):
     #Model for representing a user.
+    identity = db.StringProperty(indexed=False)
     email = db.StringProperty(indexed=False)
     name = db.StringProperty(indexed=False)
     groups = db.ListProperty(db.Key)
@@ -456,13 +414,6 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
-
-
-class Splash(webapp2.RequestHandler):
-    def get(self):
-        self.response.write(SPLASH_HTML)
-
-
 app = webapp2.WSGIApplication([
-    ('/', Test),('/splash', Splash),
+    ('/', Test),
 ], debug=True)
