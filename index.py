@@ -136,8 +136,22 @@ TEST_HTML = """<html class="no-js" lang="">
 
 class Test(webapp2.RequestHandler):
 	def get(self):
-		self.response.write(TEST_HTML)
+		user = users.get_current_user()
+		if user:
+			id = db.Key.from_path('User', user.user_id())
+			
+			self.response.write("<h1>User id is" + id.name() + "</h1>")
 
+			userObj = db.get(id)
+			if userObj:
+				self.response.write("<h1>USER FOUND</h1>")
+			else:
+				userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
+				userObj.put()
+				self.response.write("<h1>USER CREATED</h1>")
+			self.response.write(TEST_HTML)
+		else:
+			self.redirect(users.create_login_url(self.request.uri))
 
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
@@ -148,7 +162,6 @@ DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
 class User(db.Model):
     #Model for representing a user.
-    identity = db.StringProperty(indexed=False)
     email = db.StringProperty(indexed=False)
     name = db.StringProperty(indexed=False)
     groups = db.ListProperty(db.Key)
