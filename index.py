@@ -29,20 +29,49 @@ TEST_HTML = """<html class="no-js" lang="">
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
         <!-- Full Calendar imports -->
-        	<link rel='stylesheet' href='js/fullcalendar/fullcalendar.css' />
-			<script src='js/moment.js'></script>
-			<script src='js/fullcalendar/fullcalendar.js'></script>
-			<script src="https://apis.google.com/js/platform.js" async defer></script>
-    <meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
+        <link rel='stylesheet' href='js/fullcalendar/fullcalendar.css' />
+  			<script src='js/moment.js'></script>
+  			<script src='js/fullcalendar/fullcalendar.js'></script>
 
-			<script>
-			  function signOut() {
-			    var auth2 = gapi.auth2.getAuthInstance();
-			    auth2.signOut().then(function () {
-			      console.log('User signed out.');
-			    });
-			  }
-			</script>
+  			<script src="https://apis.google.com/js/platform.js" async defer></script>
+        <meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
+
+  			<script>
+  			  function signOut() {
+  			    var auth2 = gapi.auth2.getAuthInstance();
+  			    auth2.signOut().then(function () {
+  			      console.log('User signed out.');
+  			    });
+  			  }
+  			</script>
+
+        <!-- DatePicker -->
+        <link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.css' />
+        <link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.min.css' />
+        <script src='js/datepicker/js/bootstrap-datepicker.js'></script>
+        <script src='js/datepicker/js/bootstrap-datepicker.min.js'></script>
+        <script src='js/datepicker/locales/bootstrap-datepicker.uk.min.js'></script>
+
+        <!-- TimePicker -->
+        <script src='js/timepicker/js/bootstrap-timepicker.min.js'></script>
+        <link rel='stylesheet' href='js/timepicker/css/bootstrap-timepicker.min.css' />
+
+        <!-- Drop Down Picker -->
+        <script>
+        $( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
+
+           var $target = $( event.currentTarget );
+
+           $target.closest( '.btn-group' )
+              .find( '[data-bind="label"]' ).text( $target.text() )
+                 .end()
+              .children( '.dropdown-toggle' ).dropdown( 'toggle' );
+
+           return false;
+
+        });
+        </script>
+
     </head>
 
 
@@ -67,7 +96,7 @@ TEST_HTML = """<html class="no-js" lang="">
               <input type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
-            <a href="#" onclick="signOut();">Sign out</a>
+            <!--<a href="#" onclick="signOut();">Sign out</a>-->
           </form>
         </div><!--/.navbar-collapse -->
       </div>
@@ -77,12 +106,20 @@ TEST_HTML = """<html class="no-js" lang="">
 
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                <div class="btn-group" role="group" aria-label="...">
-                  <button type="button" class="btn btn-default">Module Timetable</button>
-                  <button type="button" class="btn btn-default">Events</button>
-                  <button type="button" class="btn btn-default">Deadlines</button>
-                  <button type="button" class="btn btn-default">Group Work Deadlines</button>
+            <div class="col-xs-9">
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Module Timetable</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Events</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Deadlines</button>
+                  </div>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default">Group Work Deadlines</button>
+                  </div>
                 </div>
             </div>
         </div>
@@ -99,9 +136,142 @@ TEST_HTML = """<html class="no-js" lang="">
                   <div class="panel-heading">Add/ edit contents</div>
                   <div class="panel-body">
                     <ul>
-                        <li><a href="#">Add modules</a></li>
-                        <li><a href="#">Add events</a></li>
-                        <li><a href="#">Add assignment</a></li>
+                      <li><a href="#" data-toggle="modal" data-target="#addModuleModal">Add Events</a></li>
+
+                      <!-- Modal -->
+                      <div id="addModuleModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Modules</h4>
+                            </div>
+                            <div class="modal-body">
+
+                              
+                              <!-- Form within Modal -->
+                              <form class="form-horizontal" role="form">
+                                <div class="row">
+
+                                  <div class="col-lg-6">
+                                    <div style="width:100%" class="input-group">
+                                      <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
+                                      <div style="width:100%" class="btn-group btn-input clearfix">
+                                          <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
+                                              <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
+                                          </button>
+                                          <ul style="width:100%" class="dropdown-menu" role="menu">
+                                              <li><a href="#">Module</a></li>
+                                              <li><a href="#">Society</a></li>
+                                              <li><a href="#">Job</a></li>
+                                              <li><a href="#">Other</a></li>
+                                          </ul>
+                                      </div>
+
+                                    </div><!-- /input-group -->
+                                    <br>
+                                    <div class="input-group" style="width:100%">
+                                      <input type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
+                                      <div class="input-group-btn">
+                                      </div><!-- /btn-group -->
+                                    </div><!-- /input-group -->
+
+                                  </div><!-- /.col-lg-6 -->
+                                </div><!-- /.row -->
+                              </form>
+                              <!-- //Form within Modal -->
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default">Submit</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
+
+
+                      <li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add assignment</a></li>
+                      <!-- Modal -->
+                      <div id="addAssignmentModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                          <!-- Modal content-->
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <h4 class="modal-title">Add Assignments</h4>
+                            </div>
+                            <div class="modal-body">
+
+                            <!-- Form within Modal -->
+                            <form class="form-horizontal" role="form">
+                              <div class="row">
+
+                                <div class="col-lg-6">
+                                  <div style="width:100%" class="input-group">
+                                    <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
+                                    <div style="width:100%" class="btn-group btn-input clearfix">
+                                        <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
+                                            <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
+                                        </button>
+                                        <ul style="width:100%" class="dropdown-menu" role="menu">
+                                            <li><a href="#">Assignment</a></li>
+                                            <li><a href="#">Work</a></li>
+                                            <li><a href="#">Other</a></li>
+                                        </ul>
+                                    </div>
+                                  </div><!-- /input-group -->
+                                  <script>
+                                  $( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
+
+                                     var $target = $( event.currentTarget );
+
+                                     $target.closest( '.btn-group' )
+                                        .find( '[data-bind="label"]' ).text( $target.text() )
+                                           .end()
+                                        .children( '.dropdown-toggle' ).dropdown( 'toggle' );
+
+                                     return false;
+
+                                  });
+                                  </script>
+                                  <br>
+                                    <!-- date picker -->
+                                        <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                        <script>
+                                            $('.datepicker').datepicker()
+                                        </script>
+                                    <!-- date picker -->
+                                    <br>
+                                    <!-- time picker -->
+                                        <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                        <i class="icon-time"></i>
+                                    
+                                    <script type="text/javascript">
+                                        $('#timepicker5').timepicker({
+                                            template: false,
+                                            showInputs: false,
+                                            minuteStep: 5
+                                        });
+                                    </script>
+                                    <!-- time picker -->
+                                </div><!-- /.col-lg-6 -->
+                              </div><!-- /.row -->
+                            </form>
+                            <!-- //Form within Modal -->
+
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                            </div>
+                          </div>
+                          <!-- //Modal Content -->
+                        </div>
+                      </div>
+                      <!-- //Modal -->
                     </ul>
                   </div>
                 </div>
@@ -127,10 +297,8 @@ TEST_HTML = """<html class="no-js" lang="">
                     </ul>
                   </div>
                 </div>
-
             </div>
         </div>
-        
     </div>
 	
 	<div class="container">
@@ -398,6 +566,7 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
+
 
 app = webapp2.WSGIApplication([
     ('/', Test),
