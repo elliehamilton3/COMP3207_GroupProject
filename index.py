@@ -4,6 +4,9 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb, db
 from google.appengine.api import oauth
+import logging
+import traceback
+import webapp2
 
 import webapp2
 
@@ -352,15 +355,15 @@ SPLASH_HTML = """<!DOCTYPE html>
     <meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
 
     <script>
-    function onSignIn(googleUser) {
-	  var profile = googleUser.getBasicProfile();
-	  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-	  console.log('Name: ' + profile.getName());
-	  console.log('Image URL: ' + profile.getImageUrl());
-	  console.log('Email: ' + profile.getEmail());
-
-	}
-	</script>
+	    function onSignIn(googleUser) {
+			  var profile = googleUser.getBasicProfile();
+			  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+			  console.log('Name: ' + profile.getName());
+			  console.log('Image URL: ' + profile.getImageUrl());
+			  console.log('Email: ' + profile.getEmail());
+			  window.location.replace("/calendar");
+			}
+		</script>
 </head>
 
 <body id="page-top">
@@ -398,15 +401,25 @@ SPLASH_HTML = """<!DOCTYPE html>
 </html>
 """
 
+class Calendar(webapp2.RequestHandler):
+	def get(self):
+		self.response.write(TEST_HTML)
+
 class Test(webapp2.RequestHandler):
 	def get(self):
-		scope = 'https://www.googleapis.com/auth/userinfo.email'
-		'''self.response.write('\noauth.get_current_user(%s)' % repr(scope))'''
+		self.response.write(SPLASH_HTML)
+		'''scope = 'https://www.googleapis.com/auth/userinfo.email'
+		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
 		try:
 			user = oauth.get_current_user(scope)
-			'''self.response.write("<h1>User id is " + user.user_id() + "</h1>")
+			allowed_clients = ['110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com'] # list your client ids here
+			token_audience = oauth.get_client_id(scope)
+			if token_audience not in allowed_clients:
+				raise oauth.OAuthRequestError('audience of token \'%s\' is not in allowed list (%s)'
+																						% (token_audience, allowed_clients))
+			self.response.write("<h1>User id is " + user.user_id() + "</h1>")
 			self.response.write('- email       = %s\n' % user.email())
-			self.response.write("<h1>User id is " + scope + "</h1>")'''
+			self.response.write("<h1>User id is " + scope + "</h1>")
 			if user:
 				id = db.Key.from_path('User', user.user_id())
 				self.response.write("<h1>User id is " + id.name() + "</h1>")
@@ -422,9 +435,10 @@ class Test(webapp2.RequestHandler):
 			else:
 				self.response.write(SPLASH_HTML)
 		except oauth.OAuthRequestError, e:
+			# self.response.write(SPLASH_HTML)
 			self.response.set_status(401)
 			self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
-			# logging.warn(traceback.format_exc())
+			logging.warn(traceback.format_exc())'''
 
 		
 		'''user = users.get_current_user()
@@ -564,5 +578,5 @@ class UserPrefs(ndb.Model):
 
 
 app = webapp2.WSGIApplication([
-    ('/', Test),
+    ('/', Test),('/calendar', Calendar),
 ], debug=True)
