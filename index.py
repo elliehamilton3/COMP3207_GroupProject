@@ -146,10 +146,6 @@ TEST_HTML = """<html class="no-js" lang="">
                       <div id="addModuleModal" class="modal fade" role="dialog">
                         <div class="modal-dialog">
 
-                          <!-- Modal -->
-                      <div id="addModuleModal" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-
                           <!-- Modal content-->
                           <div class="modal-content">
                             <div class="modal-header">
