@@ -3,6 +3,7 @@ import urllib
 
 from google.appengine.api import users
 from google.appengine.ext import ndb, db
+from google.appengine.api import oauth
 
 import webapp2
 
@@ -399,41 +400,34 @@ SPLASH_HTML = """<!DOCTYPE html>
 
 class Test(webapp2.RequestHandler):
 	def get(self):
-		'''from google.appengine.api import oauth
 		scope = 'https://www.googleapis.com/auth/userinfo.email'
 		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
 		try:
 			user = oauth.get_current_user(scope)
+			self.response.write("<h1>User id is " + user.user_id() + "</h1>")
+			self.response.write('- email       = %s\n' % user.email())
+			'''self.response.write("<h1>User id is " + scope + "</h1>")'''
 			if user:
-				allowed_clients = ['407408718192.apps.googleusercontent.com'] # list your client ids here
-				token_audience = oauth.get_client_id(scope)
-				if token_audience not in allowed_clients:
-				raise oauth.OAuthRequestError('audience of token \'%s\' is not in allowed list (%s)' % (token_audience, allowed_clients))
-
-				self.response.write(' = %s\n' % user)
-				self.response.write('- auth_domain = %s\n' % user.auth_domain())
-				self.response.write('- email       = %s\n' % user.email())
-				self.response.write('- nickname    = %s\n' % user.nickname())
-				self.response.write('- user_id     = %s\n' % user.user_id())
+				id = db.Key.from_path('User', user.user_id())
+				self.response.write("<h1>User id is " + id.name() + "</h1>")
+				userObj = db.get(id)
+				if userObj:
+					self.response.write("<h1>USER FOUND</h1>")
+					self.response.write(TEST_HTML)
+				else:
+					userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
+					userObj.put()
+					self.response.write("<h1>USER CREATED</h1>")
+					self.response.write(SPLASH_HTML)
+			else:
+				self.response.write(SPLASH_HTML)
 		except oauth.OAuthRequestError, e:
 			self.response.set_status(401)
 			self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
 			logging.warn(traceback.format_exc())
 
-      
-      userObj = db.get(id)
-        if userObj:
-          self.response.write("<h1>USER FOUND</h1>")
-          self.response.write(TEST_HTML)
-        else:
-          userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
-          userObj.put()
-          self.response.write("<h1>USER CREATED</h1>")
-          self.response.write(SPLASH_HTML)
-      else:
-        self.response.write(SPLASH_HTML)'''
 		
-		user = users.get_current_user()
+		'''user = users.get_current_user()
 		if user:
 			id = db.Key.from_path('User', user.user_id())
 			
@@ -449,7 +443,7 @@ class Test(webapp2.RequestHandler):
 				self.response.write("<h1>USER CREATED</h1>")
 				self.response.write(SPLASH_HTML)
 		else:
-			self.response.write(SPLASH_HTML)
+			self.response.write(SPLASH_HTML)'''
 
 # We set a parent key on the 'Greetings' to ensure that they are all
 # in the same entity group. Queries across the single entity group
