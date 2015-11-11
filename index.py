@@ -424,7 +424,7 @@ class Test(webapp2.RequestHandler):
 		except oauth.OAuthRequestError, e:
 			self.response.set_status(401)
 			self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
-			logging.warn(traceback.format_exc())
+			# logging.warn(traceback.format_exc())
 
 		
 		'''user = users.get_current_user()
