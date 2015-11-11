@@ -577,19 +577,19 @@ class UserPrefs(ndb.Model):
 '''
 class NewEvent(webapp2.RequestHandler):
     def post(self):
-        
+        logging.warn("new event")
         event = Event()
         
-        id = db.Key.from_path('User', user.user_id())
-        groupId = db.Key.from_path('Group', self.request.get('group'))
+        ##id = db.Key.from_path('User', user.user_id())
+        ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
         if users.get_current_user():
             event.name = self.request.get('name')
-            event.date = self.request.get('date')
+            ##event.date = self.request.get('date')
             event.location = self.request.get('location')
             event.event_type = self.request.get('event_type')
-            event.user = db.get(id)
-            event.group = db.get(groupId)
+            ##event.user = db.get(id)
+            ##event.group = db.get(groupId)
             event.put()
 
 app = webapp2.WSGIApplication([
