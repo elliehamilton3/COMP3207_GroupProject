@@ -8,8 +8,6 @@ import logging
 import traceback
 import webapp2
 
-import webapp2
-
 TEST_HTML = """<html class="no-js" lang="">
     <head>
         <meta charset="utf-8">
