@@ -146,6 +146,10 @@ TEST_HTML = """<html class="no-js" lang="">
                       <div id="addModuleModal" class="modal fade" role="dialog">
                         <div class="modal-dialog">
 
+                          <!-- Modal -->
+                      <div id="addModuleModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
                           <!-- Modal content-->
                           <div class="modal-content">
                             <div class="modal-header">
@@ -156,17 +160,17 @@ TEST_HTML = """<html class="no-js" lang="">
 
                               
                               <!-- Form within Modal -->
-                              <form class="form-horizontal" role="form">
+                              <form class="form-horizontal" role="form" method="post" action="/events">
                                 <div class="row">
 
                                   <div class="col-lg-6">
                                     <div style="width:100%" class="input-group">
-                                      <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
+                                      <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
                                       <div style="width:100%" class="btn-group btn-input clearfix">
                                           <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
                                               <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
                                           </button>
-                                          <ul style="width:100%" class="dropdown-menu" role="menu">
+                                          <ul style="width:100%" class="dropdown-menu" name="event_type" role="menu">
                                               <li><a href="#">Module</a></li>
                                               <li><a href="#">Society</a></li>
                                               <li><a href="#">Job</a></li>
@@ -177,7 +181,7 @@ TEST_HTML = """<html class="no-js" lang="">
                                     </div><!-- /input-group -->
                                     <br>
                                     <div class="input-group" style="width:100%">
-                                      <input type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
+                                      <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                       <div class="input-group-btn">
                                       </div><!-- /btn-group -->
                                     </div><!-- /input-group -->
@@ -575,8 +579,23 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
-
+class NewEvent(webbapp2.RequestHandler):
+    def post(self):
+        
+        event = Event()
+        
+        id = db.Key.from_path('User', user.user_id())
+        groupId = db.Key.from_path('Group', self.request.get('group'))
+        
+        if users.get_current_user():
+            event.name = self.request.get('name')
+            event.date = self.request.get('date')
+            event.location = self.request.get('location')
+            event.event_type = self.request.get('event_type')
+            event.user = db.get(id)
+            event.group = db.get(groupId)
+            event.put()
 
 app = webapp2.WSGIApplication([
-    ('/', Test),('/calendar', Calendar),
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent)
 ], debug=True)
