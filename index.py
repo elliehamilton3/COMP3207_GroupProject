@@ -582,6 +582,7 @@ class NewEvent(webapp2.RequestHandler):
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
         if users.get_current_user():
+            logging.warn("found users")
             event.name = self.request.get('name')
             ##event.date = self.request.get('date')
             event.location = self.request.get('location')
