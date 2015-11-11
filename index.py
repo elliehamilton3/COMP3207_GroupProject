@@ -179,14 +179,14 @@ TEST_HTML = """<html class="no-js" lang="">
                                       <div class="input-group-btn">
                                       </div><!-- /btn-group -->
                                     </div><!-- /input-group -->
-
+                                    <button type="submit" class="btn btn-default">Submit</button>
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
                               </form>
                               <!-- //Form within Modal -->
                             </div>
                             <div class="modal-footer">
-                              <button type="submit" class="btn btn-default">Submit</button>
+                              
                             </div>
                           </div>
                           <!-- //Modal Content -->
