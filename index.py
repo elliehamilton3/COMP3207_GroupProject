@@ -581,15 +581,14 @@ class NewEvent(webapp2.RequestHandler):
         ##id = db.Key.from_path('User', user.user_id())
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
-        if users.get_current_user():
-            logging.warn("found users")
-            event.name = self.request.get('name')
-            ##event.date = self.request.get('date')
-            event.location = self.request.get('location')
-            event.event_type = self.request.get('event_type')
-            ##event.user = db.get(id)
-            ##event.group = db.get(groupId)
-            event.put()
+        logging.warn("found users")
+        event.name = self.request.get('name')
+        ##event.date = self.request.get('date')
+        event.location = self.request.get('location')
+        event.event_type = self.request.get('event_type')
+        ##event.user = db.get(id)
+        ##event.group = db.get(groupId)
+        event.put()
 
 app = webapp2.WSGIApplication([
     ('/', Test),('/calendar', Calendar),('/event', NewEvent)
