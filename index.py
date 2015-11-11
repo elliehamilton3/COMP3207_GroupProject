@@ -156,7 +156,7 @@ TEST_HTML = """<html class="no-js" lang="">
 
                               
                               <!-- Form within Modal -->
-                              <form class="form-horizontal" role="form" method="post" action="/events">
+                              <form class="form-horizontal" role="form" method="post" action="/event">
                                 <div class="row">
 
                                   <div class="col-lg-6">
@@ -188,7 +188,7 @@ TEST_HTML = """<html class="no-js" lang="">
                               <!-- //Form within Modal -->
                             </div>
                             <div class="modal-footer">
-                              <button type="button" class="btn btn-default">Submit</button>
+                              <button type="submit" class="btn btn-default">Submit</button>
                             </div>
                           </div>
                           <!-- //Modal Content -->
