@@ -579,7 +579,7 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
-class NewEvent(webbapp2.RequestHandler):
+class NewEvent(webapp2.RequestHandler):
     def post(self):
         
         event = Event()
