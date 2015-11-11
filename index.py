@@ -401,12 +401,12 @@ SPLASH_HTML = """<!DOCTYPE html>
 class Test(webapp2.RequestHandler):
 	def get(self):
 		scope = 'https://www.googleapis.com/auth/userinfo.email'
-		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
+		'''self.response.write('\noauth.get_current_user(%s)' % repr(scope))'''
 		try:
 			user = oauth.get_current_user(scope)
-			self.response.write("<h1>User id is " + user.user_id() + "</h1>")
+			'''self.response.write("<h1>User id is " + user.user_id() + "</h1>")
 			self.response.write('- email       = %s\n' % user.email())
-			'''self.response.write("<h1>User id is " + scope + "</h1>")'''
+			self.response.write("<h1>User id is " + scope + "</h1>")'''
 			if user:
 				id = db.Key.from_path('User', user.user_id())
 				self.response.write("<h1>User id is " + id.name() + "</h1>")
