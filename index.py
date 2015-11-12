@@ -588,9 +588,10 @@ class NewEvent(webapp2.RequestHandler):
         
         date = self.request.get('date')
         time = self.request.get('time')
-        dt = datetime.datetime.combine(date, time)
         
-        logging.warn("found users")
+        
+        logging.warn(date)
+        logging.warn(time)
         event.name = self.request.get('name')
         event.date = dt
         event.location = self.request.get('location')
