@@ -4,11 +4,11 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb, db
 from google.appengine.api import oauth
+from oauth2client import client, crypt
 import logging
 import traceback
 import webapp2
 
-import webapp2
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
@@ -357,11 +357,21 @@ SPLASH_HTML = """<!DOCTYPE html>
     <script>
 	    function onSignIn(googleUser) {
 			  var profile = googleUser.getBasicProfile();
-			  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-			  console.log('Name: ' + profile.getName());
-			  console.log('Image URL: ' + profile.getImageUrl());
-			  console.log('Email: ' + profile.getEmail());
-			  window.location.replace("/calendar");
+        	var id_token = googleUser.getAuthResponse().id_token;
+				console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+				console.log('Name: ' + profile.getName());
+				console.log('Image URL: ' + profile.getImageUrl());
+				console.log('Email: ' + profile.getEmail());
+				
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', 'http://testproj-1113.appspot.com/calendar');
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onload = function() {
+				  console.log('Signed in as: ' + xhr.responseText);
+				};
+				xhr.send('idtoken=' + id_token);
+
+				window.location.replace("/calendar");
 			}
 		</script>
 </head>
@@ -403,10 +413,25 @@ SPLASH_HTML = """<!DOCTYPE html>
 
 class Calendar(webapp2.RequestHandler):
 	def get(self):
-		self.response.write(TEST_HTML)
+		try:
+			idinfo = client.verify_id_token(token, 110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com)
+			# If multiple clients access the backend server:
+			if idinfo['aud'] not in [110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com]:
+				raise crypt.AppIdentityError("Unrecognized client.")
+			if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+				raise crypt.AppIdentityError("Wrong issuer.")
+			if idinfo['hd'] != APPS_DOMAIN_NAME:
+				raise crypt.AppIdentityError("Wrong hosted domain.")
+			userid = idinfo['sub']
+			self.response.write(userid)
+			self.response.write(TEST_HTML)
+		except crypt.AppIdentityError:
+			# Invalid token
+			self.response.write(SPLASH_HTML)
 
 class Test(webapp2.RequestHandler):
 	def get(self):
+
 		self.response.write(SPLASH_HTML)
 		'''scope = 'https://www.googleapis.com/auth/userinfo.email'
 		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
