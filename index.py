@@ -150,7 +150,7 @@ TEST_HTML = """<html class="no-js" lang="">
                                   <div class="col-lg-6">
                                     <div style="width:100%" class="input-group">
                                         <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
-                                        <br/>
+                                        <br/><br/>
                                         <select name="event_type" style="width:100%">
                                             <option value="module">Module</option>
                                             <option value="society">Society</option>
