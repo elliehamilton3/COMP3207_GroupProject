@@ -161,15 +161,6 @@ TEST_HTML = """<html class="no-js" lang="">
                                     <div style="width:100%" class="input-group">
                                       <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
                                       <div style="width:100%" class="btn-group btn-input clearfix">
-                                          <!--<button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
-                                              <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
-                                          </button>
-                                          <ul style="width:100%" class="dropdown-menu" role="menu">
-                                              <li><a href="#">Module</a></li>
-                                              <li><a href="#">Society</a></li>
-                                              <li><a href="#">Job</a></li>
-                                              <li><a href="#">Other</a></li>
-                                          </ul>-->
                                           <select name="event_type" style="width:100%">
                                               <option value="module">Module</option>
                                               <option value="society">Society</option>
