@@ -7,6 +7,7 @@ from google.appengine.api import oauth
 import logging
 import traceback
 import webapp2
+import datetime
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
