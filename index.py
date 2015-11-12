@@ -90,16 +90,6 @@ TEST_HTML = """<html class="no-js" lang="">
           <a class="navbar-brand" href="#">COMP3207</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-            <!--<a href="#" onclick="signOut();">Sign out</a>-->
-          </form>
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
