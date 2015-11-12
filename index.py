@@ -595,8 +595,7 @@ class NewEvent(webapp2.RequestHandler):
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
         date = self.request.get('date')
-        time = self.request.get('time')
-        
+        time = self.request.get('time')      
         
         logging.warn(date)
         logging.warn(time)
