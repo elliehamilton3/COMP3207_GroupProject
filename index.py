@@ -462,6 +462,14 @@ class Test(webapp2.RequestHandler):
 		else:
 			self.response.write(SPLASH_HTML)'''
 
+
+
+class Feed(webapp2.RequestHandler):
+    def get(self):
+        self.response.write('Hello')
+
+
+
 # We set a parent key on the 'Greetings' to ensure that they are all
 # in the same entity group. Queries across the single entity group
 # will be consistent.  However, the write rate should be limited to
@@ -601,5 +609,5 @@ class NewEvent(webapp2.RequestHandler):
         event.put()
 
 app = webapp2.WSGIApplication([
-    ('/', Test),('/calendar', Calendar),('/event', NewEvent)
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed)
 ], debug=True)
