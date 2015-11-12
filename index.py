@@ -417,7 +417,8 @@ SPLASH_HTML = """<!DOCTYPE html>
 
 class Calendar(webapp2.RequestHandler):
 	def get(self):
-		try:
+		self.response.write(TEST_HTML)
+		'''try:
 			idinfo = client.verify_id_token(token, 110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com)
 			# If multiple clients access the backend server:
 			if idinfo['aud'] not in [110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com]:
@@ -431,7 +432,7 @@ class Calendar(webapp2.RequestHandler):
 			self.response.write(TEST_HTML)
 		except crypt.AppIdentityError:
 			# Invalid token
-			self.response.write(SPLASH_HTML)
+			self.response.write(SPLASH_HTML)'''
 
 class Test(webapp2.RequestHandler):
 	def get(self):
