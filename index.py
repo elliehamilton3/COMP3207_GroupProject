@@ -497,7 +497,7 @@ class Test(webapp2.RequestHandler):
 
 # JSON Feed
 
-def jsonfeed():
+def jsonfeed(startDate, endDate):
 
     json_list = []
 
@@ -539,27 +539,13 @@ def jsonfeed():
 
     json_list.append(json_entry_d)
 
-    
-
-    # # Open a file for writing
-    # out_file = open("js/test.json","w")
-
-    # # Save the dictionary into this file
-    # # (the 'indent=4' is optional, but makes it more readable)
-    # json.dump(json_list,out_file, indent=4)                                    
-
-    # # Close the file
-    # out_file.close()
-
 
     return json.dumps(json_list)
 
 
-JSON = """[{"start": "2015-11-05T09:20:22+00:00", "end": "2015-11-05T13:20:22+00:00", "id": 12, "title": "My first event"}, {"start": "2015-11-12T09:20:22+00:00", "end": "2015-11-12T13:20:22+00:00", "id": 13, "title": "My party"}, {"start": "2015-11-17T09:20:22+00:00", "end": "2015-11-17T13:20:22+00:00", "id": 14, "title": "My big event"}]"""
-
 class Feed(webapp2.RequestHandler):
     def get(self):
-        self.response.write(jsonfeed())
+        self.response.write(jsonfeed(self.request.get("start"), self.request.get("end")))
 
 
 # ///////////////////////////////////
