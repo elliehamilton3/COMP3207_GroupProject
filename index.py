@@ -8,7 +8,7 @@ from oauth2client import client, crypt
 import logging
 import traceback
 import webapp2
-
+import datetime
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
@@ -92,16 +92,6 @@ TEST_HTML = """<html class="no-js" lang="">
           <a class="navbar-brand" href="#">COMP3207</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-            <!--<a href="#" onclick="signOut();">Sign out</a>-->
-          </form>
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
@@ -156,40 +146,54 @@ TEST_HTML = """<html class="no-js" lang="">
 
                               
                               <!-- Form within Modal -->
-                              <form class="form-horizontal" role="form">
+                              <form class="form-horizontal" role="form" method="post" action="/event">
                                 <div class="row">
 
                                   <div class="col-lg-6">
                                     <div style="width:100%" class="input-group">
-                                      <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
-                                      <div style="width:100%" class="btn-group btn-input clearfix">
-                                          <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
-                                              <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
-                                          </button>
-                                          <ul style="width:100%" class="dropdown-menu" role="menu">
-                                              <li><a href="#">Module</a></li>
-                                              <li><a href="#">Society</a></li>
-                                              <li><a href="#">Job</a></li>
-                                              <li><a href="#">Other</a></li>
-                                          </ul>
-                                      </div>
-
-                                    </div><!-- /input-group -->
-                                    <br>
+                                        <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
+                                      </div><!-- /input-group -->
+                                        <br/>
+                                        <div class="input-group" style="width:100%">
+                                          <select name="event_type" style="width:100%">
+                                              <option value="module">Module</option>
+                                              <option value="society">Society</option>
+                                              <option value="job">Job</option>
+                                              <option value="other">Other</option>
+                                          </select>
+                                        </div> <!-- /input-group -->
+                                    <br/>
                                     <div class="input-group" style="width:100%">
-                                      <input type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
-                                      <div class="input-group-btn">
-                                      </div><!-- /btn-group -->
+                                        <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                     </div><!-- /input-group -->
-
+                                    <br/>
+                                    <!-- date picker -->
+                                        <input name="date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                        <script>
+                                            $('.datepicker').datepicker()
+                                        </script>
+                                    <!-- date picker -->
+                                    <br/>
+                                    <!-- time picker -->
+                                        <input name="time" id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                        <i class="icon-time"></i>
+                                    
+                                    <script type="text/javascript">
+                                        $('#timepicker5').timepicker({
+                                            template: false,
+                                            showInputs: false,
+                                            minuteStep: 5
+                                        });
+                                    </script>
+                                    <!-- time picker -->
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
-                              </form>
                               <!-- //Form within Modal -->
                             </div>
                             <div class="modal-footer">
-                              <button type="button" class="btn btn-default">Submit</button>
+                                <button type="submit" class="btn btn-default">Submit</button>
                             </div>
+                            </form>
                           </div>
                           <!-- //Modal Content -->
                         </div>
@@ -484,6 +488,14 @@ class Test(webapp2.RequestHandler):
 		else:
 			self.response.write(SPLASH_HTML)'''
 
+
+
+class Feed(webapp2.RequestHandler):
+    def get(self):
+        self.response.write('Hello')
+
+
+
 # We set a parent key on the 'Greetings' to ensure that they are all
 # in the same entity group. Queries across the single entity group
 # will be consistent.  However, the write rate should be limited to
@@ -600,8 +612,27 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
-
+class NewEvent(webapp2.RequestHandler):
+    def post(self):
+        logging.warn("new event")
+        event = Event()
+        
+        ##id = db.Key.from_path('User', user.user_id())
+        ##groupId = db.Key.from_path('Group', self.request.get('group'))
+        
+        date = self.request.get('date')
+        time = self.request.get('time')      
+        
+        logging.warn(date)
+        logging.warn(time)
+        event.name = self.request.get('name')
+        ##event.date = dt
+        event.location = self.request.get('location')
+        event.event_type = self.request.get('event_type')
+        ##event.user = db.get(id)
+        ##event.group = db.get(groupId)
+        event.put()
 
 app = webapp2.WSGIApplication([
-    ('/', Test),('/calendar', Calendar),
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed)
 ], debug=True)
