@@ -164,26 +164,6 @@ TEST_HTML = """<html class="no-js" lang="">
                                     <div class="input-group" style="width:100%">
                                         <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                     </div><!-- /input-group -->
-                                    <br/>
-                                    <!-- date picker -->
-                                        <input name="date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-                                        <script>
-                                            $('.datepicker').datepicker()
-                                        </script>
-                                    <!-- date picker -->
-                                    <br/>
-                                    <!-- time picker -->
-                                        <input name="time" id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
-                                        <i class="icon-time"></i>
-                                    
-                                    <script type="text/javascript">
-                                        $('#timepicker5').timepicker({
-                                            template: false,
-                                            showInputs: false,
-                                            minuteStep: 5
-                                        });
-                                    </script>
-                                    <!-- time picker -->
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
                               <!-- //Form within Modal -->
@@ -585,9 +565,13 @@ class NewEvent(webapp2.RequestHandler):
         ##id = db.Key.from_path('User', user.user_id())
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
+        date = self.request.get('date')
+        time = self.request.get('time')
+        dt = datetime.datetime.combine(date, time)
+        
         logging.warn("found users")
         event.name = self.request.get('name')
-        ##event.date = self.request.get('date')
+        event.date = dt
         event.location = self.request.get('location')
         event.event_type = self.request.get('event_type')
         ##event.user = db.get(id)
