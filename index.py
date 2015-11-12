@@ -186,14 +186,16 @@ TEST_HTML = """<html class="no-js" lang="">
                                         });
                                     </script>
                                     <!-- time picker -->
+                                    <button type="submit" class="btn btn-default">Submit</button>
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
+                                </form>
                               <!-- //Form within Modal -->
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-default">Submit</button>
+                                
                             </div>
-                            </form>
+                            
                           </div>
                           <!-- //Modal Content -->
                         </div>
