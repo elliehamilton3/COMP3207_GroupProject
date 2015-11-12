@@ -601,7 +601,7 @@ class NewEvent(webapp2.RequestHandler):
         logging.warn(date)
         logging.warn(time)
         event.name = self.request.get('name')
-        event.date = dt
+        ##event.date = dt
         event.location = self.request.get('location')
         event.event_type = self.request.get('event_type')
         ##event.user = db.get(id)
