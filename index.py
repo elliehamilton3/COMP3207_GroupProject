@@ -360,7 +360,7 @@ SPLASH_HTML = """<!DOCTYPE html>
 
     <script>
 	    function onSignIn(googleUser) {
-			  var profile = googleUser.getBasicProfile();
+			var profile = googleUser.getBasicProfile();
         	var id_token = googleUser.getAuthResponse().id_token;
 				console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
 				console.log('Name: ' + profile.getName());
@@ -368,14 +368,13 @@ SPLASH_HTML = """<!DOCTYPE html>
 				console.log('Email: ' + profile.getEmail());
 				
 				var xhr = new XMLHttpRequest();
-				xhr.open('POST', 'http://testproj-1113.appspot.com/calendar');
+				xhr.open('POST', 'https://testproj-1113.appspot.com/calendar');
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onload = function() {
-				  console.log('Signed in as: ' + xhr.responseText);
+				  document.write(xhr.responseText);
 				};
 				xhr.send('idtoken=' + id_token);
-
-				window.location.replace("/calendar");
+				//window.location.replace('/calendar');
 			}
 		</script>
 </head>
@@ -416,23 +415,26 @@ SPLASH_HTML = """<!DOCTYPE html>
 """
 
 class Calendar(webapp2.RequestHandler):
-	def get(self):
-		self.response.write(TEST_HTML)
-		'''try:
-			idinfo = client.verify_id_token(token, 110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com)
+	def post(self):
+		try:
+			logging.warn('posted')
+			token = self.request.get('idtoken')   
+			idinfo = client.verify_id_token(token, '110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com')
 			# If multiple clients access the backend server:
-			if idinfo['aud'] not in [110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com]:
+			if idinfo['aud'] not in ['110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com']:
 				raise crypt.AppIdentityError("Unrecognized client.")
 			if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
 				raise crypt.AppIdentityError("Wrong issuer.")
-			if idinfo['hd'] != APPS_DOMAIN_NAME:
-				raise crypt.AppIdentityError("Wrong hosted domain.")
 			userid = idinfo['sub']
+			logging.warn(userid)
 			self.response.write(userid)
 			self.response.write(TEST_HTML)
 		except crypt.AppIdentityError:
 			# Invalid token
-			self.response.write(SPLASH_HTML)'''
+			self.response.write(SPLASH_HTML)
+	def get(self):
+		self.response.write(TEST_HTML)
+		
 
 class Test(webapp2.RequestHandler):
 	def get(self):
