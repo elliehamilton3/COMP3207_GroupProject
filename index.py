@@ -7,6 +7,7 @@ from google.appengine.api import oauth
 import logging
 import traceback
 import webapp2
+import json
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
@@ -642,5 +643,5 @@ class NewEvent(webapp2.RequestHandler):
         event.put()
 
 app = webapp2.WSGIApplication([
-    ('/', Test),('/calendar', Calendar),('/event', NewEvent)
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed)
 ], debug=True)
