@@ -12,7 +12,7 @@ $(document).ready(function() {
 		},
 
 		 events: {
-		 	url: '/js/test.json',
+		 	url: '/feed',
 		 }
 
 		 // events: [
