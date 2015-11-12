@@ -168,6 +168,7 @@ TEST_HTML = """<html class="no-js" lang="">
                                         <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                     </div><!-- /input-group -->
                                     <br/>
+                                    <!--
                                     <!-- date picker -->
                                         <input name="date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
                                         <script>
@@ -187,6 +188,7 @@ TEST_HTML = """<html class="no-js" lang="">
                                         });
                                     </script>
                                     <!-- time picker -->
+                                    -->
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
                               <!-- //Form within Modal -->
