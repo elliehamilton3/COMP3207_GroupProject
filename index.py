@@ -4,9 +4,13 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb, db
 from google.appengine.api import oauth
+from oauth2client import client, crypt
 import logging
 import traceback
 import webapp2
+import datetime
+import json
+
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
@@ -120,7 +124,7 @@ TEST_HTML = """<html class="no-js" lang="">
 
         <div class="row">
             <div class="col-xs-9">
-                <div id='calendar'></div>
+                <div id="calendar"></div>
             </div>
             <div class="col-xs-3">
 
@@ -347,10 +351,11 @@ SPLASH_HTML = """<!DOCTYPE html>
 				console.log('Email: ' + profile.getEmail());
 				
 				var xhr = new XMLHttpRequest();
-				xhr.open('POST', 'https://testproj-1113.appspot.com/calendar');
+				xhr.open('POST', 'http://testproj-1113.appspot.com/calendar');
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onload = function() {
 				  document.write(xhr.responseText);
+
 				};
 				xhr.send('idtoken=' + id_token);
 				//window.location.replace('/calendar');
@@ -407,14 +412,14 @@ class Calendar(webapp2.RequestHandler):
 				raise crypt.AppIdentityError("Wrong issuer.")
 			userid = idinfo['sub']
 			logging.warn(userid)
-			self.response.write(userid)
+			# self.response.write(userid)
 			self.response.write(TEST_HTML)
 		except crypt.AppIdentityError:
 			# Invalid token
 			self.response.write(SPLASH_HTML)
 	def get(self):
 		self.response.write(TEST_HTML)
-		
+
 
 class Test(webapp2.RequestHandler):
 	def get(self):
