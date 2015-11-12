@@ -149,32 +149,27 @@ TEST_HTML = """<html class="no-js" lang="">
 
                                   <div class="col-lg-6">
                                     <div style="width:100%" class="input-group">
-                                      <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
-                                      <div style="width:100%" class="btn-group btn-input clearfix">
-                                          <select name="event_type" style="width:100%">
-                                              <option value="module">Module</option>
-                                              <option value="society">Society</option>
-                                              <option value="job">Job</option>
-                                              <option value="other">Other</option>
-                                          </select>
-                                      </div>
-
+                                        <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
+                                        <br/>
+                                        <select name="event_type" style="width:100%">
+                                            <option value="module">Module</option>
+                                            <option value="society">Society</option>
+                                            <option value="job">Job</option>
+                                            <option value="other">Other</option>
+                                        </select>
                                     </div><!-- /input-group -->
-                                    <br>
+                                    <br/>
                                     <div class="input-group" style="width:100%">
-                                      <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
-                                      <div class="input-group-btn">
-                                      </div><!-- /btn-group -->
+                                        <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                     </div><!-- /input-group -->
-                                    <button type="submit" class="btn btn-default">Submit</button>
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
-                              </form>
                               <!-- //Form within Modal -->
                             </div>
                             <div class="modal-footer">
-                              
+                                <button type="submit" class="btn btn-default">Submit</button>
                             </div>
+                            </form>
                           </div>
                           <!-- //Modal Content -->
                         </div>
