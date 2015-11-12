@@ -528,7 +528,8 @@ class Group(db.Model):
 class Event(db.Model):
     #Model for representing an individual event.
     name = db.StringProperty(indexed=False)
-    date = db.DateTimeProperty(auto_now_add=False)
+    start_time = db.DateTimeProperty(auto_now_add=False)
+    end_time = db.DateTimeProperty(auto_now_add=False)
     location = db.StringProperty(indexed=False)
     event_type = db.StringProperty(
         choices=('module', 'sporting', 'society', 'job', 'other'))
