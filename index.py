@@ -186,16 +186,14 @@ TEST_HTML = """<html class="no-js" lang="">
                                         });
                                     </script>
                                     <!-- time picker -->
-                                    <button type="submit" class="btn btn-default">Submit</button>
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
-                                </form>
                               <!-- //Form within Modal -->
                             </div>
                             <div class="modal-footer">
-                                
+                                <button type="submit" class="btn btn-default">Submit</button>
                             </div>
-                            
+                            </form>
                           </div>
                           <!-- //Modal Content -->
                         </div>
@@ -250,23 +248,23 @@ TEST_HTML = """<html class="no-js" lang="">
                                   </script>
                                   <br>
                                     <!-- date picker -->
-                                        <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                        <!--<input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
                                         <script>
-                                            $('.datepicker').datepicker()
-                                        </script>
+                                            //$('.datepicker').datepicker()
+                                        </script>-->
                                     <!-- date picker -->
                                     <br>
                                     <!-- time picker -->
-                                        <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                        <!--<input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
                                         <i class="icon-time"></i>
                                     
                                     <script type="text/javascript">
-                                        $('#timepicker5').timepicker({
-                                            template: false,
-                                            showInputs: false,
-                                            minuteStep: 5
-                                        });
-                                    </script>
+                                        //$('#timepicker5').timepicker({
+                                        //    template: false,
+                                        //    showInputs: false,
+                                        //    minuteStep: 5
+                                        //});
+                                    </script>-->
                                     <!-- time picker -->
                                 </div><!-- /.col-lg-6 -->
                               </div><!-- /.row -->
