@@ -4,12 +4,9 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb, db
 from google.appengine.api import oauth
-from oauth2client import client, crypt
 import logging
 import traceback
 import webapp2
-import datetime
-import json
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
@@ -167,36 +164,15 @@ TEST_HTML = """<html class="no-js" lang="">
                                     <div class="input-group" style="width:100%">
                                         <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                     </div><!-- /input-group -->
-                                    <br/>
-                                    <!--
-                                    <!-- date picker -->
-                                        <input name="date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-                                        <script>
-                                            $('.datepicker').datepicker()
-                                        </script>
-                                    <!-- date picker -->
-                                    <br/>
-                                    <!-- time picker -->
-                                        <input name="time" id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
-                                        <i class="icon-time"></i>
-                                    
-                                    <script type="text/javascript">
-                                        $('#timepicker5').timepicker({
-                                            template: false,
-                                            showInputs: false,
-                                            minuteStep: 5
-                                        });
-                                    </script>
-                                    <!-- time picker -->
-                                    -->
+                                    <button type="submit" class="btn btn-default">Submit</button>
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
                               <!-- //Form within Modal -->
+                              </form>
                             </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-default">Submit</button>
-                            </div>
-                            </form>
+                            <!--<div class="modal-footer">
+
+                            </div> -->
                           </div>
                           <!-- //Modal Content -->
                         </div>
@@ -251,23 +227,23 @@ TEST_HTML = """<html class="no-js" lang="">
                                   </script>
                                   <br>
                                     <!-- date picker -->
-                                        <!--<input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                        <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
                                         <script>
-                                            //$('.datepicker').datepicker()
-                                        </script>-->
+                                            $('.datepicker').datepicker()
+                                        </script>
                                     <!-- date picker -->
                                     <br>
                                     <!-- time picker -->
-                                        <!--<input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                        <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
                                         <i class="icon-time"></i>
                                     
                                     <script type="text/javascript">
-                                        //$('#timepicker5').timepicker({
-                                        //    template: false,
-                                        //    showInputs: false,
-                                        //    minuteStep: 5
-                                        //});
-                                    </script>-->
+                                        $('#timepicker5').timepicker({
+                                            template: false,
+                                            showInputs: false,
+                                            minuteStep: 5
+                                        });
+                                    </script>
                                     <!-- time picker -->
                                 </div><!-- /.col-lg-6 -->
                               </div><!-- /.row -->
@@ -364,21 +340,11 @@ SPLASH_HTML = """<!DOCTYPE html>
     <script>
 	    function onSignIn(googleUser) {
 			  var profile = googleUser.getBasicProfile();
-        	var id_token = googleUser.getAuthResponse().id_token;
-				console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-				console.log('Name: ' + profile.getName());
-				console.log('Image URL: ' + profile.getImageUrl());
-				console.log('Email: ' + profile.getEmail());
-				
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', 'http://testproj-1113.appspot.com/calendar');
-				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				xhr.onload = function() {
-				  console.log('Signed in as: ' + xhr.responseText);
-				};
-				xhr.send('idtoken=' + id_token);
-
-				window.location.replace("/calendar");
+			  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+			  console.log('Name: ' + profile.getName());
+			  console.log('Image URL: ' + profile.getImageUrl());
+			  console.log('Email: ' + profile.getEmail());
+			  window.location.replace("/calendar");
 			}
 		</script>
 </head>
@@ -421,25 +387,9 @@ SPLASH_HTML = """<!DOCTYPE html>
 class Calendar(webapp2.RequestHandler):
 	def get(self):
 		self.response.write(TEST_HTML)
-		'''try:
-			idinfo = client.verify_id_token(token, 110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com)
-			# If multiple clients access the backend server:
-			if idinfo['aud'] not in [110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com]:
-				raise crypt.AppIdentityError("Unrecognized client.")
-			if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-				raise crypt.AppIdentityError("Wrong issuer.")
-			if idinfo['hd'] != APPS_DOMAIN_NAME:
-				raise crypt.AppIdentityError("Wrong hosted domain.")
-			userid = idinfo['sub']
-			self.response.write(userid)
-			self.response.write(TEST_HTML)
-		except crypt.AppIdentityError:
-			# Invalid token
-			self.response.write(SPLASH_HTML)'''
 
 class Test(webapp2.RequestHandler):
 	def get(self):
-
 		self.response.write(SPLASH_HTML)
 		'''scope = 'https://www.googleapis.com/auth/userinfo.email'
 		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
@@ -493,8 +443,6 @@ class Test(webapp2.RequestHandler):
 			self.response.write(SPLASH_HTML)'''
 
 
-# ///////////////////////////////////
-
 # JSON Feed
 
 def jsonfeed(startDate, endDate):
@@ -546,9 +494,6 @@ def jsonfeed(startDate, endDate):
 class Feed(webapp2.RequestHandler):
     def get(self):
         self.response.write(jsonfeed(self.request.get("start"), self.request.get("end")))
-
-
-# ///////////////////////////////////
 
 
 # We set a parent key on the 'Greetings' to ensure that they are all
@@ -675,13 +620,9 @@ class NewEvent(webapp2.RequestHandler):
         ##id = db.Key.from_path('User', user.user_id())
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
-        date = self.request.get('date')
-        time = self.request.get('time')      
-        
-        logging.warn(date)
-        logging.warn(time)
+        ##logging.warn("found users")
         event.name = self.request.get('name')
-        ##event.date = dt
+        ##event.date = self.request.get('date')
         event.location = self.request.get('location')
         event.event_type = self.request.get('event_type')
         ##event.user = db.get(id)
@@ -689,5 +630,5 @@ class NewEvent(webapp2.RequestHandler):
         event.put()
 
 app = webapp2.WSGIApplication([
-    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed)
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent)
 ], debug=True)
