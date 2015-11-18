@@ -747,6 +747,10 @@ class NewEvent(BaseHandler):
                 event.end_time = endDatetime
                 event.location = self.request.get('location')
                 event.event_type = self.request.get('event_type')
+                userid = self.session.get('user')
+                id = db.Key.from_path('User', userid)
+                userObj = db.get(id)
+                event.user = userObj
                 ##event.group = db.get(groupId)
                 event.put()
 
