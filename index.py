@@ -176,14 +176,14 @@ TEST_HTML = """<html class="no-js" lang="">
                                         <br>
                                         <p>Start Date & Time</p>
                                           <!-- date picker -->
-                                              <input name="start_time" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                              <input name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
                                               <script>
                                                   $('.datepicker').datepicker()
                                               </script>
                                           <!-- date picker -->
                                           <br>
                                           <!-- time picker -->
-                                              <input name="" id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                              <input name="start_time" id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
                                           
                                           <script type="text/javascript"> 
                                               $('#timepicker5').timepicker({
