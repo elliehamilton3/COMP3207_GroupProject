@@ -400,10 +400,10 @@ SPLASH_HTML = """<!DOCTYPE html>
 				xhr.open('POST', 'http://testproj-1113.appspot.com/calendar');
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onload = function() {
-					document.write(xhr.responseText);
+					window.location.replace('/calendar');
 
 				};
-				xhr.send('idtoken=' + id_token);
+				xhr.send('idtoken=' + id_token + '&email=' + profile.getEmail());
 				//window.location.replace('/calendar');
 
 			}
@@ -467,7 +467,8 @@ class Calendar(BaseHandler):
 	def post(self):
 		try:
 			logging.warn('posted')
-			token = self.request.get('idtoken')   
+			token = self.request.get('idtoken')
+			email = self.request.get('email')
 			idinfo = client.verify_id_token(token, '110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com')
 			# If multiple clients access the backend server:
 			if idinfo['aud'] not in ['110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com']:
@@ -486,13 +487,15 @@ class Calendar(BaseHandler):
 				# To get a value:
 				sess = self.session.get('user')
 				self.response.write(sess)
-				
 				self.response.write(TEST_HTML)
 			else:
-				'''userObj = User(key_name=user.user_id(), email=user.email())
+				userObj = User(key_name=userid, email=email)
 				userObj.put()
-				'''
-				self.response.write(SPLASH_HTML)
+				self.session['user'] = userid
+				# To get a value:
+				sess = self.session.get('user')
+				self.response.write(sess)
+				self.response.write(TEST_HTML)
 			
 			
 		except crypt.AppIdentityError:
