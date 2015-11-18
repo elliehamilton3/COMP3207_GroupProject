@@ -8,10 +8,14 @@ from oauth2client import client, crypt
 import logging
 import traceback
 import webapp2
+from webapp2_extras import sessions
 import datetime
 import json
 
-
+config = {}
+config['webapp2_extras.sessions'] = {
+    'secret_key': '9876rujjhtfsgnbll8676543wsdlip',
+}
 
 TEST_HTML = """<html class="no-js" lang="">
     <head>
@@ -412,7 +416,25 @@ SPLASH_HTML = """<!DOCTYPE html>
 </html>
 """
 
-class Calendar(webapp2.RequestHandler):
+class BaseHandler(webapp2.RequestHandler):
+    def dispatch(self):
+        # Get a session store for this request.
+        self.session_store = sessions.get_store(request=self.request)
+
+        try:
+            # Dispatch the request.
+            webapp2.RequestHandler.dispatch(self)
+        finally:
+            # Save all sessions.
+            self.session_store.save_sessions(self.response)
+
+    @webapp2.cached_property
+    def session(self):
+        # Returns a session using the default cookie key.
+        return self.session_store.get_session()
+
+
+class Calendar(BaseHandler):
 	def post(self):
 		try:
 			logging.warn('posted')
@@ -427,15 +449,23 @@ class Calendar(webapp2.RequestHandler):
 			logging.warn(userid)
 			# self.response.write(userid)
 			self.response.write(TEST_HTML)
+			self.session['user'] = userid
+
+			# To get a value:
+			sess = self.session.get('user')
+			self.response.write(sess)
 		except crypt.AppIdentityError:
 			# Invalid token
 			self.response.write(SPLASH_HTML)
 	def get(self):
+		sess = self.session.get('user')
+		self.response.write(sess);
 		self.response.write(TEST_HTML)
 
 
-class Test(webapp2.RequestHandler):
+class Test(BaseHandler):
 	def get(self):
+	
 		self.response.write(SPLASH_HTML)
 		'''scope = 'https://www.googleapis.com/auth/userinfo.email'
 		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
@@ -661,4 +691,4 @@ class NewEvent(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed)
-], debug=True)
+], debug=True, config=config)
