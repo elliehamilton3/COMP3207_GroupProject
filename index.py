@@ -188,7 +188,8 @@ TEST_HTML = """<html class="no-js" lang="">
                                           <script type="text/javascript"> 
                                               $('#timepicker5').timepicker({
                                                   showInputs: false,
-                                                  minuteStep: 5
+                                                  minuteStep: 5,
+                                                  showMeridian: false
                                               });
                                           </script>
                                           <!-- time picker -->
