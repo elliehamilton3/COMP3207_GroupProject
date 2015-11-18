@@ -591,8 +591,8 @@ def jsonfeed(startDate, endDate):
 				start_time = p.start_time
 				end_time = p.end_time
 
-				start_time = str(start_time.year) + "-" + str(start_time.month) + "-" + str(start_time.day) + "T" + str(start_time.hour) + ":" + str(start_time.minute) + ":" + "00";
-				end_time = str(end_time.year) + "-" + str(end_time.month) + "-" + str(end_time.day) + "T" + str(end_time.hour) + ":" + str(end_time.minute) + ":" + "00";
+				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
+				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
 				json_entry = {'title': title, 'start':start_time, 'end': end_time}
 
