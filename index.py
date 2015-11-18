@@ -509,7 +509,7 @@ def jsonfeed(startDate, endDate):
         start_time = p.start_time
         end_time = p.end_time
 
-        json_entry = {'start':start_time, 'title': title, 'end': end_time}
+        json_entry = {'title': title, 'start':start_time, 'end': end_time}
 
         # print json_entry
 
