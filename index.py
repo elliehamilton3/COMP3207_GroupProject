@@ -157,43 +157,76 @@ TEST_HTML = """<html class="no-js" lang="">
                                 <div class="row">
 
                                   <div class="col-lg-6">
-                                                                       <div style="width:100%" class="input-group">
-                                                                         <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
-                                                                         <div style="width:100%" class="btn-group btn-input clearfix">
-                                                                            <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
-                                                                            <!--<button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
-                                                                                 <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
-                                                                             </button>
-                                                                            <ul style="width:100%" class="dropdown-menu" name="event_type" role="menu">
-                                                                            <ul style="width:100%" class="dropdown-menu" role="menu">
-                                                                                 <li><a href="#">Module</a></li>
-                                                                                 <li><a href="#">Society</a></li>
-                                                                                 <li><a href="#">Job</a></li>
-                                                                                 <li><a href="#">Other</a></li>
-                                                                            </ul>
-                                                                            </ul>-->
-                                                                            <select name="event_type" style="width:100%">
-                                                                                <option value="module">Module</option>
-                                                                                <option value="society">Society</option>
-                                                                                <option value="job">Job</option>
-                                                                                <option value="other">Other</option>
-                                                                            </select>
-                                     </div>
+                                   <div style="width:100%" class="input-group">
+                                     <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
+                                     <br/>
+                                     <br/>
+                                     <div style="width:100%" class="btn-group btn-input clearfix">
+                                      <select name="event_type" style="width:100%">
+                                          <option value="module">Module</option>
+                                          <option value="society">Society</option>
+                                          <option value="job">Job</option>
+                                          <option value="other">Other</option>
+                                      </select>
+                                    </div>
                                    
-                                     </div><!-- /input-group -->
-                                    <br/>
+                                  </div><!-- /input-group -->
+                                  <br/>
                                     <div class="input-group" style="width:100%">
-                                        <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
+                                      <input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
                                     </div><!-- /input-group -->
-                                    <button type="submit" class="btn btn-default">Submit</button>
+                                    <div class="col-sm-6">
+                                      <div class="input-group" style-width:100%">
+                                        <br>
+                                        <p>Start Date & Time</p>
+                                          <!-- date picker -->
+                                              <input name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                              <script>
+                                                  $('.datepicker').datepicker()
+                                              </script>
+                                          <!-- date picker -->
+                                          <br>
+                                          <!-- time picker -->
+                                              <input name="start_time" id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                          
+                                          <script type="text/javascript"> 
+                                              $('#timepicker5').timepicker({
+                                                  showInputs: false,
+                                                  minuteStep: 5,
+                                                  showMeridian: false
+                                              });
+                                          </script>
+                                          <!-- time picker -->
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                      <div class="input-group" style-width:100%">
+                                      </script>
+                                        <br>
+                                        <p>End Date & Time</p>
+                                          <!-- date picker -->
+                                              <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                              <script>
+                                                  $('.datepicker').datepicker()
+                                              </script>
+                                          <!-- date picker -->
+                                          <br>
+                                          <!-- time picker -->
+                                              <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                              <i class="icon-time"></i>
+                                          <!-- time picker -->
+                                      </div>
+                                    </div>
                                   </div><!-- /.col-lg-6 -->
                                 </div><!-- /.row -->
-                              <!-- //Form within Modal -->
-                              </form>
-                            </div>
-                            <!--<div class="modal-footer">
+                                <br/>
+                                <br/>
 
-                            </div> -->
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-default">Submit</button>
+                                </form>     <!-- //Form within Modal -->
+                              </div>
+                            </div>
                           </div>
                           <!-- //Modal Content -->
                         </div>
@@ -215,38 +248,27 @@ TEST_HTML = """<html class="no-js" lang="">
                             <div class="modal-body">
 
                             <!-- Form within Modal -->
-                            <form class="form-horizontal" role="form">
+                            <form class="form-horizontal" role="form" action="/task">
                               <div class="row">
 
                                 <div class="col-lg-6">
                                   <div style="width:100%" class="input-group">
-                                    <input type="text" placeholder="Event Name" class="form-control" aria-label="...">
+                                    <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
+                                    <br/>
+                                    <br/>
+
                                     <div style="width:100%" class="btn-group btn-input clearfix">
-                                        <button type="button" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">
-                                            <span data-bind="label">Type of Event</span>&nbsp;<span class="caret"></span>
-                                        </button>
-                                        <ul style="width:100%" class="dropdown-menu" role="menu">
-                                            <li><a href="#">Assignment</a></li>
-                                            <li><a href="#">Work</a></li>
-                                            <li><a href="#">Other</a></li>
-                                        </ul>
+                                      <select name="task_type" style="width:100%">
+                                          <option value="assignment">Assignment</option>
+                                          <option value="work">Work</option>
+                                          <option value="other">Other</option>
+                                      </select>
                                     </div>
+                                    
                                   </div><!-- /input-group -->
-                                  <script>
-                                  $( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
-
-                                     var $target = $( event.currentTarget );
-
-                                     $target.closest( '.btn-group' )
-                                        .find( '[data-bind="label"]' ).text( $target.text() )
-                                           .end()
-                                        .children( '.dropdown-toggle' ).dropdown( 'toggle' );
-
-                                     return false;
-
-                                  });
-                                  </script>
                                   <br>
+                                  <div class="col-sm-6">
+                                  <p>Start Date & Time</p>
                                     <!-- date picker -->
                                         <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
                                         <script>
@@ -257,15 +279,22 @@ TEST_HTML = """<html class="no-js" lang="">
                                     <!-- time picker -->
                                         <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
                                         <i class="icon-time"></i>
-                                    
-                                    <script type="text/javascript">
-                                        $('#timepicker5').timepicker({
-                                            template: false,
-                                            showInputs: false,
-                                            minuteStep: 5
-                                        });
-                                    </script>
                                     <!-- time picker -->
+                                  </div>
+                                  <div class="col-sm-6">
+                                  <p>End Date & Time</p>
+                                  <!-- date picker -->
+                                      <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                      <script>
+                                          $('.datepicker').datepicker()
+                                      </script>
+                                  <!-- date picker -->
+                                  <br>
+                                  <!-- time picker -->
+                                      <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                      <i class="icon-time"></i>
+                                  <!-- time picker -->
+                                  </div>
                                 </div><!-- /.col-lg-6 -->
                               </div><!-- /.row -->
                             </form>
@@ -550,7 +579,7 @@ def jsonfeed(startDate, endDate):
 
 
 
-class Feed(webapp2.RequestHandler):
+class Feed(BaseHandler):
     def get(self):
         self.response.write(jsonfeed(self.request.get("start"), self.request.get("end")))
 
@@ -672,7 +701,7 @@ class UserPrefs(ndb.Model):
         super(UserPrefs, self).delete()    
 
 '''
-class NewEvent(webapp2.RequestHandler):
+class NewEvent(BaseHandler):
     def post(self):
         logging.warn("new event")
         event = Event()
@@ -680,7 +709,12 @@ class NewEvent(webapp2.RequestHandler):
         ##id = db.Key.from_path('User', user.user_id())
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
-        ##logging.warn("found users")
+        date = self.request.get('start_date')
+        time = self.request.get('start_time')
+        
+        logging.warn(date)
+        logging.warn(time)
+        
         event.name = self.request.get('name')
         ##event.date = self.request.get('date')
         event.location = self.request.get('location')
@@ -689,6 +723,24 @@ class NewEvent(webapp2.RequestHandler):
         ##event.group = db.get(groupId)
         event.put()
 
+class NewTask(BaseHandler):
+    def post(self):
+        logging.warn("new task")
+        task = Task()
+        
+        ##id = db.Key.from_path('User', user.user_id())
+        ##groupId = db.Key.from_path('Group', self.request.get('group'))
+        
+        ##logging.warn("found users")
+        task.name = self.request.get('name')
+        ##task.deadline = self.request.get('deadline')
+        task.location = self.request.get('location')
+        task.task_type = self.request.get('task_type')
+        ##task.user = db.get(id)
+        ##task.group = db.get(groupId)
+        task.put()
+
+
 app = webapp2.WSGIApplication([
-    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed)
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed),('/task', NewTask)
 ], debug=True, config=config)
