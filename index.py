@@ -5,11 +5,11 @@ from google.appengine.api import users
 from google.appengine.ext import ndb, db
 from google.appengine.api import oauth
 from oauth2client import client, crypt
+from datetime import datetime, date, time
 import logging
 import traceback
 import webapp2
 from webapp2_extras import sessions
-import datetime
 import json
 
 config = {}
@@ -575,6 +575,9 @@ def jsonfeed(startDate, endDate):
         title = p.name
         start_time = p.start_time
         end_time = p.end_time
+
+        start_time = str(start_time.year) + "-" + str(start_time.month) + "-" + str(start_time.day) + "T" + str(start_time.hour) + ":" + str(start_time.minute) + ":" + "00";
+        end_time = str(end_time.year) + "-" + str(end_time.month) + "-" + str(end_time.day) + "T" + str(end_time.hour) + ":" + str(end_time.minute) + ":" + "00";
 
         json_entry = {'title': title, 'start':start_time, 'end': end_time}
 
