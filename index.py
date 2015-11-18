@@ -205,16 +205,24 @@ TEST_HTML = """<html class="no-js" lang="">
                                         <br>
                                         <p>End Date & Time</p>
                                           <!-- date picker -->
-                                              <input type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+                                              <input name="end_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
                                               <script>
                                                   $('.datepicker').datepicker()
                                               </script>
                                           <!-- date picker -->
                                           <br>
                                           <!-- time picker -->
-                                              <input id="timepicker5" data-provide="timepicker" class="form-control" type="text" class="input-small">
+                                              <input name="end_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small">
                                               <i class="icon-time"></i>
                                           <!-- time picker -->
+                                          
+                                          <script type="text/javascript"> 
+                                              $('#timepicker6').timepicker({
+                                                  showInputs: false,
+                                                  minuteStep: 5,
+                                                  showMeridian: false
+                                              });
+                                          </script>
                                       </div>
                                     </div>
                                   </div><!-- /.col-lg-6 -->
@@ -709,14 +717,19 @@ class NewEvent(BaseHandler):
         ##id = db.Key.from_path('User', user.user_id())
         ##groupId = db.Key.from_path('Group', self.request.get('group'))
         
-        date = self.request.get('start_date')
-        time = self.request.get('start_time')
+        sDate = self.request.get('start_date')
+        sTime = self.request.get('start_time')
+        startDatetime = sDate + " " + sTime
+        startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
         
-        logging.warn(date)
-        logging.warn(time)
+        eDate = self.request.get('end_date')
+        eTime = self.request.get('end_time')
+        endDatetime = eDate + " " + eTime
+        endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
         
         event.name = self.request.get('name')
-        ##event.date = self.request.get('date')
+        event.start_time = startDatetime
+        event.end_time = endDatetime
         event.location = self.request.get('location')
         event.event_type = self.request.get('event_type')
         ##event.user = db.get(id)
