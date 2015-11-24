@@ -334,16 +334,12 @@ class NewTask(BaseHandler):
 
                 ##id = db.Key.from_path('User', user.user_id())
                 ##groupId = db.Key.from_path('Group', self.request.get('group'))
-                sDate = self.request.get('start_date2')
-                sTime = self.request.get('start_time2')
-                startDatetime = sDate + " " + sTime
-                startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
-                eDate2 = self.request.get('end_date2')
-                eTime2 = self.request.get('end_time2')
+
+                eDate = self.request.get('end_date2')
+                eTime = self.request.get('end_time2')
                 endDatetime = eDate + " " + eTime
-                endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
-                task.start_time = startDatetime
-                task.end_time = endDatetime
+                deadline = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+                task.deadline = deadline
                 task.name = self.request.get('task_name')
                 task.task_type = self.request.get('task_type')
                 userid = self.session.get('user')
