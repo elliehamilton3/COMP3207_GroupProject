@@ -335,10 +335,10 @@ class NewTask(BaseHandler):
                 ##id = db.Key.from_path('User', user.user_id())
                 ##groupId = db.Key.from_path('Group', self.request.get('group'))
 
-                eDate = self.request.get('end_date2')
-                eTime = self.request.get('end_time2')
-                endDatetime = eDate + " " + eTime
-                deadline = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+                deadlineDate = self.request.get('deadline_date')
+                deadlineTime = self.request.get('deadline_time')
+                deadlineDatetime = eDate + " " + eTime
+                deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
                 task.deadline = deadline
                 task.name = self.request.get('task_name')
                 task.task_type = self.request.get('task_type')
