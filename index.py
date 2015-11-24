@@ -328,13 +328,14 @@ class NewEvent(BaseHandler):
                 event.put()
 
 class NewTask(BaseHandler):
-		def post(self):
-				logging.warn("new task")
-				task = Task()
-
+        
+        def post(self):
+                logging.warn("new task")
+                task = Task()
+                
                 ##id = db.Key.from_path('User', user.user_id())
                 ##groupId = db.Key.from_path('Group', self.request.get('group'))
-
+                
                 deadlineDate = self.request.get('deadline_date')
                 deadlineTime = self.request.get('deadline_time')
                 deadlineDatetime = eDate + " " + eTime
