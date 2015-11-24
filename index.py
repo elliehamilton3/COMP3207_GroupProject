@@ -338,7 +338,7 @@ class NewTask(BaseHandler):
                 
                 deadlineDate = self.request.get('deadline_date')
                 deadlineTime = self.request.get('deadline_time')
-                deadlineDatetime = eDate + " " + eTime
+                deadlineDatetime = deadlineDate + " " + deadlineTime
                 deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
                 task.deadline = deadline
                 task.name = self.request.get('task_name')
