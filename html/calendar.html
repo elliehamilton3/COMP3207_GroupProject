@@ -223,7 +223,7 @@
 											<!-- //Modal -->
 
 
-											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add assignment</a></li>
+											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add Assignment</a></li>
 											<!-- Modal -->
 											<div id="addAssignmentModal" class="modal fade" role="dialog">
 												<div class="modal-dialog">
@@ -268,6 +268,13 @@
 																		<!-- time picker -->
 																				<input name="deadline_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small">
 																				<i class="icon-time"></i>
+																				<script type="text/javascript"> 
+																						$('#timepicker6').timepicker({
+																								showInputs: false,
+																								minuteStep: 5,
+																								showMeridian: false
+																						});
+																				</script>
 																		<!-- time picker -->
 																		</div>
 																	</div><!-- /.col-lg-6 -->
