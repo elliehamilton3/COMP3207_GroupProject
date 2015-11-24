@@ -331,18 +331,27 @@ class NewTask(BaseHandler):
 		def post(self):
 				logging.warn("new task")
 				task = Task()
-				
-				##id = db.Key.from_path('User', user.user_id())
-				##groupId = db.Key.from_path('Group', self.request.get('group'))
-				
-				##logging.warn("found users")
-				task.name = self.request.get('name')
-				##task.deadline = self.request.get('deadline')
-				task.location = self.request.get('location')
-				task.task_type = self.request.get('task_type')
-				##task.user = db.get(id)
-				##task.group = db.get(groupId)
-				task.put()
+
+                ##id = db.Key.from_path('User', user.user_id())
+                ##groupId = db.Key.from_path('Group', self.request.get('group'))
+                sDate = self.request.get('start_date2')
+                sTime = self.request.get('start_time2')
+                startDatetime = sDate + " " + sTime
+                startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+                eDate2 = self.request.get('end_date2')
+                eTime2 = self.request.get('end_time2')
+                endDatetime = eDate + " " + eTime
+                endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+                task.start_time = startDatetime
+                task.end_time = endDatetime
+                task.name = self.request.get('task_name')
+                task.task_type = self.request.get('task_type')
+                userid = self.session.get('user')
+                id = db.Key.from_path('User', userid)
+                userObj = db.get(id)
+                task.user = userObj
+                ##task.group = db.get(groupId)
+                task.put()
 
 
 app = webapp2.WSGIApplication([
