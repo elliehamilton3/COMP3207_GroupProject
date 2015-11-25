@@ -142,12 +142,12 @@ class Test(BaseHandler):
 
 # JSON Feed
 
-def jsonfeed(startDate, endDate):
+def jsonfeed(startDate, endDate, user):
 
 		json_list = []
-
+		q = user.event_user;
 		# # Query interface constructs a query using instance methods
-		q = Event.all()
+		#q = Event.all()
 		# # q.filter("last_name =", "Smith")
 		# # q.filter("height <=", max_height)
 		# # q.order("-height")
@@ -176,7 +176,12 @@ def jsonfeed(startDate, endDate):
 
 class Feed(BaseHandler):
 		def get(self):
-				self.response.write(jsonfeed(self.request.get("start"), self.request.get("end")))
+				# Get user
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+		
+				self.response.write(jsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
 
 # We set a parent key on the 'Greetings' to ensure that they are all
