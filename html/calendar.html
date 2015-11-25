@@ -62,10 +62,6 @@
 					 return false;
 
 				});
-				$('#myTabs a').click(function (e) {
-				  e.preventDefault()
-				  $(this).tab('show')
-				})
 				</script>
 
 		</head>
@@ -91,25 +87,22 @@
 	<br><br>
 
 		<div class="container">
-				<div class="row">
-						<div class="col-xs-9">
-								<ul class="nav nav-pills" role="pilllist">
-								    <li role="presentation" class="active"><a href="#calendar" aria-controls="calendar" role="pills" data-toggle="pills">Calendar</a></li>
-								    <li role="presentation"><a href="#tasks" aria-controls="tasks" role="tab" data-toggle="tab">Tasks</a></li>
-								    <li role="presentation"><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab">Groups</a></li>
-								</ul>
-						</div>
-				</div>
-
-				<br>
 
 				<div class="row">
 						<div class="col-xs-9">
-							<div class="pill-content">
-								<div role="pillpanel" class="pill-pane fade in active" id="calendar"><div id="calendar"></div></div>
-								<div role="pillpanel" class="pill-pane fade" id="tasks">...</div>
-								<div role="pillpanel" class="pill-pane fade" id="groups">...</div>
-							</div>
+						    <ul class="nav nav-pills nav-justified">
+						        <li class="nav active"><a href="#events" data-toggle="pill">Calendar</a></li>
+						        <li class="nav"><a href="#tasks" data-toggle="pill">Tasks</a></li>
+						        <li class="nav"><a href="#groups" data-toggle="pill">Groups</a></li>
+						    </ul>
+							
+							<br/>
+							<!-- Tab panes -->
+						    <div class="pill-content">
+						        <div class="pill-pane fade in active" id="events"><div id="calendar"></div></div>
+						        <div class="pill-pane fade" id="tasks">Content inside tab Tasks</div>
+						        <div class="pill-pane fade" id="groups">Content inside tab Groups</div>
+						    </div>
 						</div>
 						<div class="col-xs-3">
 
