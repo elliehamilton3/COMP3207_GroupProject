@@ -63,11 +63,9 @@ class Calendar(BaseHandler):
 			userObj = db.get(id)
 
 			if userObj:
-				self.response.write("<h1>USER FOUND</h1>")
 				self.session['user'] = userid
 				# To get a value:
 				sess = self.session.get('user')
-				self.response.write(sess)
 				self.response.write(TEST_HTML)
 			else:
 				userObj = User(key_name=userid, email=email)
@@ -75,7 +73,6 @@ class Calendar(BaseHandler):
 				self.session['user'] = userid
 				# To get a value:
 				sess = self.session.get('user')
-				self.response.write(sess)
 				self.response.write(TEST_HTML)
 			
 			
@@ -84,7 +81,6 @@ class Calendar(BaseHandler):
 			self.response.write(SPLASH_HTML)
 	def get(self):
 		sess = self.session.get('user')
-		self.response.write(sess);
 		self.response.write(TEST_HTML)
 
 
