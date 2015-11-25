@@ -7,12 +7,6 @@
 				<meta name="viewport" content="width=device-width, initial-scale=1">
 
 				<link rel="stylesheet" href="css/bootstrap.min.css">
-				<style>
-						body {
-								padding-top: 50px;
-								padding-bottom: 20px;
-						}
-				</style>
 				<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 				<link rel="stylesheet" href="css/main.css">
 
@@ -27,7 +21,9 @@
 
 				<script src="https://apis.google.com/js/platform.js" async defer></script>
 				<meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
+				<script src="js/vendor/bootstrap.min.js"></script>
 
+				<script src="js/main.js"></script>
 				<script>
 					function signOut() {
 						var auth2 = gapi.auth2.getAuthInstance();
@@ -50,19 +46,43 @@
 
 				<!-- Drop Down Picker -->
 				<script>
-				$( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
+					$( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
 
-					 var $target = $( event.currentTarget );
+						 var $target = $( event.currentTarget );
 
-					 $target.closest( '.btn-group' )
-							.find( '[data-bind="label"]' ).text( $target.text() )
-								 .end()
-							.children( '.dropdown-toggle' ).dropdown( 'toggle' );
+						 $target.closest( '.btn-group' )
+								.find( '[data-bind="label"]' ).text( $target.text() )
+									 .end()
+								.children( '.dropdown-toggle' ).dropdown( 'toggle' );
 
-					 return false;
+						 return false;
 
-				});
+					});
+					$('.datepicker').datepicker();
+					$('#timepicker6').timepicker({showInputs: false, minuteStep: 5, showMeridian: false });
+					$('#timepicker7').timepicker({showInputs: false, minuteStep: 5, showMeridian: false });
+					$('#timepicker8').timepicker({showInputs: false, minuteStep: 5, showMeridian: false });
+					
 				</script>
+				<style>
+					.bootstrap-timepicker-widget.dropdown-menu.open{
+						z-index: 1500;
+					}
+					body {
+						padding-top: 50px;
+						padding-bottom: 20px;
+					}
+					.form-horizontal .form-group {
+						margin-left:0;
+						margin-right: 0;
+					}
+					.form-group{
+						margin-bottom: 0;
+					}
+					.row{
+						padding-bottom: 15px;
+					}
+				</style>
 
 		</head>
 
@@ -131,7 +151,7 @@
 
 																	<div class="col-lg-6">
 																	 <div style="width:100%" class="input-group">
-																		 <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="...">
+																		 <input type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
 																		 <br/>
 																		 <br/>
 																		 <div style="width:100%" class="btn-group btn-input clearfix">
@@ -146,29 +166,19 @@
 																	</div><!-- /input-group -->
 																	<br/>
 																		<div class="input-group" style="width:100%">
-																			<input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="...">
+																			<input name="location" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
 																		</div><!-- /input-group -->
 																		<div class="col-sm-6">
 																			<div class="input-group" style-width:"100%">
 																				<br>
 																				<p>Start Date &amp; Time</p>
 																					<!-- date picker -->
-																							<input name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-																							<script>
-																									$('.datepicker').datepicker()
-																							</script>
+																					<input name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="">
 																					<!-- date picker -->
 																					<br>
 																					<!-- time picker -->
-																							<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small">
+																					<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small">
 																					
-																					<script type="text/javascript"> 
-																							$('#timepicker6').timepicker({
-																									showInputs: false,
-																									minuteStep: 5,
-																									showMeridian: false
-																							});
-																					</script>
 																					<!-- time picker -->
 																			</div>
 																		</div>
@@ -177,25 +187,15 @@
 																			</script>
 																				<br>
 																				<p>End Date &amp; Time</p>
-																					<!-- date picker -->
-																							<input name="end_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-																							<script>
-																									$('.datepicker').datepicker()
-																							</script>
-																					<!-- date picker -->
-																					<br>
-																					<!-- time picker -->
-																							<input name="end_time" id="timepicker8" data-provide="timepicker" class="form-control" type="text" class="input-small">
-																							<i class="icon-time"></i>
-																					<!-- time picker -->
-																					
-																					<script type="text/javascript"> 
-																							$('#timepicker8').timepicker({
-																									showInputs: false,
-																									minuteStep: 5,
-																									showMeridian: false
-																							});
-																					</script>
+																				<!-- date picker -->
+																				<input name="end_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+																				<!-- date picker -->
+																				<br>
+																				<!-- time picker -->
+																				<input name="end_time" id="timepicker8" data-provide="timepicker" class="form-control" type="text" class="input-small">
+																				<i class="icon-time"></i>
+																				<!-- time picker -->
+																				
 																			</div>
 																		</div>
 																	</div><!-- /.col-lg-6 -->
@@ -215,7 +215,7 @@
 											<!-- //Modal -->
 
 
-											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add Assignment</a></li>
+											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add Task</a></li>
 											<!-- Modal -->
 											<div id="addAssignmentModal" class="modal fade" role="dialog">
 												<div class="modal-dialog">
@@ -224,58 +224,50 @@
 													<div class="modal-content">
 														<div class="modal-header">
 															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Add Assignments</h4>
+															<h4 class="modal-title">Add Task</h4>
 														</div>
 														<div class="modal-body">
-
 															<!-- Form within Modal -->
 															<form class="form-horizontal" role="form" method="post" action="/task">
 																<div class="row">
-
-																	<div class="col-lg-6">
-																		<div style="width:100%" class="input-group">
-																			<input type="text" name="task_name" placeholder="Event Name" class="form-control" aria-label="...">
-																			<br/>
-																			<br/>
-
-																			<div style="width:100%" class="btn-group btn-input clearfix">
-																				<select name="task_type" style="width:100%">
-																						<option value="assignment">Assignment</option>
-																						<option value="work">Work</option>
-																						<option value="other">Other</option>
-																				</select>
-																			</div>
-																			
-																		</div><!-- /input-group -->
-																		<br>
-																		<div class="col-sm-6">
-																		<p>Deadline Day</p>
-																		<!-- date picker -->
-																				<input name="deadline_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-																				<script>
-																						$('.datepicker').datepicker()
-																				</script>
-																		<!-- date picker -->
-																		<br>
-																		<!-- time picker -->
-																				<input name="deadline_time" id="timepicker7" data-provide="timepicker" class="form-control" type="text" class="input-small">
-																				<i class="icon-time"></i>
-																				<script type="text/javascript"> 
-																						$('#timepicker7').timepicker({
-																								showInputs: false,
-																								minuteStep: 5,
-																								showMeridian: false
-																						});
-																				</script>
-																		<!-- time picker -->
-																		</div>
-																	</div><!-- /.col-lg-6 -->
-																</div><!-- /.row -->
-																<div class="modal-footer">
-																	<button type="submit" class="btn btn-default">Submit</button>
-																	</form>
-																	<!-- //Form within Modal -->
+																	<div class="col-xs-12">
+																		<label for="sel2">Task Name:</label>
+																		<input type="text" name="task_name" id="sel2" class="form-control" aria-label=""/>
+																	</div>
 																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<div class="form-group">
+																		  <label for="sel1">Task Type:</label>
+																		  <select class="form-control" id="sel1" name="task_type">
+																		    <option value="assignment">Assignment</option>
+																			<option value="work">Work</option>
+																			<option value="other">Other</option>
+																		  </select>
+																		</div>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-xs-1">
+																		<label for="datepicker1">Date:</label>
+																	</div>
+																	<div class="col-xs-3">
+																		<input name="deadline_date" type="text" id="datepicker1" data-provide="datepicker" class="form-control" aria-label="">
+																	</div>
+																	<div class="col-xs-1">
+																		<label for="timepicker7">Time:</label>
+																	</div>
+																	<div class="col-xs-3">
+																		<input name="deadline_time" id="timepicker7" data-provide="timepicker" class="form-control" type="text">
+																	</div>
+
+																</div><!-- /.row -->
+																<div class="row">
+																	<div class="col-xs-12">
+																		<button type="submit" class="btn btn-default">Submit</button>
+																	</div>
+																</div>
+															</form>
 														</div>
 													</div>
 													<!-- //Modal Content -->
@@ -310,16 +302,5 @@
 						</div>
 				</div>
 		</div>
-	
-	<div class="container">
-		<hr>
-			<footer>
-					<p>&copy; Company 2015</p>
-		</footer>
-		</div> <!-- /container -->        
-
-				<script src="js/vendor/bootstrap.min.js"></script>
-
-				<script src="js/main.js"></script>
-		</body>
+	</body>
 </html>

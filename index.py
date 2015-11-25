@@ -184,10 +184,48 @@ class Feed(BaseHandler):
 				self.response.write(jsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
 
-# We set a parent key on the 'Greetings' to ensure that they are all
-# in the same entity group. Queries across the single entity group
-# will be consistent.  However, the write rate should be limited to
-# ~1/second.
+# JSON Feed
+
+def taskjsonfeed(startDate, endDate, user):
+
+		json_list = []
+		q = user.event_user;
+		# # Query interface constructs a query using instance methods
+		#q = Event.all()
+		# # q.filter("last_name =", "Smith")
+		# # q.filter("height <=", max_height)
+		# # q.order("-height")
+
+		# # Query is not executed until results are accessed
+		for p in q.run(limit=5):
+
+				# for entry in entries:
+				title = p.name
+				start_time = p.start_time
+				end_time = p.end_time
+
+				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
+				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
+
+				json_entry = {'title': title, 'start':start_time, 'end': end_time}
+
+				# print json_entry
+
+				json_list.append(json_entry)
+
+		# return json_list
+		return json.dumps(json_list)
+
+
+class TaskFeed(BaseHandler):
+		def get(self):
+				# Get user
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+		
+				self.response.write(taskjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+
 
 class User(db.Model):
 		#Model for representing a user.
