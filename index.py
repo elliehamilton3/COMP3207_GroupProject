@@ -327,6 +327,9 @@ class NewEvent(BaseHandler):
                 event.user = userObj
                 ##event.group = db.get(groupId)
                 event.put()
+				
+				# Redirect back to calendar
+                self.redirect(self.request.host_url + "/calendar")
 
 class NewTask(BaseHandler):
         
@@ -350,6 +353,8 @@ class NewTask(BaseHandler):
                 task.user = userObj
                 ##task.group = db.get(groupId)
                 task.put()
+				# Redirect back to calendar
+                self.redirect(self.request.host_url + "/calendar")
 
 
 app = webapp2.WSGIApplication([
