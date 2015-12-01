@@ -346,6 +346,7 @@ class NewGroup(BaseHandler):
 		group = Group()
 		group.name = self.request.get('group_name')
 		group.description = self.request.get('group_description')
+		members = self.request.get('group_members')
 		userid = self.session.get('user')
 		self.response.write(userid)
 		id = db.Key.from_path('User', userid)
@@ -353,7 +354,7 @@ class NewGroup(BaseHandler):
 		self.response.write(userObj.email)
 		userEmail = userObj.email
 		#self.response.write(type(userEmail).__name__)
-		group.users = [userEmail]
+		group.users = [userEmail,members]
 		group.put()
 		#db.get()
 
