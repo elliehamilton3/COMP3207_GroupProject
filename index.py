@@ -238,7 +238,7 @@ class Group(db.Model):
 	#Model for representing a group.
 	name = db.StringProperty()
 	description = db.TextProperty()
-	users = db.ListProperty(db.Key)
+	#users = db.ListProperty(db.Key)
 
 
 class Event(db.Model):
@@ -344,8 +344,8 @@ class UserPrefs(ndb.Model):
 class NewGroup(BaseHandler):
 	def post(self):
 		group = Group()
-		group.name = "Test"
-		group.description = "Test Description"
+		group.name = self.request.get('group_name')
+		group.description = self.request.get('group_description')
 		#group.users = [3]
 		group.put()
 		#db.get()
