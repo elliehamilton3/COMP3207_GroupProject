@@ -238,7 +238,7 @@ class Group(db.Model):
 	#Model for representing a group.
 	name = db.StringProperty()
 	description = db.TextProperty()
-	#users = db.ListProperty(db.Key)
+	users = db.ListProperty(unicode)
 
 
 class Event(db.Model):
@@ -346,7 +346,14 @@ class NewGroup(BaseHandler):
 		group = Group()
 		group.name = self.request.get('group_name')
 		group.description = self.request.get('group_description')
-		#group.users = [3]
+		userid = self.session.get('user')
+		self.response.write(userid)
+		id = db.Key.from_path('User', userid)
+		userObj = db.get(id)
+		self.response.write(userObj.email)
+		userEmail = userObj.email
+		#self.response.write(type(userEmail).__name__)
+		group.users = [userEmail]
 		group.put()
 		#db.get()
 
