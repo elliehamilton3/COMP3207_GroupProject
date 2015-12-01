@@ -235,9 +235,10 @@ class User(db.Model):
 
 
 class Group(db.Model):
-		#Model for representing a group.
-		name = db.StringProperty()
-		description = db.TextProperty()
+	#Model for representing a group.
+	name = db.StringProperty()
+	description = db.TextProperty()
+	users = db.ListProperty(db.Key)
 
 
 class Event(db.Model):
@@ -339,6 +340,16 @@ class UserPrefs(ndb.Model):
 				super(UserPrefs, self).delete()    
 
 '''
+
+class NewGroup(BaseHandler):
+	def post(self):
+		group = Group()
+		group.name = "Test"
+		group.description = "Test Description"
+		#group.users = [3]
+		group.put()
+		#db.get()
+
 class NewEvent(BaseHandler):
 
         def post(self):
@@ -396,5 +407,5 @@ class NewTask(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed),('/task', NewTask)
+    ('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed),('/task', NewTask),('/group', NewGroup)
 ], debug=True, config=config)
