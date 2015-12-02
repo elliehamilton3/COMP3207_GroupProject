@@ -88,56 +88,6 @@ class Test(BaseHandler):
 	def get(self):
 	
 		self.response.write(SPLASH_HTML)
-		'''scope = 'https://www.googleapis.com/auth/userinfo.email'
-		self.response.write('\noauth.get_current_user(%s)' % repr(scope))
-		try:
-			user = oauth.get_current_user(scope)
-			allowed_clients = ['110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com'] # list your client ids here
-			token_audience = oauth.get_client_id(scope)
-			if token_audience not in allowed_clients:
-				raise oauth.OAuthRequestError('audience of token \'%s\' is not in allowed list (%s)'
-																						% (token_audience, allowed_clients))
-			self.response.write("<h1>User id is " + user.user_id() + "</h1>")
-			self.response.write('- email       = %s\n' % user.email())
-			self.response.write("<h1>User id is " + scope + "</h1>")
-			if user:
-				id = db.Key.from_path('User', user.user_id())
-				self.response.write("<h1>User id is " + id.name() + "</h1>")
-				userObj = db.get(id)
-				if userObj:
-					self.response.write("<h1>USER FOUND</h1>")
-					self.response.write(TEST_HTML)
-				else:
-					userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
-					userObj.put()
-					self.response.write("<h1>USER CREATED</h1>")
-					self.response.write(SPLASH_HTML)
-			else:
-				self.response.write(SPLASH_HTML)
-		except oauth.OAuthRequestError, e:
-			# self.response.write(SPLASH_HTML)
-			self.response.set_status(401)
-			self.response.write(' -> %s %s\n' % (e.__class__.__name__, e.message))
-			logging.warn(traceback.format_exc())'''
-
-		
-		'''user = users.get_current_user()
-		if user:
-			id = db.Key.from_path('User', user.user_id())
-			
-			self.response.write("<h1>User id is" + id.name() + "</h1>")
-
-			userObj = db.get(id)
-			if userObj:
-				self.response.write("<h1>USER FOUND</h1>")
-				self.response.write(TEST_HTML)
-			else:
-				userObj = User(key_name=user.user_id(), email=user.email(), name=user.nickname())
-				userObj.put()
-				self.response.write("<h1>USER CREATED</h1>")
-				self.response.write(SPLASH_HTML)
-		else:
-			self.response.write(SPLASH_HTML)'''
 
 
 # JSON Feed
@@ -145,7 +95,7 @@ class Test(BaseHandler):
 def jsonfeed(startDate, endDate, user):
 
 		json_list = []
-		q = user.event_user;
+		q = user.event_user
 		# # Query interface constructs a query using instance methods
 		#q = Event.all()
 		# # q.filter("last_name =", "Smith")
@@ -153,7 +103,7 @@ def jsonfeed(startDate, endDate, user):
 		# # q.order("-height")
 
 		# # Query is not executed until results are accessed
-		for p in q.run(limit=5):
+		for p in q.run():
 
 				# for entry in entries:
 				title = p.name
@@ -189,27 +139,19 @@ class Feed(BaseHandler):
 def taskjsonfeed(startDate, endDate, user):
 
 		json_list = []
-		q = user.event_user;
-		# # Query interface constructs a query using instance methods
-		#q = Event.all()
-		# # q.filter("last_name =", "Smith")
-		# # q.filter("height <=", max_height)
-		# # q.order("-height")
+		q = user.task_user
+		q.order('deadline')
 
-		# # Query is not executed until results are accessed
-		for p in q.run(limit=5):
-
-				# for entry in entries:
+		for p in q.run():
 				title = p.name
-				start_time = p.start_time
-				end_time = p.end_time
+				deadline = p.deadline
+				color = p.color
 
-				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
-				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
+				deadlineStr = deadline.strftime('%d') + " - " + deadline.strftime('%H') + ":" + deadline.strftime('%M')
+				
+				month = deadline.strftime('%B') + " " + deadline.strftime('%Y')
 
-				json_entry = {'title': title, 'start':start_time, 'end': end_time}
-
-				# print json_entry
+				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color}
 
 				json_list.append(json_entry)
 
@@ -223,7 +165,7 @@ class TaskFeed(BaseHandler):
 				userid = self.session.get('user')
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
-		
+
 				self.response.write(taskjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
 
@@ -255,90 +197,13 @@ class Event(db.Model):
 class Task(db.Model):
 		#Model for representing an individual task.
 		name = db.StringProperty(indexed=False)
-		deadline = db.DateTimeProperty(auto_now_add=False)
+		deadline = db.DateTimeProperty(auto_now_add=False, indexed=True)
 		task_type = db.StringProperty(choices=('assignment', 'work', 'other'))
-		user = db.ReferenceProperty(User, collection_name='task_user')
+		user = db.ReferenceProperty(User, collection_name='task_user',indexed=True)
 		group = db.ReferenceProperty(Group, collection_name='task_group')
 		event = db.ReferenceProperty(Event, collection_name='linked_event')
+		color = db.StringProperty(indexed=False)
 
-# Here for reference only
-'''class Guestbook (webapp2.RequestHandler):
-		def post(self):
-				# We set the same parent key on the 'Greeting' to ensure each
-				# Greeting is in the same entity group. Queries across the
-				# single entity group will be consistent. However, the write
-				# rate to a single entity group should be limited to
-				# ~1/second.
-				guestbook_name = self.request.get('guestbook_name',
-																					DEFAULT_GUESTBOOK_NAME)
-				greeting = Greeting(parent=guestbook_key(guestbook_name))
-
-				if users.get_current_user():
-						greeting.author = Author(
-										identity=users.get_current_user().user_id(),
-										email=users.get_current_user().email())
-
-				greeting.content = self.request.get('content')
-				greeting.put()
-
-				query_params = {'guestbook_name': guestbook_name}
-				self.redirect('/?' + urllib.urlencode(query_params))
-
-class League(BaseModel):
-		name = ndb.StringProperty()    
-		managers = ndb.ListProperty(ndb.Key) #all the users who can view/edit this league
-		coaches = ndb.ListProperty(ndb.Key) #all the users who are able to view this league
-
-		def get_managers(self):
-				# This returns the models themselves, not just the keys that are stored in teams
-				return UserPrefs.get(self.managers)
-
-		def get_coaches(self):
-				# This returns the models themselves, not just the keys that are stored in teams
-				return UserPrefs.get(self.coaches)      
-
-		def __str__(self):
-				return self.name
-
-		# Need to delete all the associated games, teams and players
-		def delete(self):
-				for player in self.leagues_players:
-						player.delete()
-				for game in self.leagues_games:
-						game.delete()
-				for team in self.leagues_teams:
-						team.delete()            
-				super(League, self).delete()
-
-class UserPrefs(ndb.Model):
-		user = ndb.UserProperty()
-		league_ref = ndb.ReferenceProperty(reference_class=League,
-														collection_name='users') #league the users are managing
-
-		def __str__(self):
-				return self.user.nickname
-
-		# many-to-many relationship, a user can coach many leagues, a league can be
-		# coached by many users
-		@property
-		def managing(self):
-				return League.gql('WHERE managers = :1', self.key())
-
-		@property
-		def coaching(self):
-				return League.gql('WHERE coaches = :1', self.key())
-
-		# remove all references to me when I'm deleted
-		def delete(self):
-				for manager in self.managing:
-						manager.managers.remove(self.key())
-						manager.put()
-				for coach in self.managing:
-						coach.coaches.remove(self.key())
-						coaches.put()            
-				super(UserPrefs, self).delete()    
-
-'''
 class NewEvent(BaseHandler):
 
         def post(self):
@@ -384,6 +249,8 @@ class NewTask(BaseHandler):
                 deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
                 task.deadline = deadline
                 task.name = self.request.get('task_name')
+                task.color = self.request.get('color')
+                logging.warn(self.request.get('color'))
                 task.task_type = self.request.get('task_type')
                 userid = self.session.get('user')
                 id = db.Key.from_path('User', userid)
@@ -396,5 +263,5 @@ class NewTask(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed),('/task', NewTask)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/task', NewTask)
 ], debug=True, config=config)

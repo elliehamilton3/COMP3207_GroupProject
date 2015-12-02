@@ -1,13 +1,13 @@
+.task-table {
+	display: table;
+    border-collapse: separate;
+    border-spacing: 2px;
+    border-color: grey;
+}
 
-
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
-
-
-
-
-
+.task-table-cell {
+	width:125px;
+}
 
 
 

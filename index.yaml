@@ -1,1 +1,5 @@
 indexes:
+- kind: Task
+  properties:
+  - name: user
+  - name: deadline
