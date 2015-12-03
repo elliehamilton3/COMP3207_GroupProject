@@ -265,8 +265,10 @@ class NewTask(BaseHandler):
 				deadlineTime = self.request.get('deadline_time')
 				logging.warn(deadlineTime)
 				logging.warn(deadlineDate)
-				
+				if not deadlineTime:
+					deadlineTime = "00:00"
 					# no time do this
+				# if not deadlineDate:
 					# no date do this
 				deadlineDatetime = deadlineDate + " " + deadlineTime
 				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
