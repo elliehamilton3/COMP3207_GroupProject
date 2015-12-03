@@ -221,6 +221,10 @@ class Task(db.Model):
 		event = db.ReferenceProperty(Event, collection_name='linked_event')
 		color = db.StringProperty(indexed=False)
 
+class URLInvite(db.model):
+	key = db.StringProperty
+	userid = db.StringProperty
+
 class NewGroup(BaseHandler):
 	def post(self):
 		group = Group()
@@ -251,6 +255,23 @@ class NewGroup(BaseHandler):
 		group.put()
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")
+
+	def sendEmails(recipients, userObj, userId):
+		for i in range [0, len(recipients), 1]:
+			
+			url = URLInvite()
+			url.key = #MD5 of random
+			url.userid = userId
+
+			confirmation_url = #createNewUserConfirmation(self.request)
+            sender_address = userObj.email
+            subject = "You've been invited to a group!"
+            body = """
+            	You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below:
+            %s
+			""" % confirmation_url
+
+            mail.send_mail(sender_address, recipients[i], subject, body)
 
 class NewEvent(BaseHandler):
 		def post(self):
