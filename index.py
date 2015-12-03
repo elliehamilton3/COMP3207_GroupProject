@@ -223,31 +223,31 @@ class NewGroup(BaseHandler):
 		self.redirect(self.request.host_url + "/calendar")
 
 class NewEvent(BaseHandler):
-        def post(self):
-                logging.warn("new event")
-                event = Event()
-                ##id = db.Key.from_path('User', user.user_id())
-                ##groupId = db.Key.from_path('Group', self.request.get('group'))
-                sDate = self.request.get('start_date')
-                sTime = self.request.get('start_time')
-                startDatetime = sDate + " " + sTime
-                startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
-                eDate = self.request.get('end_date')
-                eTime = self.request.get('end_time')
-                endDatetime = eDate + " " + eTime
-                endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
-                event.name = self.request.get('name')
-                event.start_time = startDatetime
-                event.end_time = endDatetime
-                event.location = self.request.get('location')
-                event.event_type = self.request.get('event_type')
-                event.color = self.request.get('color2')
-                userid = self.session.get('user')
-                id = db.Key.from_path('User', userid)
-                userObj = db.get(id)
-                event.user = userObj
-                ##event.group = db.get(groupId)
-                event.put()
+		def post(self):
+				logging.warn("new event")
+				event = Event()
+				##id = db.Key.from_path('User', user.user_id())
+				##groupId = db.Key.from_path('Group', self.request.get('group'))
+				sDate = self.request.get('start_date')
+				sTime = self.request.get('start_time')
+				startDatetime = sDate + " " + sTime
+				startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+				eDate = self.request.get('end_date')
+				eTime = self.request.get('end_time')
+				endDatetime = eDate + " " + eTime
+				endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+				event.name = self.request.get('name')
+				event.start_time = startDatetime
+				event.end_time = endDatetime
+				event.location = self.request.get('location')
+				event.event_type = self.request.get('event_type')
+				event.color = self.request.get('color2')
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+				event.user = userObj
+				##event.group = db.get(groupId)
+				event.put()
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
 
