@@ -388,10 +388,24 @@
 																		<input type="text" name="group_description" id="sel2" class="form-control" aria-label=""/>
 																	</div>
 																</div>
-																	<div class="row">
+																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Member Email:</label>
 																		<input type="text" name="group_members" id="sel2" class="form-control" aria-label=""/>
+																		<div class="row" style="">
+																			<div id="responce"></div>
+																		</div>
+																		<input type="button" onclick="addInput()"/>
+																		<script>
+																			var countBox =1;
+																			var boxName = 0;
+																			function addInput()
+																			{
+																				 var boxName="textBox"+countBox; 
+																			document.getElementById('responce').innerHTML+='<br/><div class="col-xs-12"><input type="text" id="'+boxName+'" value="'+boxName+'" " class="form-control"  /></div><br/>';
+																				 countBox += 1;
+																			}
+																		</script>
 																	</div>
 																</div>
 																<div class="row">
