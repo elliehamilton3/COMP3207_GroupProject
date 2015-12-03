@@ -66,30 +66,7 @@
 					//$('#timepicker7').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
 					//$('#timepicker8').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
 
-					function buildHtmlTable(selector) {
-						$.getJSON( "/taskfeed", function( data ) {
-						  console.log(data);
-						  var items = [];
-						  var month = '';
-						  $.each( data, function( key, val ) {
-						  	
-						  	console.log(val['title']);
-						  	console.log(val['datetime']);
-						  	console.log(val['color']);
-
-						  	if( val['month'] !== month ) {
-						  		month = val['month'];
-						  		items.push( "<tr><td colspan='3' class='table-heading'>" + month + "</td></tr>" );
-						    }
-						    items.push( "<tr><td class='task-table-cell'>" + val['datetime'] + "</td><td style='width:5px;background-color:"+ val['color'] + "'></td><td class='task-table-cell'>" + val['title']  + "</td></tr>" );
-						  });
-						 
-						  $( "<table/>", {
-						    "class": "task-table",
-						    html: items.join( "" )
-						  }).appendTo(selector);
-						});
-					}
+					
 					$( document ).ready(function() {
 						$(".colorpicker").spectrum({
 						    color: "gray",
@@ -133,8 +110,116 @@
 						        "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
 						    ]
 						});
+						function buildHtmlTable(selector) {
+							$.getJSON( "/taskfeed", function( data ) {
+							  console.log(data);
+							  var items = [];
+							  var month = '';
+							  $.each( data, function( key, val ) {
+							  	
+							  	console.log(val['title']);
+							  	console.log(val['datetime']);
+							  	console.log(val['color']);
+
+							  	if( val['month'] !== month ) {
+							  		month = val['month'];
+							  		items.push( "<div class='table-heading'>" + month + "</div>" );
+							    }
+							    items.push( "<li class='list-group-item' data-style='button' data-color='"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
+							  });
+							 
+							  $( "<ul/>", {
+							    "class": "list-group checked-list-box",
+							    "id": "check-list-box",
+							    html: items.join( "" )
+							  }).appendTo(selector);
+
+							  $(function () {
+							    $('.list-group.checked-list-box .list-group-item').each(function () {
+							        
+							        // Settings
+							        var $widget = $(this),
+							            $checkbox = $('<input type="checkbox" class="hidden" />'),
+							            color = ($widget.data('color') ? $widget.data('color') : "primary"),
+							            style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+							            settings = {
+							                on: {
+							                    icon: 'glyphicon glyphicon-check'
+							                },
+							                off: {
+							                    icon: 'glyphicon glyphicon-unchecked'
+							                }
+							            };
+							            
+							        $widget.css('cursor', 'pointer')
+							        $widget.append($checkbox);
+
+							        // Event Handlers
+							        $widget.on('click', function () {
+							            $checkbox.prop('checked', !$checkbox.is(':checked'));
+							            $checkbox.triggerHandler('change');
+							            updateDisplay();
+							        });
+							        $checkbox.on('change', function () {
+							            updateDisplay();
+							        });
+						          
+
+							        // Actions
+							        function updateDisplay() {
+							            var isChecked = $checkbox.is(':checked');
+
+							            // Set the button's state
+							            $widget.data('state', (isChecked) ? "on" : "off");
+
+							            // Set the button's icon
+							            $widget.find('.state-icon')
+							                .removeClass()
+							                .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+							            // Update the button's color
+							            if (isChecked) {
+							                $widget.addClass(style + color + ' active');
+							            } else {
+							                $widget.removeClass(style + color + ' active');
+							            }
+							        }
+
+							        // Initialization
+							        function init() {
+							            console.log("HI");
+							            if ($widget.data('checked') == true) {
+							                $checkbox.prop('checked', !$checkbox.is(':checked'));
+							            }
+							            
+							            updateDisplay();
+
+							            // Inject the icon if applicable
+							            if ($widget.find('.state-icon').length == 0) {
+							                $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+							            }
+							        }
+							        init();
+						    	});
+						    
+							    $('#get-checked-data').on('click', function(event) {
+							        event.preventDefault(); 
+							        var checkedItems = {}, counter = 0;
+							        $("#check-list-box li.active").each(function(idx, li) {
+							            checkedItems[counter] = $(li).text();
+							            counter++;
+							        });
+							        $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+							    });
+							});
+
+
+							});
+							
+						}
+
+						buildHtmlTable('#excelDataTable');
 					});
-					
 				</script>
 				<style>
 					.bootstrap-timepicker-widget.dropdown-menu.open{
@@ -162,12 +247,19 @@
 						padding-bottom: 10px;
 						font-weight: bold;
 					}
+					.state-icon {
+					    left: -5px;
+					}
+					.list-group-item-primary {
+					    color: rgb(255, 255, 255);
+					    background-color: rgb(66, 139, 202);
+					}
 				</style>
 
 		</head>
 
 
-		<body onLoad="buildHtmlTable('#excelDataTable')">
+		<body>
 		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
@@ -200,7 +292,7 @@
 							<!-- Tab panes -->
 						    <div class="tab-content">
 						        <div class="tab-pane fade in active" id="events"><div id="calendar"></div></div>
-						        <div class="tab-pane fade" id="tasks"><div id="excelDataTable" border="1"></div></div>
+						        <div class="tab-pane fade" id="tasks"><div class="well" style="" id="excelDataTable"></div></div>
 						        <div class="tab-pane fade" id="groups">Content inside tab Groups</div>
 						    </div>
 						</div>

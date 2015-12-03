@@ -161,9 +161,17 @@ def taskjsonfeed(startDate, endDate, user):
 				deadline = p.deadline
 				color = p.color
 
-				deadlineStr = deadline.strftime('%d') + " - " + deadline.strftime('%H') + ":" + deadline.strftime('%M')
+				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
+				if deadlineTime == "00:00":
+						deadlineStr = deadline.strftime('%d')
+				else:
+						deadlineStr = deadline.strftime('%d') + " - " + deadlineTime
 				
 				month = deadline.strftime('%B') + " " + deadline.strftime('%Y')
+
+				if month == "January 1900":
+						month = "Other"
+						deadlineStr = ""
 
 				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color}
 
@@ -314,7 +322,8 @@ class NewTask(BaseHandler):
 				if not deadlineTime:
 					deadlineTime = "00:00"
 					# no time do this
-				# if not deadlineDate:
+				if not deadlineDate: 
+					deadlineDate =  "1/1/1900"
 					# no date do this
 				deadlineDatetime = deadlineDate + " " + deadlineTime
 				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
