@@ -177,9 +177,10 @@ class User(db.Model):
 
 
 class Group(db.Model):
-		#Model for representing a group.
-		name = db.StringProperty()
-		description = db.TextProperty()
+	#Model for representing a group.
+	name = db.StringProperty()
+	description = db.TextProperty()
+	users = db.ListProperty(unicode)
 
 
 class Event(db.Model):
@@ -203,6 +204,22 @@ class Task(db.Model):
 		group = db.ReferenceProperty(Group, collection_name='task_group')
 		event = db.ReferenceProperty(Event, collection_name='linked_event')
 		color = db.StringProperty(indexed=False)
+
+class NewGroup(BaseHandler):
+	def post(self):
+		group = Group()
+		group.name = self.request.get('group_name')
+		group.description = self.request.get('group_description')
+		members = self.request.get('group_members')
+		userid = self.session.get('user')
+		id = db.Key.from_path('User', userid)
+		userObj = db.get(id)
+		userEmail = userObj.email
+		members = members.decode('unicode-escape')
+		group.users = [userEmail, members]
+		group.put()
+		# Redirect back to calendar
+		self.redirect(self.request.host_url + "/calendar")
 
 class NewEvent(BaseHandler):
 
@@ -263,5 +280,5 @@ class NewTask(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/task', NewTask)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/task', NewTask),('/group', NewGroup)
 ], debug=True, config=config)
