@@ -91,7 +91,7 @@
 						});
 					}
 					$( document ).ready(function() {
-						$("#full").spectrum({
+						$(".colorpicker").spectrum({
 						    color: "gray",
 						    showInput: true,
 						    className: "full-spectrum",
@@ -220,7 +220,7 @@
 													<div class="modal-content">
 														<div class="modal-header">
 															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Add Modules</h4>
+															<h4 class="modal-title">Add Events</h4>
 														</div>
 														<div class="modal-body">
 
@@ -276,6 +276,11 @@
 																				<i class="icon-time"></i>
 																				<!-- time picker -->
 																				
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="col-sm-6">
+																				<input type='text' class="colorpicker" name="color2" value="gray" class="form-control"/>
 																			</div>
 																		</div>
 																	</div><!-- /.col-lg-6 -->
@@ -344,7 +349,7 @@
 																</div><!-- /.row -->
 																<div class="row">
 																	<div class="col-xs-12">
-																		<input type='text' id="full" name="color" value="gray" class="form-control"/>
+																		<input type='text' class="colorpicker" name="color" value="gray" class="form-control"/>
 																	</div>
 																</div>
 																<div class="row">
