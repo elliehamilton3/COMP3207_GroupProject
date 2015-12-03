@@ -19,9 +19,9 @@ config['webapp2_extras.sessions'] = {
 }
 
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader('html'),
-    extensions=['jinja2.ext.autoescape'],
-    autoescape=True)
+	loader=jinja2.FileSystemLoader('html'),
+	extensions=['jinja2.ext.autoescape'],
+	autoescape=True)
 
 TEST_HTML = JINJA_ENVIRONMENT.get_template('calendar.html').render()
 SPLASH_HTML = JINJA_ENVIRONMENT.get_template('splash.html').render()
@@ -223,60 +223,65 @@ class NewGroup(BaseHandler):
 
 class NewEvent(BaseHandler):
 
-        def post(self):
-                logging.warn("new event")
-                event = Event()
-                ##id = db.Key.from_path('User', user.user_id())
-                ##groupId = db.Key.from_path('Group', self.request.get('group'))
-                sDate = self.request.get('start_date')
-                sTime = self.request.get('start_time')
-                startDatetime = sDate + " " + sTime
-                startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
-                eDate = self.request.get('end_date')
-                eTime = self.request.get('end_time')
-                endDatetime = eDate + " " + eTime
-                endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
-                event.name = self.request.get('name')
-                event.start_time = startDatetime
-                event.end_time = endDatetime
-                event.location = self.request.get('location')
-                event.event_type = self.request.get('event_type')
-                userid = self.session.get('user')
-                id = db.Key.from_path('User', userid)
-                userObj = db.get(id)
-                event.user = userObj
-                ##event.group = db.get(groupId)
-                event.put()
+		def post(self):
+				logging.warn("new event")
+				event = Event()
+				##id = db.Key.from_path('User', user.user_id())
+				##groupId = db.Key.from_path('Group', self.request.get('group'))
+				sDate = self.request.get('start_date')
+				sTime = self.request.get('start_time')
+				startDatetime = sDate + " " + sTime
+				startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+				eDate = self.request.get('end_date')
+				eTime = self.request.get('end_time')
+				endDatetime = eDate + " " + eTime
+				endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+				event.name = self.request.get('name')
+				event.start_time = startDatetime
+				event.end_time = endDatetime
+				event.location = self.request.get('location')
+				event.event_type = self.request.get('event_type')
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+				event.user = userObj
+				##event.group = db.get(groupId)
+				event.put()
 				
 				# Redirect back to calendar
-                self.redirect(self.request.host_url + "/calendar")
+				self.redirect(self.request.host_url + "/calendar")
 
 class NewTask(BaseHandler):
-        
-        def post(self):
-                logging.warn("new task")
-                task = Task()
-                
-                ##id = db.Key.from_path('User', user.user_id())
-                ##groupId = db.Key.from_path('Group', self.request.get('group'))
-                
-                deadlineDate = self.request.get('deadline_date')
-                deadlineTime = self.request.get('deadline_time')
-                deadlineDatetime = deadlineDate + " " + deadlineTime
-                deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
-                task.deadline = deadline
-                task.name = self.request.get('task_name')
-                task.color = self.request.get('color')
-                logging.warn(self.request.get('color'))
-                task.task_type = self.request.get('task_type')
-                userid = self.session.get('user')
-                id = db.Key.from_path('User', userid)
-                userObj = db.get(id)
-                task.user = userObj
-                ##task.group = db.get(groupId)
-                task.put()
+		
+		def post(self):
+				logging.warn("new task")
+				task = Task()
+				
+				##id = db.Key.from_path('User', user.user_id())
+				##groupId = db.Key.from_path('Group', self.request.get('group'))
+				
+				deadlineDate = self.request.get('deadline_date')
+				deadlineTime = self.request.get('deadline_time')
+				logging.warn(deadlineTime)
+				logging.warn(deadlineDate)
+				
+					# no time do this
+					# no date do this
+				deadlineDatetime = deadlineDate + " " + deadlineTime
+				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
+				task.deadline = deadline
+				task.name = self.request.get('task_name')
+				task.color = self.request.get('color')
+				logging.warn(self.request.get('color'))
+				task.task_type = self.request.get('task_type')
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+				task.user = userObj
+				##task.group = db.get(groupId)
+				task.put()
 				# Redirect back to calendar
-                self.redirect(self.request.host_url + "/calendar")
+				self.redirect(self.request.host_url + "/calendar")
 
 
 app = webapp2.WSGIApplication([
