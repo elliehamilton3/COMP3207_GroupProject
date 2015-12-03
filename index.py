@@ -110,11 +110,24 @@ def jsonfeed(startDate, endDate, user):
 				start_time = p.start_time
 				end_time = p.end_time
 				color = p.color
+				text_color = '#ffffff'
+				border_color = ''
+				color_int = ''
+
+				if(color is not None):
+					color_check = list(color)
+					p = color_check.index("#")
+					del(color_check[p])
+					color_int = "0x".join(color_check)
+
+					if(color_int > 0xffffff/2):
+						text_color = '#000000'
+						border_color = '#bbbbbb'
 
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
-				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'color': color}
+				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'color': color, 'textColor': text_color, 'borderColor': border_color}
 
 				# print json_entry
 
