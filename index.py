@@ -194,7 +194,8 @@ class Group(db.Model):
 	#Model for representing a group.
 	name = db.StringProperty()
 	description = db.TextProperty()
-	users = db.ListProperty(unicode)
+	invited = db.ListProperty(unicode)
+	confirmed = db.ListProperty(unicode)
 
 
 class Event(db.Model):
@@ -225,13 +226,28 @@ class NewGroup(BaseHandler):
 		group = Group()
 		group.name = self.request.get('group_name')
 		group.description = self.request.get('group_description')
-		members = self.request.get('group_members')
+		##members = self.request.get('group_members')
 		userid = self.session.get('user')
 		id = db.Key.from_path('User', userid)
 		userObj = db.get(id)
 		userEmail = userObj.email
-		members = members.decode('unicode-escape')
-		group.users = [userEmail, members]
+		self.response.write(userEmail)
+		i = 1
+		members = [userEmail]
+		self.response.write(members)
+		while True:
+			tmp = self.request.get('email' + str(i))
+			self.response.write(tmp)
+			if (len(tmp) > 0):
+				tmp = tmp.decode('unicode-escape')
+				members.append(tmp)
+				self.response.write(members)
+				i = i + 1
+			else:
+				break
+		group.invited = members
+		self.sendEmails(members, userObj, id)
+		group.confirmed = [userEmail]
 		group.put()
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")

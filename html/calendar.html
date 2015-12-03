@@ -389,7 +389,7 @@
 																		<div class="row" style="">
 																			<div class="col-xs-12">
 																				<div class="input-group">
-																					<input type="text" id="" value="" class="form-control" placeholder="example@email.com">
+																					<input type="text" name="email1" id="" value="" class="form-control" placeholder="example@email.com">
 																					<span class="input-group-btn">
 																						<button class="btn btn-default" type="button" onclick="addInput()">Add</button>
 																					</span>
@@ -399,12 +399,12 @@
 																			<div id="responce"></div>
 																		</div>
 																		<script>
-																			var countBox =1;
+																			var countBox =2;
 																			var boxName = 0;
 																			function addInput()
 																			{
 																				 var boxName="textBox"+countBox; 
-																			document.getElementById('responce').innerHTML+='<div class="col-xs-12"><input type="text" id="'+boxName+'" value="'+boxName+'" " class="form-control"  /></div>';
+																			document.getElementById('responce').innerHTML+='<div class="col-xs-12"><input type="text" name="email'+countBox+'" id="'+boxName+'" value="'+boxName+'" " class="form-control"  /></div>';
 																				 countBox += 1;
 																			}
 																		</script>
