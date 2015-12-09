@@ -114,23 +114,19 @@
 						});
 						function buildHtmlTable(selector) {
 							$.getJSON( "/taskfeed", function( data ) {
-							  console.log(data);
 							  var items = [];
 							  var month = '';
 							  $.each( data, function( key, val ) {
-							  	
-							  	console.log(val['title']);
-							  	console.log(val['datetime']);
-							  	console.log(val['color']);
-
 							  	if( val['month'] !== month ) {
 							  		month = val['month'];
 							  		items.push( "<div class='table-heading'>" + month + "</div>" );
 							    }
 							    
-								items.push( "<li class='list-group-item' id='"+ val['id'] +"' data-style='button' style='color:"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
+								items.push( "<li class='list-group-item' id='"+ val['id'] +"' data-style='button' data-color='"+ val['color'] +"'style='color:"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
 							  });
-							 
+								if(items.length == 0){
+									items.push( "<p>You have no tasks to do!</p>" );
+								}
 							  $( "<ul/>", {
 							    "class": "list-group checked-list-box",
 							    "id": "check-list-box",
@@ -179,13 +175,16 @@
 
 							            // Update the button's color
 							            if (isChecked) {
-							                $widget.addClass(style + color + ' active');
+							                
+							                $widget.css({"background-color":color,"color":'black'});
 
-	                						$('#modal-footer').empty().append('<button type="button" class="btn btn-default" data-dismiss="modal" id="taskcancel">Cancel</button><a class="btn btn-danger btn-ok" id="taskdelete" onclick="deleteTask('+$widget.attr('id')+')">Delete</a>');
+	                						$('#modal-footer').empty().append('<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><a class="btn btn-danger btn-ok" id="taskdelete" onclick="deleteTask('+$widget.attr('id')+')">Delete</a>');
 							                $('#confirm-delete').modal('toggle');
+							                
 							            } 
 							            else {
-							                $widget.removeClass(style + color + ' active');
+							                
+							                $widget.css({"background-color":"white","color":color});
 							            }
 							        }
 
@@ -251,10 +250,11 @@
 						};
 						xhr.send('taskid=' + id);
 			        };
-
-			        function cancelTask(id) {
-			        
-			        };
+			        $('#confirm-delete').on('show.bs.modal', function(e) {
+			        	console.log(e);
+			        	
+			        });
+			       
 				</script>
 				<style>
 					.bootstrap-timepicker-widget.dropdown-menu.open{
