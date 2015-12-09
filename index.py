@@ -4,6 +4,7 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb, db
 from google.appengine.api import oauth
+from google.appengine.api import mail
 from oauth2client import client, crypt
 from datetime import datetime, date, time
 import logging
@@ -261,24 +262,30 @@ class NewGroup(BaseHandler):
 			else:
 				break
 		group.invited = members
-		#self.sendEmails(members, userObj, id)
+		logging.warn(members)
+		self.sendEmails(members, userObj, id)
+		logging.warn('warn4')
 		group.confirmed = [userEmail]
+		logging.warn('warn5')
 		group.put()
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")
 
-	def sendEmails(recipients, userObj, userId):
-		for i in range [0, len(recipients), 1]:
-			url = URLInvite()
+	def sendEmails(self, recipients, userObj, userId):
+		#for i in range [0, len(recipients), 1]:
+			#url = URLInvite()
 			#url.key = #MD5 of random
-			url.userid = userId
+			#url.userid = userId
 
 			#confirmation_url = #createNewUserConfirmation(self.request)
+			logging.warn('warn2')
 			sender_address = userObj.email
-			subject = "You've been invited to a group!"
-			body = """You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below: 
-			%s """ % confirmation_url
-			mail.send_mail(sender_address, recipients[i], subject, body)
+			mail.send_mail(sender=sender_address,
+							to=recipients[0],
+							subject="You've been invited to a group!",
+							body= """You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below: %s """# % confirmation_url
+							)
+			logging.warn('warn3')
 
 class NewEvent(BaseHandler):
 		def post(self):
