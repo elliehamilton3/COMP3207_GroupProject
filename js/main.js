@@ -15,7 +15,11 @@ $(document).ready(function() {
 		 	url: '/feed',
 		},
 
-		eventClick: function( event, jsEvent, view ) {
+		// eventAfterRender: function(event, element, view){
+		// 	$(this).click();
+		// },
+
+		eventRender: function( event, element ) {
 			var start_date = new Date(event.start);
 			var end_date = new Date(event.end);
 
@@ -25,7 +29,7 @@ $(document).ready(function() {
 			var end_hour = end_date.getHours();
 			var end_minute = end_date.getMinutes();
 
-			$(this).qtip({ // Grab some elements to apply the tooltip to
+			element.qtip({ // Grab some elements to apply the tooltip to
 			    content: {
 			        text: "Type: " + event.type
 			        + '<br> Time: ' + start_hour + ":" + start_minute
@@ -42,8 +46,10 @@ $(document).ready(function() {
 			});
 		}
     })
+});
 
-    
-
+$(document).ready(function() {
+	// $('.fc-content').click();
+	// alert("clicked");
 });
 
