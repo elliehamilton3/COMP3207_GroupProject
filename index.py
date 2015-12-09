@@ -264,9 +264,7 @@ class NewGroup(BaseHandler):
 		group.invited = members
 		logging.warn(members)
 		self.sendEmails(members, userObj, id)
-		logging.warn('warn4')
 		group.confirmed = [userEmail]
-		logging.warn('warn5')
 		group.put()
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")
@@ -278,14 +276,12 @@ class NewGroup(BaseHandler):
 			#url.userid = userId
 
 			#confirmation_url = #createNewUserConfirmation(self.request)
-			logging.warn('warn2')
 			sender_address = userObj.email
 			mail.send_mail(sender=sender_address,
 							to=recipients[0],
 							subject="You've been invited to a group!",
 							body= """You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below: %s """# % confirmation_url
 							)
-			logging.warn('warn3')
 
 class NewEvent(BaseHandler):
 		def post(self):
