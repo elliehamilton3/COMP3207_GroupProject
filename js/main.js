@@ -11,18 +11,39 @@ $(document).ready(function() {
 		    right:  'today prev,next'
 		},
 
-		 events: {
+		events: {
 		 	url: '/feed',
-		 }
+		},
 
-		 // events: [
-   //      {
-   //          title  : 'event1',
-   //          start : '2015-11-05T09:20:22+00:00',
-	  //       end : '2015-11-05T17:20:22+00:00'
-   //      }
-	  //   ]
+		eventClick: function( event, jsEvent, view ) {
+			var start_date = new Date(event.start);
+			var end_date = new Date(event.end);
 
+			var start_hour = start_date.getHours();
+			var start_minute = start_date.getMinutes();
+
+			var end_hour = end_date.getHours();
+			var end_minute = end_date.getMinutes();
+
+			$(this).qtip({ // Grab some elements to apply the tooltip to
+			    content: {
+			        text: "Type: " + event.type
+			        + '<br> Time: ' + start_hour + ":" + start_minute
+			        + " to "  + end_hour + ":" + end_minute + " <br>Location: " + event.location,
+			        title: event.title
+			    },
+			    style: {
+			        classes: 'qtip-dark qtip-rounded qtip-shadow'
+			    },
+			    hide: {
+	                fixed: true,
+	                delay: 300
+	            }
+			});
+		}
     })
 
+    
+
 });
+

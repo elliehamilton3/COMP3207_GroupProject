@@ -1,3 +1,5 @@
+/*Custom CSS*/
+
 .task-table {
 	display: table;
     border-collapse: separate;
@@ -10,7 +12,12 @@
 }
 
 
+/*For FullCalendar:*/
 
+/*To change the padding of events on month calendar*/
+.fc-day-grid-event.fc-h-event.fc-event.fc-start.fc-end {
+	padding: 4px;
+}
 
 
 
