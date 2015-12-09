@@ -312,12 +312,11 @@ class NewGroup(BaseHandler):
 	def sendEmails(self, recipients, userObj, userId, group_key):
 		groupid = group_key.id()
 		sender_address = userObj.email
-		logging.warn(recipients)
 		for i in xrange (1, len(recipients)):
 			mail.send_mail(sender=sender_address,
 							to=recipients[i],
 							subject="You've been invited to a group!",
-							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below:" + str(groupid)
+							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[i], group_key)
 							)
 
 class NewEvent(BaseHandler):
@@ -402,6 +401,29 @@ class RemoveTask(BaseHandler):
 								p.delete()
 								break;
 
+class JoinGroup(BaseHandler):
+
+	def get(self):
+		groupid = self.request.get("groupid")
+		useremail = self.request.get("useremail")
+		groupkey = self.request.get("groupkey")
+		group = db.get(groupkey)
+
+		confirmed = group.confirmed
+		confirmed.append(useremail)
+		group.confirmed = confirmed
+
+		invited = group.invited
+
+		if useremail in invited:
+			invited.remove(useremail)
+		group.invited = invited
+
+		group.put()
+		# redirect to calendar
+		self.redirect(self.request.host_url + "/calendar")
+
+
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup)
 ], debug=True, config=config)
