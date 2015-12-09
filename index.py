@@ -177,9 +177,6 @@ def taskjsonfeed(startDate, endDate, user):
 				if month == "January 3000":
 						month = "Other"
 						deadlineStr = ""
-				if month == "January 4000":
-						month = "Deleted"
-						deadlineStr = ""
 
 				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
 
@@ -402,18 +399,8 @@ class RemoveTask(BaseHandler):
 						logging.warn(p.key().id())
 						logging.warn(taskid)
 						if str(p.key().id()) == str(taskid):
-								logging.warn("in if loop")
-								
-								deadlineDate = "1/1/4000"
-								deadlineTime = "00:00"
-								deadlineDatetime = deadlineDate + " " + deadlineTime
-								
-								p.deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
-
-								p.put()
+								p.delete()
 								break;
-								# Redirect back to calendar
-								#self.redirect(self.request.host_url + "/calendar")
 
 app = webapp2.WSGIApplication([
 		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup)

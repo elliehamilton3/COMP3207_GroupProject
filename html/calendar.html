@@ -127,12 +127,8 @@
 							  		month = val['month'];
 							  		items.push( "<div class='table-heading'>" + month + "</div>" );
 							    }
-							    if( month === "Deleted" ) {
-									items.push( "<li class='list-group-item-deleted' id='"+ val['id'] +"'><span class='state-icon glyphicon glyphicon-check'></span>" + val['datetime'] + " " + val['title']  + "</li>" );
-							    } else {
-								    items.push( "<li class='list-group-item' id='"+ val['id'] +"' data-style='button' data-color='"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
-								    console.log(val['id']);
-								}
+							    
+								items.push( "<li class='list-group-item' id='"+ val['id'] +"' data-style='button' style='color:"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
 							  });
 							 
 							  $( "<ul/>", {
@@ -184,20 +180,11 @@
 							            // Update the button's color
 							            if (isChecked) {
 							                $widget.addClass(style + color + ' active');
-							                //set date of task to 4000
-							                var xhr = new XMLHttpRequest();
-											xhr.open('POST', 'http://testproj-1113.appspot.com/removetask');
-											xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-											xhr.onload = function() {
-												window.location.replace('/calendar');
 
-											};
-											xhr.send('taskid=' + $widget.attr('id'));
-											
-											console.log($widget.attr('id'));
-											//getid
-
-							            } else {
+	                						$('#modal-footer').empty().append('<button type="button" class="btn btn-default" data-dismiss="modal" id="taskcancel">Cancel</button><a class="btn btn-danger btn-ok" id="taskdelete" onclick="deleteTask('+$widget.attr('id')+')">Delete</a>');
+							                $('#confirm-delete').modal('toggle');
+							            } 
+							            else {
 							                $widget.removeClass(style + color + ' active');
 							            }
 							        }
@@ -239,7 +226,7 @@
 							  var items = [];
 							  var month = '';
 							  $.each( data, function( key, val ) {
-							    items.push( "<li data-color='"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
+							    items.push( "<li>" + val['datetime'] + " " + val['title']  + "</li>" );
 							  });
 							 
 							  $( "<ul/>", {
@@ -255,6 +242,19 @@
 						buildHtmlTable('#excelDataTable');
 						buildDeadlinesBox('#deadlinesbox');
 					});
+					function deleteTask(id) {
+			            var xhr = new XMLHttpRequest();
+						xhr.open('POST', 'http://testproj-1113.appspot.com/removetask');
+						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+						xhr.onload = function() {
+							window.location.replace('/calendar');
+						};
+						xhr.send('taskid=' + id);
+			        };
+
+			        function cancelTask(id) {
+			        
+			        };
 				</script>
 				<style>
 					.bootstrap-timepicker-widget.dropdown-menu.open{
@@ -584,5 +584,24 @@
 						</div>
 				</div>
 		</div>
+		<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <p>Do you want to delete this task?</p>
+                </div>
+                
+                <div class="modal-footer" id="modal-footer">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 	</body>
 </html>
