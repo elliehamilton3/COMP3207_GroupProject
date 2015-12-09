@@ -15,9 +15,7 @@ $(document).ready(function() {
 		 	url: '/feed',
 		},
 
-		// eventAfterRender: function(event, element, view){
-		// 	$(this).click();
-		// },
+		editable: true,
 
 		eventRender: function( event, element ) {
 			var start_date = new Date(event.start);
@@ -29,16 +27,27 @@ $(document).ready(function() {
 			var end_hour = end_date.getHours();
 			var end_minute = end_date.getMinutes();
 
-			element.qtip({ // Grab some elements to apply the tooltip to
+			var event_type = "Type: " + event.type
+			var event_time = 'Time: ' + start_hour + ":" + start_minute + " to "  + end_hour + ":" + end_minute
+			var event_loc = "Location: " + event.location
+
+			// Check if event is all day and change time if true
+			if(event.allDay) {
+				event_time = "All-day event";
+			}
+
+			// Make a qtip on the element
+			element.qtip({ 
 			    content: {
-			        text: "Type: " + event.type
-			        + '<br> Time: ' + start_hour + ":" + start_minute
-			        + " to "  + end_hour + ":" + end_minute + " <br>Location: " + event.location,
+			        text: event_type + "<br>" + event_time + "<br>" + event_loc,
 			        title: event.title
 			    },
 			    style: {
 			        classes: 'qtip-dark qtip-rounded qtip-shadow'
 			    },
+			    show: {
+		            solo: true
+		        },
 			    hide: {
 	                fixed: true,
 	                delay: 300

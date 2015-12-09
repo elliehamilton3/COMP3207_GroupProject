@@ -307,10 +307,7 @@ class NewEvent(BaseHandler):
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
 				event.user = userObj
-				#groupid = self.session.get('group')
-				#group = db.Key.from_path('Group', groupid)
-				#groupObj = db.get(group)
-				#event.group = groupObj
+				##event.group = db.get(groupId)
 				event.put()
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
@@ -320,6 +317,9 @@ class NewTask(BaseHandler):
 		def post(self):
 				logging.warn("new task")
 				task = Task()
+				
+				##id = db.Key.from_path('User', user.user_id())
+				##groupId = db.Key.from_path('Group', self.request.get('group'))
 				
 				deadlineDate = self.request.get('deadline_date')
 				deadlineTime = self.request.get('deadline_time')
@@ -342,10 +342,7 @@ class NewTask(BaseHandler):
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
 				task.user = userObj
-				#groupid = self.session.get('group')
-				#group = db.Key.from_path('Group', groupid)
-				#groupObj = db.get(group)
-				#task.group = groupObj
+				##task.group = db.get(groupId)
 				task.put()
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
