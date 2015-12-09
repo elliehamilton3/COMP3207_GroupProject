@@ -306,25 +306,21 @@ class NewGroup(BaseHandler):
 			else:
 				break
 		group.invited = members
-		logging.warn(members)
-		self.sendEmails(members, userObj, id)
 		group.confirmed = [userEmail]
-		group.put()
+		group_key = group.put()
+		self.sendEmails(members, userObj, id, group_key)
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")
 
-	def sendEmails(self, recipients, userObj, userId):
-		#for i in range [0, len(recipients), 1]:
-			#url = URLInvite()
-			#url.key = #MD5 of random
-			#url.userid = userId
-
-			#confirmation_url = #createNewUserConfirmation(self.request)
-			sender_address = userObj.email
+	def sendEmails(self, recipients, userObj, userId, group_key):
+		groupid = group_key.id()
+		sender_address = userObj.email
+		logging.warn(recipients)
+		for i in xrange (1, len(recipients)):
 			mail.send_mail(sender=sender_address,
-							to=recipients[0],
+							to=recipients[i],
 							subject="You've been invited to a group!",
-							body= """You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below: %s """# % confirmation_url
+							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link below:" + str(groupid)
 							)
 
 class NewEvent(BaseHandler):
