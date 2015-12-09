@@ -164,6 +164,7 @@ def taskjsonfeed(startDate, endDate, user):
 				title = p.name
 				deadline = p.deadline
 				color = p.color
+				keyid = p.key().id()
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
 				if deadlineTime == "00:00":
@@ -173,11 +174,14 @@ def taskjsonfeed(startDate, endDate, user):
 				
 				month = deadline.strftime('%B') + " " + deadline.strftime('%Y')
 
-				if month == "January 1900":
+				if month == "January 3000":
 						month = "Other"
 						deadlineStr = ""
+				if month == "January 4000":
+						month = "Deleted"
+						deadlineStr = ""
 
-				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color}
+				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
 
 				json_list.append(json_entry)
 
@@ -193,6 +197,46 @@ class TaskFeed(BaseHandler):
 				userObj = db.get(id)
 
 				self.response.write(taskjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+
+
+def taskboxjsonfeed(startDate, endDate, user):
+
+		json_list = []
+		q = user.task_user
+		q.order('deadline')
+
+		for p in q.run():
+				title = p.name
+				deadline = p.deadline
+				color = p.color
+
+				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
+				if deadlineTime == "00:00":
+						deadlineStr = deadline.strftime('%B') + " " + deadline.strftime('%d')
+				else:
+						deadlineStr = deadline.strftime('%B') + " " + deadline.strftime('%d') + " - " + deadlineTime
+		
+				deadlineFinal = datetime.strptime("12/31/2999 00:00", "%m/%d/%Y %H:%M")
+
+				if deadline < deadlineFinal:
+					json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
+					json_list.append(json_entry)
+
+				if len(json_list) > 2:
+						break;
+
+		# return json_list
+		return json.dumps(json_list)
+
+
+class TaskBoxFeed(BaseHandler):
+		def get(self):
+				# Get user
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+
+				self.response.write(taskboxjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
 
 class User(db.Model):
@@ -329,7 +373,7 @@ class NewTask(BaseHandler):
 					deadlineTime = "00:00"
 					# no time do this
 				if not deadlineDate: 
-					deadlineDate =  "1/1/1900"
+					deadlineDate =  "1/1/3000"
 					# no date do this
 				deadlineDatetime = deadlineDate + " " + deadlineTime
 				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
@@ -347,7 +391,34 @@ class NewTask(BaseHandler):
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
 
+class RemoveTask(BaseHandler):
+		
+		def post(self):
+				user = self.session.get('user')
+				userKey = db.Key.from_path('User', user)
+				userObj = db.get(userKey)
+				taskid = self.request.get('taskid')
+				logging.warn(taskid);
+
+				q = userObj.task_user
+				for p in q.run():
+						logging.warn("here")
+						logging.warn(p.key().id())
+						logging.warn(taskid)
+						if str(p.key().id()) == str(taskid):
+								logging.warn("in if loop")
+								
+								deadlineDate = "1/1/4000"
+								deadlineTime = "00:00"
+								deadlineDatetime = deadlineDate + " " + deadlineTime
+								
+								p.deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
+
+								p.put()
+								break;
+								# Redirect back to calendar
+								#self.redirect(self.request.host_url + "/calendar")
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/task', NewTask),('/group', NewGroup)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup)
 ], debug=True, config=config)

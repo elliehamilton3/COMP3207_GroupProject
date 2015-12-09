@@ -127,7 +127,12 @@
 							  		month = val['month'];
 							  		items.push( "<div class='table-heading'>" + month + "</div>" );
 							    }
-							    items.push( "<li class='list-group-item' data-style='button' data-color='"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
+							    if( month === "Deleted" ) {
+									items.push( "<li class='list-group-item-deleted' id='"+ val['id'] +"'><span class='state-icon glyphicon glyphicon-check'></span>" + val['datetime'] + " " + val['title']  + "</li>" );
+							    } else {
+								    items.push( "<li class='list-group-item' id='"+ val['id'] +"' data-style='button' data-color='"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
+								    console.log(val['id']);
+								}
 							  });
 							 
 							  $( "<ul/>", {
@@ -159,12 +164,9 @@
 							        // Event Handlers
 							        $widget.on('click', function () {
 							            $checkbox.prop('checked', !$checkbox.is(':checked'));
-							            $checkbox.triggerHandler('change');
 							            updateDisplay();
 							        });
-							        $checkbox.on('change', function () {
-							            updateDisplay();
-							        });
+							       
 						          
 
 							        // Actions
@@ -182,6 +184,19 @@
 							            // Update the button's color
 							            if (isChecked) {
 							                $widget.addClass(style + color + ' active');
+							                //set date of task to 4000
+							                var xhr = new XMLHttpRequest();
+											xhr.open('POST', 'http://testproj-1113.appspot.com/removetask');
+											xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+											xhr.onload = function() {
+												window.location.replace('/calendar');
+
+											};
+											xhr.send('taskid=' + $widget.attr('id'));
+											
+											console.log($widget.attr('id'));
+											//getid
+
 							            } else {
 							                $widget.removeClass(style + color + ' active');
 							            }
@@ -189,7 +204,7 @@
 
 							        // Initialization
 							        function init() {
-							            console.log("HI");
+							            
 							            if ($widget.data('checked') == true) {
 							                $checkbox.prop('checked', !$checkbox.is(':checked'));
 							            }
@@ -213,14 +228,32 @@
 							        });
 							        $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
 							    });
-							});
-
+							  });
 
 							});
 							
+							
+						}
+						function buildDeadlinesBox(selector) {
+							$.getJSON( "/taskboxfeed", function( data ) {
+							  var items = [];
+							  var month = '';
+							  $.each( data, function( key, val ) {
+							    items.push( "<li data-color='"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
+							  });
+							 
+							  $( "<ul/>", {
+							    "class": "",
+							    "id": "",
+							    html: items.join( "" )
+							  }).appendTo(selector);
+
+							  
+							});
 						}
 
 						buildHtmlTable('#excelDataTable');
+						buildDeadlinesBox('#deadlinesbox');
 					});
 				</script>
 				<style>
@@ -255,6 +288,17 @@
 					.list-group-item-primary {
 					    color: rgb(255, 255, 255);
 					    background-color: rgb(66, 139, 202);
+					}
+					.list-group-item-deleted {
+					      position: relative;
+						  display: block;
+						  padding: 10px 15px;
+						  margin-bottom: -1px;
+						  background-color: #fff;
+						  border: 1px solid #ddd;
+						  color: #777;
+						  cursor: default;
+						  background-color: #eee;
 					}
 				</style>
 
@@ -531,13 +575,10 @@
 								</div>
 
 								<div class="panel panel-default">
-									<div class="panel-heading">Deadlines</div>
+									<div class="panel-heading">Tasks</div>
 									<div class="panel-body">
-										<ul>
-												<li>Deadline 1 - 10/10/2015</li>
-												<li>Deadline 2 - 16/11/2015</li>
-												<li>Deadline 3 - 25/12/2015</li>
-										</ul>
+										<div id="deadlinesbox">
+										</div>
 									</div>
 								</div>
 						</div>
