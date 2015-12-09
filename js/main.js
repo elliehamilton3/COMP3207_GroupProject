@@ -38,7 +38,7 @@ $(document).ready(function() {
 			    hide: {
 	                fixed: true,
 	                delay: 300
-	            }
+	            },
 			});
 		}
     })
