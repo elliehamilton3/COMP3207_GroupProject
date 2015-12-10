@@ -1,3 +1,7 @@
+function deleteEvent(id) {
+	alert("Event DELETED: " + id);
+}
+
 // Full Calendar initialize
 $(document).ready(function() {
 
@@ -28,7 +32,7 @@ $(document).ready(function() {
 			var end_minute = end_date.getMinutes();
 
 			var event_type = "Type: " + event.type
-			var event_time = 'Time: ' + start_hour + ":" + start_minute + " to "  + end_hour + ":" + end_minute
+			var event_time = "Time: " + start_hour + ":" + start_minute + " to "  + end_hour + ":" + end_minute
 			var event_loc = "Location: " + event.location
 
 			// Check if event is all day and change time if true
@@ -39,7 +43,8 @@ $(document).ready(function() {
 			// Make a qtip on the element
 			element.qtip({ 
 			    content: {
-			        text: event_type + "<br>" + event_time + "<br>" + event_loc,
+			        text: event_type + "<br>" + event_time + "<br>" + event_loc + 
+			        '<br><br> <button type="button" class="btn btn-default btn-xs">Edit</button> <button type="button" class="btn btn-danger btn-xs" onclick="deleteEvent(event_id)">Delete</button>',
 			        title: event.title
 			    },
 			    style: {
