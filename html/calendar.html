@@ -178,7 +178,10 @@
 							                
 							                $widget.css({"background-color":color,"color":'black'});
 
-	                						$('#modal-footer').empty().append('<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><a class="btn btn-danger btn-ok" id="taskdelete" onclick="deleteTask('+$widget.attr('id')+')">Delete</a>');
+											console.log($widget);
+											console.log($checkbox);
+											
+	                						$('#modal-footer').empty().append('<button type="button" class="btn btn-default" data-dismiss="modal" onclick="cancelDeleteTask('+$widget.attr('id')+')">Cancel</button><a class="btn btn-danger btn-ok" id="taskdelete" onclick="deleteTask('+$widget.attr('id')+')">Delete</a>');
 							                $('#confirm-delete').modal('toggle');
 							                
 							            } 
@@ -194,7 +197,7 @@
 							            if ($widget.data('checked') == true) {
 							                $checkbox.prop('checked', !$checkbox.is(':checked'));
 							            }
-							            
+																				
 							            updateDisplay();
 
 							            // Inject the icon if applicable
@@ -240,6 +243,9 @@
 
 						buildHtmlTable('#excelDataTable');
 						buildDeadlinesBox('#deadlinesbox');
+						$('#confirm-delete').modal({ backdrop: 'static', keyboard: false });
+
+					
 					});
 					function deleteTask(id) {
 			            var xhr = new XMLHttpRequest();
@@ -249,11 +255,23 @@
 							window.location.replace('/calendar');
 						};
 						xhr.send('taskid=' + id);
-			        };
-			        $('#confirm-delete').on('show.bs.modal', function(e) {
-			        	console.log(e);
-			        	
-			        });
+			        }
+					function cancelDeleteTask(id) {
+						var li = document.getElementById(id);
+						var checkbox = li.getElementsByTagName("input")[0];
+
+						console.log(checkbox.checked);
+						checkbox.checked = false;
+						console.log(checkbox.checked);
+		
+		
+					
+						/*current = $("#" + id + " input").val();
+						console.log(current);
+						$("#" + id + " input").attr('checked', !current);
+						console.log($("#" + id + " input").val());*/
+			        }					
+					
 			       
 				</script>
 				<style>
@@ -585,7 +603,7 @@
 				</div>
 		</div>
 		<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog" id="confirm-delete2">
             <div class="modal-content">
             
                 <div class="modal-header">
