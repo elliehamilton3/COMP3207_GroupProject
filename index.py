@@ -288,9 +288,8 @@ class NewGroup(BaseHandler):
 		id = db.Key.from_path('User', userid)
 		userObj = db.get(id)
 		userEmail = userObj.email
-		self.response.write(userEmail)
 		i = 1
-		members = [userEmail]
+		members = []
 		self.response.write(members)
 		while True:
 			tmp = self.request.get('email' + str(i))
@@ -312,11 +311,11 @@ class NewGroup(BaseHandler):
 	def sendEmails(self, recipients, userObj, userId, group_key):
 		groupid = group_key.id()
 		sender_address = userObj.email
-		for i in xrange (1, len(recipients)):
+		for x in xrange (len(recipients)):
 			mail.send_mail(sender=sender_address,
-							to=recipients[i],
+							to=recipients[x],
 							subject="You've been invited to a group!",
-							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[i], group_key)
+							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 							)
 
 class NewEvent(BaseHandler):
