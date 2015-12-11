@@ -1,5 +1,9 @@
+// Deletes an event from the calendar
 function deleteEvent(id) {
-	alert("Event DELETED: " + id);
+	
+
+	console.log("Event DELETED: " + id);
+
 }
 
 // Full Calendar initialize
@@ -40,11 +44,13 @@ $(document).ready(function() {
 				event_time = "All-day event";
 			}
 
+			// console.log(event);
+
 			// Make a qtip on the element
 			element.qtip({ 
 			    content: {
 			        text: event_type + "<br>" + event_time + "<br>" + event_loc + 
-			        '<br><br> <button type="button" class="btn btn-default btn-xs">Edit</button> <button type="button" class="btn btn-danger btn-xs" onclick="deleteEvent(event_id)">Delete</button>',
+			        '<br><br> <button data-toggle="modal" data-target="#editModuleModal" type="button" class="btn btn-default btn-xs">Edit</button> <form role="form" method="post" action="/removeevent"><input type="hidden" name="event_id" value="' + event.id+ '"><button type="submit" class="btn btn-danger btn-xs">Delete</button></form>',
 			        title: event.title
 			    },
 			    style: {

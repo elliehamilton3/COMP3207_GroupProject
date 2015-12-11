@@ -107,6 +107,7 @@ def jsonfeed(startDate, endDate, user):
 		for p in q.run():
 
 				# for entry in entries:
+				id = p.key().id()
 				title = p.name
 				start_time = p.start_time
 				end_time = p.end_time
@@ -120,8 +121,13 @@ def jsonfeed(startDate, endDate, user):
 
 				if(color is not None):
 					color_check = list(color)
-					p = color_check.index("#")
-					del(color_check[p])
+
+					try:
+						x = color_check.index("#")
+						del(color_check[x])
+					except ValueError:
+						pass
+					
 					color_int = "0x".join(color_check)
 
 					if(color_int > 0xffffff/2):
@@ -131,7 +137,7 @@ def jsonfeed(startDate, endDate, user):
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
-				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
+				json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
 
 				# print json_entry
 
@@ -318,6 +324,8 @@ class NewGroup(BaseHandler):
 							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 							)
 
+# EVENT METHODS
+
 class NewEvent(BaseHandler):
 		def post(self):
 				logging.warn("new event")
@@ -346,6 +354,33 @@ class NewEvent(BaseHandler):
 				event.put()
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
+
+class RemoveEvent(BaseHandler):
+
+		def post(self):
+			logging.debug("Starting to delete an event.")
+
+			event_id = self.request.get('event_id')
+			logging.debug("The event to be deleted is: " + event_id)
+
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			q = userObj.event_user
+			for p in q.run():
+				logging.warn("here")
+				logging.warn(p.key().id())
+				logging.warn(event_id)
+				if str(p.key().id()) == str(event_id):
+					p.delete()
+					break;
+
+			logging.debug("The event " + event_id + " should be deleted.")
+
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/calendar")
+
 
 class NewTask(BaseHandler):
 		
@@ -424,5 +459,5 @@ class JoinGroup(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent)
 ], debug=True, config=config)
