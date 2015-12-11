@@ -688,9 +688,9 @@ class DragEvent(BaseHandler):
 				p.start_time = start
 				
 				if(all_day == 'false'):
-				p.end_time = end
+					p.end_time = end
 				else:
-				del p.end_time
+					del p.end_time
 
 				p.put()
 				break;
@@ -849,3 +849,4 @@ class JoinGroup(BaseHandler):
 app = webapp2.WSGIApplication([
 
 		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed)
+], debug=True, config=config)
