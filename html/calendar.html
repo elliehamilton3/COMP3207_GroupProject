@@ -447,6 +447,88 @@
 											</div>
 											<!-- //Modal -->
 
+											<!-- Edit Event Modal -->
+											<li><a href="#" data-toggle="modal" data-target="#editModuleModal">Edit Events</a></li>
+											<!-- Modal -->
+											<div id="editModuleModal" class="modal fade" role="dialog">
+												<div class="modal-dialog">
+													<!-- Modal content-->
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal">&times;</button>
+															<h4 class="modal-title">Add Events</h4>
+														</div>
+														<div class="modal-body">	
+															<!-- Form within Modal -->
+															<form class="form-horizontal" role="form" method="post" action="/event">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<label for="eventname">Event Name:</label><br/>
+																		<input id="eventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<div class="form-group">
+																			<label for="eventtype">Event Type:</label><br/>
+																			<select id="eventtype" name="event_type" class="form-control">
+																				<option value="module">Module</option>
+																				<option value="society">Society</option>
+																				<option value="job">Job</option>
+																				<option value="other">Other</option>
+																			</select>
+																		</div>
+																	</div>
+																</div>
+																<div class="row" class="input-group">
+																	<div class="col-xs-12">
+																		<label for="eventlocation">Event Location:</label><br/>
+																		<input name="location" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="input-group" style-width:"100%">
+																		<div class="col-xs-6">
+																			<label for="startdate">Start Date:</label><br/>
+																			<input id="startdate" name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="">
+																		</div>
+																		<div class="col-xs-6">
+																			<label for="timepicker6">Start Time:</label><br/>
+																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
+																		</div>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="input-group" style-width:"100%">
+																		<div class="col-xs-6">
+																			<label for="enddate">End Date:</label><br/>
+																			<input name="end_date" id="enddate" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+																		</div>
+																		<div class="col-xs-6">
+																			<label for="timepicker8">End Time:</label><br/>
+																			<input name="end_time" id="timepicker8" class="form-control" type="text"  data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false" class="input-small">
+																			<i class="icon-time"></i>
+																		</div>	
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<label for="colorcode">Choose a colour code:</label><br/>
+																		<input type='text' class="colorpicker" name="color2" value="gray" class="form-control"/>
+																	</div>
+																</div>
+																<br/>
+																<div class="modal-footer">
+																	<button type="submit" class="btn btn-default">Submit</button>
+																</form><!-- //Form within Modal -->
+															</div>
+														</div>
+													</div>
+													<!-- //Modal Content -->
+												</div>
+											</div>
+											<!-- //Modal -->
+
 											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add Task</a></li>
 											<!-- Modal -->
 											<div id="addAssignmentModal" class="modal fade" role="dialog">
