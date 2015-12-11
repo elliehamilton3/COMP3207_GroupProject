@@ -381,6 +381,57 @@ class RemoveEvent(BaseHandler):
 			# Redirect back to calendar
 			self.redirect(self.request.host_url + "/calendar")
 
+class DragEvent(BaseHandler):
+	def get(self):
+
+		logging.debug("Event dragged start")
+
+		event_id = self.request.get('event_id')
+		start = self.request.get('start')
+		start = float(start) / 1000.00
+		start = datetime.fromtimestamp(start)
+		
+
+
+		all_day = self.request.get('all_day')
+
+		if(all_day == 'false'):
+			end = self.request.get('end')
+			end = float(end) / 1000.00
+			end = datetime.fromtimestamp(end)
+			
+
+		# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start and end date are " + start + " and " + end)
+		# else:
+		# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start date is " + start)
+
+
+		# Now get the event from the db and then update properties
+		# eventKey = db.Key.from_path('Event', event_id)
+		# eventObj = db.get(eventKey)
+
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+
+		q = userObj.event_user
+		for p in q.run():
+			if str(p.key().id()) == str(event_id):
+				p.start_time = start
+				
+				if(all_day == 'false'):
+					p.end_time = end
+				else:
+					del p.end_time
+
+				p.put()
+				break;
+
+
+
+		# Redirect back to calendar
+		self.redirect(self.request.host_url + "/calendar")
+
 
 class NewTask(BaseHandler):
 		
@@ -459,5 +510,5 @@ class JoinGroup(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent),('/dragevent', DragEvent)
 ], debug=True, config=config)

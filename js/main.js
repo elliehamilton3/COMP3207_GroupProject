@@ -1,11 +1,3 @@
-// Deletes an event from the calendar
-function deleteEvent(id) {
-	
-
-	console.log("Event DELETED: " + id);
-
-}
-
 // Full Calendar initialize
 $(document).ready(function() {
 
@@ -24,6 +16,7 @@ $(document).ready(function() {
 		},
 
 		editable: true,
+		allDaySlot: false,
 
 		eventRender: function( event, element ) {
 			var start_date = new Date(event.start);
@@ -64,12 +57,22 @@ $(document).ready(function() {
 	                delay: 300
 	            },
 			});
-		}
+		},
+
+		eventDrop: function(event, delta, revertFunc) {
+	        // alert(event.title + " was dropped on " + event.start.format());
+
+	        // if (!confirm("Are you sure about this change?")) {
+	        //     revertFunc();
+	        // } else {
+
+	        	var link = "/dragevent?event_id=" + event.id;
+
+	        	link = link + "&all_day=" + event.allDay + "&start=" + event.start + "&end=" + event.end;
+
+	        	console.log(link);
+	        	window.location.replace(link);
+	        // }
+    	}
     })
 });
-
-$(document).ready(function() {
-	// $('.fc-content').click();
-	// alert("clicked");
-});
-
