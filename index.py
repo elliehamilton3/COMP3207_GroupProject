@@ -26,6 +26,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 TEST_HTML = JINJA_ENVIRONMENT.get_template('calendar.html').render()
 SPLASH_HTML = JINJA_ENVIRONMENT.get_template('splash.html').render()
+
 class BaseHandler(webapp2.RequestHandler):
 		def dispatch(self):
 				# Get a session store for this request.
@@ -82,40 +83,6 @@ class Calendar(BaseHandler):
 	def get(self):
 		sess = self.session.get('user')
 		self.response.write(TEST_HTML)
-
-class GroupCalendar(BaseHandler):
-	def get(self):
-		groupid = self.request.get("group")
-
-
-		# Get user details
-		userid = self.session.get('user')
-		id = db.Key.from_path('User', userid)
-		userObj = db.get(id)
-		
-		# Get user's groups
-		q = userObj.groups
-		logging.warn(q)
-		for p in q:
-			#logging.warn("here")
-			logging.warn(str(p))
-			#logging.warn(taskid)
-			#if str(p.key().id()) == str(taskid):
-			#	p.delete()
-			#	break;
-			if( str(p) == groupid ):
-				group = db.get(p)
-				#self.response.write(group.name)
-				template_values = {
-					'group': group,
-				}
-
-				template = JINJA_ENVIRONMENT.get_template('group-calendar.html')
-				self.response.write(template.render(template_values))
-				#self.response.write(TEST_HTML)
-				return;
-		
-		self.response.write("Error - group id invalid or you do not belong to this group")
 
 
 class Test(BaseHandler):
@@ -190,90 +157,7 @@ class Feed(BaseHandler):
 		
 				self.response.write(jsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
-def groupeventjsonfeed(startDate, endDate, group):
 
-		json_list = []
-		q = group.event_group
-		# # Query interface constructs a query using instance methods
-		#q = Event.all()
-		# # q.filter("last_name =", "Smith")
-		# # q.filter("height <=", max_height)
-		# # q.order("-height")
-
-		# # Query is not executed until results are accessed
-		for p in q.run():
-				logging.warn(p)
-
-				# for entry in entries:
-				title = p.name
-				start_time = p.start_time
-				end_time = p.end_time
-				location = p.location
-				event_type = p.event_type
-
-				color = p.color
-				text_color = '#ffffff'
-				border_color = ''
-				color_int = ''
-
-				if(color is not None):
-					color_check = list(color)
-					
-					try:
-						x = color_check.index("#")					
-						del(color_check[x])
-					except ValueError:
-						pass
-						
-					color_int = "0x".join(color_check)	
-					if(color_int > 0xffffff/2):
-						text_color = '#000000'
-						border_color = '#bbbbbb'
-
-				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
-				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
-
-				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
-
-				# print json_entry
-
-				json_list.append(json_entry)
-
-		# return json_list
-		return json.dumps(json_list)
-
-
-
-class GroupEventFeed(BaseHandler):
-		def get(self):
-				# Get user
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-					logging.warn(p)
-
-					#logging.warn("here")
-					#logging.warn(p.key().id())
-					#logging.warn(taskid)
-					#if str(p.key().id()) == str(taskid):
-					#	p.delete()
-					#	break;
-					if( str(p) == groupid ):
-						group = db.get(p)
-						logging.warn("IT@S A MATCH")
-						self.response.write(groupeventjsonfeed(self.request.get("start"), self.request.get("end"), group))
-
-						return;
-								
 # JSON Feed
 
 def taskjsonfeed(startDate, endDate, user):
@@ -317,68 +201,6 @@ class TaskFeed(BaseHandler):
 
 				self.response.write(taskjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
-def grouptaskjsonfeed(startDate, endDate, group):
-
-		json_list = []
-		q = group.task_group
-		q.order('deadline')
-
-		for p in q.run():
-				title = p.name
-				deadline = p.deadline
-				color = p.color
-				keyid = p.key().id()
-
-				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
-				if deadlineTime == "00:00":
-						deadlineStr = deadline.strftime('%d')
-				else:
-						deadlineStr = deadline.strftime('%d') + " - " + deadlineTime
-				
-				month = deadline.strftime('%B') + " " + deadline.strftime('%Y')
-
-				if month == "January 3000":
-						month = "Other"
-						deadlineStr = ""
-
-				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
-
-				json_list.append(json_entry)
-
-		# return json_list
-		return json.dumps(json_list)
-
-
-class GroupTaskFeed(BaseHandler):
-		def get(self):
-
-				# Get user
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-						logging.warn(p)
-
-						#logging.warn("here")
-						#logging.warn(p.key().id())
-						#logging.warn(taskid)
-						#if str(p.key().id()) == str(taskid):
-						#	p.delete()
-						#	break;
-						if( str(p) == groupid ):
-								group = db.get(p)
-								logging.warn("IT@S A MATCH")
-								self.response.write(grouptaskjsonfeed(self.request.get("start"), self.request.get("end"), group))
-
-								return;
 
 def taskboxjsonfeed(startDate, endDate, user):
 
@@ -420,70 +242,9 @@ class TaskBoxFeed(BaseHandler):
 				self.response.write(taskboxjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
 
 
-def grouptaskboxjsonfeed(startDate, endDate, group):
-
-		json_list = []
-		q = group.task_group
-		q.order('deadline')
-
-		for p in q.run():
-				title = p.name
-				deadline = p.deadline
-				color = p.color
-
-				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
-				if deadlineTime == "00:00":
-						deadlineStr = deadline.strftime('%B') + " " + deadline.strftime('%d')
-				else:
-						deadlineStr = deadline.strftime('%B') + " " + deadline.strftime('%d') + " - " + deadlineTime
-		
-				deadlineFinal = datetime.strptime("12/31/2999 00:00", "%m/%d/%Y %H:%M")
-
-				if deadline < deadlineFinal:
-					json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
-					json_list.append(json_entry)
-
-				if len(json_list) > 2:
-						break;
-
-		# return json_list
-		return json.dumps(json_list)
-
-
-class GroupTaskBoxFeed(BaseHandler):
-		def get(self):
-				# Get user
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-						logging.warn(p)
-
-						#logging.warn("here")
-						#logging.warn(p.key().id())
-						#logging.warn(taskid)
-						#if str(p.key().id()) == str(taskid):
-						#	p.delete()
-						#	break;
-						if( str(p) == groupid ):
-								group = db.get(p)
-								logging.warn("IT@S A MATCH")
-								self.response.write(grouptaskboxjsonfeed(self.request.get("start"), self.request.get("end"), group))
-
-								return;
-
-
 class User(db.Model):
 		#Model for representing a user.
-		email = db.StringProperty(indexed=True)
+		email = db.StringProperty(indexed=False)
 		name = db.StringProperty(indexed=False)
 		groups = db.ListProperty(db.Key)
 
@@ -515,7 +276,7 @@ class Task(db.Model):
 		deadline = db.DateTimeProperty(auto_now_add=False, indexed=True)
 		task_type = db.StringProperty(choices=('assignment', 'work', 'other'))
 		user = db.ReferenceProperty(User, collection_name='task_user',indexed=True)
-		group = db.ReferenceProperty(Group, collection_name='task_group', indexed=True)
+		group = db.ReferenceProperty(Group, collection_name='task_group')
 		event = db.ReferenceProperty(Event, collection_name='linked_event')
 		color = db.StringProperty(indexed=False)
 
@@ -549,8 +310,6 @@ class NewGroup(BaseHandler):
 		group.invited = members
 		group.confirmed = [userEmail]
 		group_key = group.put()
-		userObj.groups.append(group_key)
-		userObj.put()
 		self.sendEmails(members, userObj, id, group_key)
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")
@@ -596,32 +355,6 @@ class NewEvent(BaseHandler):
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
 
-class NewGroupEvent(BaseHandler):
-		def post(self):
-				event = Event()
-
-				sDate = self.request.get('start_date')
-				sTime = self.request.get('start_time')
-				startDatetime = sDate + " " + sTime
-				startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
-				eDate = self.request.get('end_date')
-				eTime = self.request.get('end_time')
-				endDatetime = eDate + " " + eTime
-				endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
-				event.name = self.request.get('name')
-				event.start_time = startDatetime
-				event.end_time = endDatetime
-				event.location = self.request.get('location')
-				event.event_type = self.request.get('event_type')
-				event.color = self.request.get('color2')
-				
-				group = db.get(self.request.get('id'))
-				event.group = group
-				##event.group = db.get(groupId)
-				event.put()
-				# Redirect back to calendar
-				self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id')))
-				
 class RemoveEvent(BaseHandler):
 
 		def post(self):
@@ -700,9 +433,6 @@ class DragEvent(BaseHandler):
 		self.redirect(self.request.host_url + "/calendar")
 
 
-
-
-
 class NewTask(BaseHandler):
 		
 		def post(self):
@@ -738,43 +468,6 @@ class NewTask(BaseHandler):
 				# Redirect back to calendar
 				self.redirect(self.request.host_url + "/calendar")
 
-
-class NewGroupTask(BaseHandler):
-		
-		def post(self):
-				logging.warn("new task")
-				task = Task()
-				
-				##id = db.Key.from_path('User', user.user_id())
-				##groupId = db.Key.from_path('Group', self.request.get('group'))
-				
-				deadlineDate = self.request.get('deadline_date')
-				deadlineTime = self.request.get('deadline_time')
-				logging.warn(deadlineTime)
-				logging.warn(deadlineDate)
-				if not deadlineTime:
-					deadlineTime = "00:00"
-					# no time do this
-				if not deadlineDate: 
-					deadlineDate =  "1/1/3000"
-					# no date do this
-				deadlineDatetime = deadlineDate + " " + deadlineTime
-				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
-				task.deadline = deadline
-				task.name = self.request.get('task_name')
-				task.color = self.request.get('color')
-				logging.warn(self.request.get('color'))
-				task.task_type = self.request.get('task_type')
-				
-				group = db.get(self.request.get('id'))
-				task.group = group
-				
-				task.put()
-				# Redirect back to calendar
-				self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id')))
-				
-
-				
 class RemoveTask(BaseHandler):
 		
 		def post(self):
@@ -793,32 +486,11 @@ class RemoveTask(BaseHandler):
 								p.delete()
 								break;
 
-
-class RemoveGroupTask(BaseHandler):
-		
-		def post(self):
-				groupid = self.request.get('groupid')
-				taskid = self.request.get('taskid')
-				
-				logging.warn(taskid);
-				
-				group = db.get(groupid)
-
-				q = group.task_group
-				for p in q.run():
-						logging.warn("here")
-						logging.warn(p.key().id())
-						logging.warn(taskid)
-						if str(p.key().id()) == str(taskid):
-								p.delete()
-								break;								
-								
 class JoinGroup(BaseHandler):
 
 	def get(self):
 		groupid = self.request.get("groupid")
 		useremail = self.request.get("useremail")
-		userid = self.request.get("userid")
 		groupkey = self.request.get("groupkey")
 		group = db.get(groupkey)
 
@@ -832,21 +504,11 @@ class JoinGroup(BaseHandler):
 			invited.remove(useremail)
 		group.invited = invited
 
-		key = group.put()
-
-		# Update user's group list
-		q = User.all()
-		q.filter("email =", useremail)
-
-		for p in q.run():
-			logging.warn(group)
-			p.groups.append(key)
-			p.put()
-
+		group.put()
 		# redirect to calendar
 		self.redirect(self.request.host_url + "/calendar")
 
 
 app = webapp2.WSGIApplication([
-
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent),('/dragevent', DragEvent)
+], debug=True, config=config)
