@@ -3,3 +3,4 @@ indexes:
   properties:
   - name: user
   - name: deadline
+  - name: group
