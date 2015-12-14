@@ -593,7 +593,6 @@ class Task(db.Model):
 		task_type = db.StringProperty(choices=('assignment', 'work', 'other'))
 		user = db.ReferenceProperty(User, collection_name='task_user',indexed=True)
 		group = db.ReferenceProperty(Group, collection_name='task_group', indexed=True)
-		event = db.ReferenceProperty(Event, collection_name='linked_event')
 		color = db.StringProperty(indexed=False)
 
 class URLInvite(db.Model):
