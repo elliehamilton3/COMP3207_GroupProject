@@ -268,7 +268,7 @@
 					});
 					function deleteTask(id) {
 			            var xhr = new XMLHttpRequest();
-						xhr.open('POST', 'http://testproj-1113.appspot.com/removetask');
+						xhr.open('POST', '/removetask');
 						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 						xhr.onload = function() {
 							window.location.replace('/calendar');
@@ -282,14 +282,12 @@
 						console.log(checkbox.checked);
 						checkbox.checked = false;
 						console.log(checkbox.checked);
-		
-		
-					
 						/*current = $("#" + id + " input").val();
 						console.log(current);
 						$("#" + id + " input").attr('checked', !current);
 						console.log($("#" + id + " input").val());*/
-			        }	
+						window.location.replace('/calendar');
+			        }					
 			       
 				</script>
 				<style>
@@ -543,23 +541,23 @@
 																		<div class="row" style="">
 																			<div class="col-xs-12">
 																				<div class="input-group">
-																					<input type="text" name="email1" id="" value="" class="form-control" placeholder="example@email.com">
+																					<input type="text" id="emailBox" value="" class="form-control" placeholder="example@email.com">
 																					<span class="input-group-btn">
 																						<button class="btn btn-default" type="button" onclick="addInput()">Add</button>
 																					</span>
 																				</div>
 																			</div>
 																			
-																			<div id="responce"></div>
+																			<div class="col-xs-12" id="addedEmails"></div>
 																		</div>
-																		<script>
-																			var countBox =2;
-																			var boxName = 0;
+																		<script>																			
+																			var countBox = 1;															
+																			var textbox = document.getElementById("emailBox");
 																			function addInput()
 																			{
-																				 var boxName="textBox"+countBox; 
-																			document.getElementById('responce').innerHTML+='<div class="col-xs-12"><input type="text" name="email'+countBox+'" id="'+boxName+'" value="'+boxName+'" " class="form-control"  /></div>';
-																				 countBox += 1;
+																				document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
+																				textbox.value = '';
+																				countBox++;
 																			}
 																		</script>
 																	</div>

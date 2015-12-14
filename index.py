@@ -601,6 +601,9 @@ class URLInvite(db.Model):
 
 class NewGroup(BaseHandler):
 	def post(self):
+	
+		logging.warn(self.request);
+	
 		group = Group()
 		group.name = self.request.get('group_name')
 		group.description = self.request.get('group_description')
@@ -638,9 +641,47 @@ class NewGroup(BaseHandler):
 			mail.send_mail(sender=sender_address,
 							to=recipients[x],
 							subject="You've been invited to a group!",
-							body= "You have been invited to a group on Sort Your Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
+							body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 							)
 
+class Invite(BaseHandler):
+	def post(self):
+	
+		group = db.get(self.request.get('id'))
+		userid = self.session.get('user')
+		id = db.Key.from_path('User', userid)
+		userObj = db.get(id)
+		userEmail = userObj.email
+		i = 1
+		members = []
+		while True:
+			tmp = self.request.get('email' + str(i))
+			self.response.write(tmp)
+			if (len(tmp) > 0):
+				tmp = tmp.decode('unicode-escape')
+				members.append(tmp)
+				group.invited.append(tmp)
+				self.response.write(members)
+				i = i + 1
+			else:
+				break
+		group_key = group.put()
+		self.sendEmails(members, userObj, id, group_key)
+		# Redirect back to calendar
+		self.redirect(self.request.host_url + "/grouppage?group=" + str(group_key))
+
+	# TODO - duplication is bad!
+	def sendEmails(self, recipients, userObj, userId, group_key):
+		groupid = group_key.id()
+		sender_address = userObj.email
+		for x in xrange (len(recipients)):
+			mail.send_mail(sender=sender_address,
+							to=recipients[x],
+							subject="You've been invited to a group!",
+							body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
+							)
+							
+							
 # EVENT METHODS
 
 class NewEvent(BaseHandler):
@@ -978,6 +1019,5 @@ class JoinGroup(BaseHandler):
 
 
 app = webapp2.WSGIApplication([
-
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite)
 ], debug=True, config=config)
