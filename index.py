@@ -479,8 +479,85 @@ class GroupTaskBoxFeed(BaseHandler):
 								self.response.write(grouptaskboxjsonfeed(self.request.get("start"), self.request.get("end"), group))
 
 								return;
+def groupjsonfeed(user):
+
+		json_list = []
+		q = user.groups
+
+		for p in q:
+				group = db.get(p)
+				
+				name = group.name
+
+				json_entry = {'key': str(group.key()), 'name': name}
+
+				json_list.append(json_entry)
+
+		# return json_list
+		return json.dumps(json_list)
 
 
+class GroupFeed(BaseHandler):
+		def get(self):
+				# Get user
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+
+				self.response.write(groupjsonfeed(userObj))				
+
+def memberjsonfeed(group):
+
+		json_list = []
+		q = group.confirmed
+
+		for p in q:
+				
+				json_entry = {'email': p, 'status': 'Confirmed'}
+
+				json_list.append(json_entry)
+
+				
+		q = group.invited
+		
+		for p in q:
+				
+				json_entry = {'email': p, 'status': 'Invited'}
+
+				json_list.append(json_entry)
+		
+		# return json_list
+		return json.dumps(json_list)
+
+
+class MemberFeed(BaseHandler):
+		def get(self):
+				groupid = self.request.get('id')
+								
+				userid = self.session.get('user')
+				id = db.Key.from_path('User', userid)
+				userObj = db.get(id)
+				
+				logging.warn(groupid)
+				
+				# Security stuff
+				# Get user's groups
+				q = userObj.groups
+				for p in q:
+						logging.warn(p)
+
+						#logging.warn("here")
+						#logging.warn(p.key().id())
+						#logging.warn(taskid)
+						#if str(p.key().id()) == str(taskid):
+						#	p.delete()
+						#	break;
+						if( str(p) == groupid ):
+								group = db.get(p)
+								logging.warn("IT@S A MATCH")
+								self.response.write(memberjsonfeed(group))
+
+								return;	
 class User(db.Model):
 		#Model for representing a user.
 		email = db.StringProperty(indexed=True)
@@ -848,5 +925,5 @@ class JoinGroup(BaseHandler):
 
 app = webapp2.WSGIApplication([
 
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed)
 ], debug=True, config=config)

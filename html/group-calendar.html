@@ -25,7 +25,7 @@
 				<meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
 				<script src="js/vendor/bootstrap.min.js"></script>
 
-				<script src="js/main.js"></script>
+				<!--<script src="js/main.js"></script>-->
 				<script>
 					function signOut() {
 						var auth2 = gapi.auth2.getAuthInstance();
@@ -70,6 +70,64 @@
 
 					
 					$( document ).ready(function() {
+							// Full calendar set up
+
+							console.log("DOCUMENT READY");
+							console.log("/group-event-feed?id={{ group.key() }}");
+							$('#calendar').fullCalendar({
+							   
+								header: {
+									left:   'title',
+									center: 'agendaDay,agendaWeek,month',
+									right:  'today prev,next'
+								},
+
+								events: {
+									url: '/group-event-feed?id={{ group.key() }}',
+								},
+
+								editable: true,
+
+								eventRender: function( event, element ) {
+									var start_date = new Date(event.start);
+									var end_date = new Date(event.end);
+
+									var start_hour = start_date.getHours();
+									var start_minute = start_date.getMinutes();
+
+									var end_hour = end_date.getHours();
+									var end_minute = end_date.getMinutes();
+
+									var event_type = "Type: " + event.type
+									var event_time = "Time: " + start_hour + ":" + start_minute + " to "  + end_hour + ":" + end_minute
+									var event_loc = "Location: " + event.location
+
+									// Check if event is all day and change time if true
+									if(event.allDay) {
+										event_time = "All-day event";
+									}
+
+									// Make a qtip on the element
+									element.qtip({ 
+										content: {
+											text: event_type + "<br>" + event_time + "<br>" + event_loc + 
+											'<br><br> <button type="button" class="btn btn-default btn-xs">Edit</button> <button type="button" class="btn btn-danger btn-xs" onclick="deleteEvent(event_id)">Delete</button>',
+											title: event.title
+										},
+										style: {
+											classes: 'qtip-dark qtip-rounded qtip-shadow'
+										},
+										show: {
+											solo: true
+										},
+										hide: {
+											fixed: true,
+											delay: 300
+										},
+									});
+								}
+							});
+
 						$(".colorpicker").spectrum({
 						    color: "gray",
 						    showInput: true,
@@ -113,7 +171,7 @@
 						    ]
 						});
 						function buildHtmlTable(selector) {
-							$.getJSON( "/taskfeed", function( data ) {
+							$.getJSON( "/group-task-feed?id={{ group.key() }}", function( data ) {
 							  var items = [];
 							  var month = '';
 							  $.each( data, function( key, val ) {
@@ -224,7 +282,7 @@
 							
 						}
 						function buildDeadlinesBox(selector) {
-							$.getJSON( "/taskboxfeed", function( data ) {
+							$.getJSON( "/grouptaskboxfeed?id={{ group.key() }}", function( data ) {
 							  var items = [];
 							  $.each( data, function( key, val ) {
 							    items.push( "<li>" + val['datetime'] + " " + val['title']  + "</li>" );
@@ -239,11 +297,18 @@
 							  
 							});
 						}
-						function buildGroupsList(selector) {
-							$.getJSON( "/groupfeed", function( data ) {
+						
+						
+						function buildMembersList(selector) {
+							$.getJSON( "/memberfeed?id={{ group.key() }}", function( data ) {
 							  var items = [];
+							  var status = '';
 							  $.each( data, function( key, val ) {
-							    items.push( "<li><a href='/grouppage?group=" + val['key'] + "'>" + val['name']  + "</a></li>" );
+								if( val['status'] !== status ) {
+							  		status = val['status'];
+							  		items.push( "<div class='table-heading'>" + status + "</div>" );
+							    }
+							    items.push( "<li>" + val['email'] + "</li>" );
 							  });
 							 
 							  $( "<ul/>", {
@@ -255,21 +320,22 @@
 							  
 							});
 						}
+
 						buildHtmlTable('#excelDataTable');
 						buildDeadlinesBox('#deadlinesbox');
-						buildGroupsList('#grouplist');
+						buildMembersList('#memberlist');
 						//$('#confirm-delete').modal({ backdrop: 'static', keyboard: false });
 
 					
 					});
 					function deleteTask(id) {
 			            var xhr = new XMLHttpRequest();
-						xhr.open('POST', 'http://testproj-1113.appspot.com/removetask');
+						xhr.open('POST', 'http://testproj-1113.appspot.com/removegrouptask');
 						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 						xhr.onload = function() {
-							window.location.replace('/calendar');
+							window.location.replace('/grouppage?group={{ group.key() }}');
 						};
-						xhr.send('taskid=' + id);
+						xhr.send('taskid=' + id + "&groupid={{ group.key() }}");
 			        }
 					function cancelDeleteTask(id) {
 						var li = document.getElementById(id);
@@ -287,7 +353,9 @@
 						console.log($("#" + id + " input").val());*/
 			        }					
 					
-			       
+					function deleteEvent(id) {
+						alert("Event DELETED: " + id);
+					}
 				</script>
 				<style>
 					.bootstrap-timepicker-widget.dropdown-menu.open{
@@ -360,11 +428,14 @@
 		<div class="container">
 
 				<div class="row">
+						<div class="col-xs-12">
+							<h2>Group name: {{ group.name }}</h2>
+						</div>
 						<div class="col-xs-9">
 						    <ul class="nav nav-pills nav-justified">
 						        <li class="nav active"><a href="#events" data-toggle="tab">Calendar</a></li>
 						        <li class="nav"><a href="#tasks" data-toggle="tab">Tasks</a></li>
-						        <li class="nav"><a href="#groups" data-toggle="tab">Groups</a></li>
+						        <li class="nav"><a href="#members" data-toggle="tab">Members</a></li>
 						    </ul>
 							
 							<br/>
@@ -372,7 +443,7 @@
 						    <div class="tab-content">
 						        <div class="tab-pane fade in active" id="events"><div id="calendar"></div></div>
 						        <div class="tab-pane fade" id="tasks"><div class="well" style="" id="excelDataTable"></div></div>
-						        <div class="tab-pane fade" id="groups"><div class="well" id="grouplist"></div></div>
+						        <div class="tab-pane fade" id="members"><div class="well" id="memberlist"></div></div>
 						    </div>
 						</div>
 						<div class="col-xs-3">
@@ -393,7 +464,7 @@
 														</div>
 														<div class="modal-body">	
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/event">
+															<form class="form-horizontal" role="form" method="post" action="/groupevent">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="eventname">Event Name:</label><br/>
@@ -448,88 +519,7 @@
 																	<div class="col-xs-12">
 																		<label for="colorcode">Choose a colour code:</label><br/>
 																		<input type='text' class="colorpicker" name="color2" value="gray" class="form-control"/>
-																	</div>
-																</div>
-																<br/>
-																<div class="modal-footer">
-																	<button type="submit" class="btn btn-default">Submit</button>
-																</form><!-- //Form within Modal -->
-															</div>
-														</div>
-													</div>
-													<!-- //Modal Content -->
-												</div>
-											</div>
-											<!-- //Modal -->
-
-											<!-- Edit Event Modal -->
-											<li><a href="#" data-toggle="modal" data-target="#editModuleModal">Edit Events</a></li>
-											<!-- Modal -->
-											<div id="editModuleModal" class="modal fade" role="dialog">
-												<div class="modal-dialog">
-													<!-- Modal content-->
-													<div class="modal-content">
-														<div class="modal-header">
-															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Add Events</h4>
-														</div>
-														<div class="modal-body">	
-															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/event">
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="eventname">Event Name:</label><br/>
-																		<input id="eventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<div class="form-group">
-																			<label for="eventtype">Event Type:</label><br/>
-																			<select id="eventtype" name="event_type" class="form-control">
-																				<option value="module">Module</option>
-																				<option value="society">Society</option>
-																				<option value="job">Job</option>
-																				<option value="other">Other</option>
-																			</select>
-																		</div>
-																	</div>
-																</div>
-																<div class="row" class="input-group">
-																	<div class="col-xs-12">
-																		<label for="eventlocation">Event Location:</label><br/>
-																		<input name="location" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="input-group" style-width:"100%">
-																		<div class="col-xs-6">
-																			<label for="startdate">Start Date:</label><br/>
-																			<input id="startdate" name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="">
-																		</div>
-																		<div class="col-xs-6">
-																			<label for="timepicker6">Start Time:</label><br/>
-																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
-																		</div>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="input-group" style-width:"100%">
-																		<div class="col-xs-6">
-																			<label for="enddate">End Date:</label><br/>
-																			<input name="end_date" id="enddate" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-																		</div>
-																		<div class="col-xs-6">
-																			<label for="timepicker8">End Time:</label><br/>
-																			<input name="end_time" id="timepicker8" class="form-control" type="text"  data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false" class="input-small">
-																			<i class="icon-time"></i>
-																		</div>	
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="colorcode">Choose a colour code:</label><br/>
-																		<input type='text' class="colorpicker" name="color2" value="gray" class="form-control"/>
+																		<input type='hidden' name="id" value="{{ group.key() }}" />
 																	</div>
 																</div>
 																<br/>
@@ -557,7 +547,7 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/task">
+															<form class="form-horizontal" role="form" method="post" action="/grouptask">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Task Name:</label>
@@ -595,6 +585,7 @@
 																	<div class="col-xs-12">
 																		<label for="colorcode2">Choose a colour code:</label>
 																		<input id="colorcode2" type='text' class="colorpicker" name="color" value="gray" class="form-control"/>
+																		<input type='hidden' name="id" value="{{ group.key() }}" />
 																	</div>
 																</div>
 																<div class="row">
@@ -609,82 +600,6 @@
 												</div>
 											</div>
 											<!-- //Modal -->
-											
-											
-											<li><a href="#" data-toggle="modal" data-target="#addGroupModal">Add Group</a></li>
-											<!-- Modal -->
-											<div id="addGroupModal" class="modal fade" role="dialog">
-												<div class="modal-dialog">
-													<!-- Modal content-->
-													<div class="modal-content">
-														<div class="modal-header">
-															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Group</h4>
-														</div>
-														<div class="modal-body">
-															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/group">
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="sel2">Group Name:</label>
-																		<input type="text" name="group_name" id="sel2" class="form-control" aria-label=""/>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="sel2">Description:</label>
-																		<input type="text" name="group_description" id="sel2" class="form-control" aria-label=""/>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="sel2">Member Email:</label>
-																		<div class="row" style="">
-																			<div class="col-xs-12">
-																				<div class="input-group">
-																					<input type="text" name="email1" id="" value="" class="form-control" placeholder="example@email.com">
-																					<span class="input-group-btn">
-																						<button class="btn btn-default" type="button" onclick="addInput()">Add</button>
-																					</span>
-																				</div>
-																			</div>
-																			
-																			<div id="responce"></div>
-																		</div>
-																		<script>
-																			var countBox =2;
-																			var boxName = 0;
-																			function addInput()
-																			{
-																				 var boxName="textBox"+countBox; 
-																			document.getElementById('responce').innerHTML+='<div class="col-xs-12"><input type="text" name="email'+countBox+'" id="'+boxName+'" value="'+boxName+'" " class="form-control"  /></div>';
-																				 countBox += 1;
-																			}
-																		</script>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<button type="submit" class="btn btn-default">Submit</button>
-																	</div>
-																</div>
-															</form>
-														</div>
-													</div>
-													<!-- //Modal Content -->
-												</div>
-											</div>
-										</ul>
-									</div>
-								</div>
-
-								<div class="panel panel-default">
-									<div class="panel-heading">Group Hub</div>
-									<div class="panel-body">
-										<ul>
-												<li><a href="#">Group 1</a></li>
-												<li><a href="#">Group 2</a></li>
-												<li><a href="#">Group 3</a></li>
 										</ul>
 									</div>
 								</div>
