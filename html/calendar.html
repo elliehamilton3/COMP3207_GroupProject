@@ -63,8 +63,7 @@
 						 return false;
 
 					});
-					$('.datepicker').datepicker({
-					format: 'dd/mm/yyyy'});
+
 					//$('#timepicker6').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
 					//$('#timepicker7').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
 					//$('#timepicker8').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
@@ -72,6 +71,9 @@
 					
 					$( document ).ready(function() {
 					
+						$('.datepicker').datepicker({
+							format: 'dd/mm/yyyy'
+						});
 						// Check if they are a new user
 						
 						console.log("NAME {{user.name}}");
@@ -420,7 +422,7 @@
 																	<div class="input-group" style-width:"100%">
 																		<div class="col-xs-6">
 																			<label for="startdate">Start Date:</label><br/>
-																			<input id="startdate" name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="">
+																			<input id="startdate" name="start_date" type="text" placeholder="Deadline Date" class="datepicker form-control" aria-label="">
 																		</div>
 																		<div class="col-xs-6">
 																			<label for="timepicker6">Start Time:</label><br/>
