@@ -724,6 +724,64 @@ class RemoveEvent(BaseHandler):
 			# Redirect back to calendar
 			self.redirect(self.request.host_url + "/calendar")
 
+class GetEvent(BaseHandler):
+		def get(self):
+			json_list = []
+			event_id = self.request.get('eventid')
+			logging.warn(event_id)
+
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			q = userObj.event_user
+			for p in q.run():
+				if str(p.key().id()) == str(event_id):
+					start_time = p.start_time
+					end_time = p.end_time
+
+					start_time = start_time.strftime('%m') + "/" + start_time.strftime('%d') + "/" + start_time.strftime('%Y') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M');
+					end_time = end_time.strftime('%m') + "/" + end_time.strftime('%d') + "/" + end_time.strftime('%Y') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M');
+					
+					json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'color': p.color, 'event_type': p.event_type}
+					json_list.append(json_entry)
+					logging.warn(json_entry)
+
+			self.response.write(json.dumps(json_list))
+
+class EditEvent(BaseHandler):
+		def post(self):
+			event_id = self.request.get('event_id')
+
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			q = userObj.event_user
+			for p in q.run():
+				if str(p.key().id()) == str(event_id):
+					sDate = self.request.get('start_date')
+					sTime = self.request.get('start_time')
+					startDatetime = sDate + " " + sTime
+					logging.warn(startDatetime)
+					startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+					eDate = self.request.get('end_date')
+					eTime = self.request.get('end_time')
+					endDatetime = eDate + " " + eTime
+					endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+					
+					p.start_time = startDatetime
+					p.end_time = endDatetime
+					p.location = self.request.get('location')
+					p.event_type = self.request.get('event_type')
+					p.color = self.request.get('color2')
+					p.user = userObj
+					p.put()
+					break;
+
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/calendar")
+
 
 class DragEvent(BaseHandler):
 	def get(self):
@@ -770,9 +828,6 @@ class DragEvent(BaseHandler):
 
 				p.put()
 				break;
-
-
-
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar")
 
@@ -924,5 +979,5 @@ class JoinGroup(BaseHandler):
 
 app = webapp2.WSGIApplication([
 
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed)
 ], debug=True, config=config)
