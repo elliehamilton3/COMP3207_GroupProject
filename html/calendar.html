@@ -63,7 +63,8 @@
 						 return false;
 
 					});
-					$('.datepicker').datepicker();
+					$('.datepicker').datepicker({
+					format: 'dd/mm/yyyy'});
 					//$('#timepicker6').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
 					//$('#timepicker7').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
 					//$('#timepicker8').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
@@ -247,6 +248,22 @@
 							  
 							});
 						}
+						function buildKeysBox(selector) {
+							$.getJSON( "/getkeys", function( data ) {
+							  var items = [];
+							  $.each( data, function( key, val ) {
+							    items.push( "<li>" + val['key'] + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:block;"></span></li>' );
+							  });
+							 
+							  $( "<ul/>", {
+							    "class": "",
+							    "id": "",
+							    html: items.join( "" )
+							  }).appendTo(selector);
+
+							  
+							});
+						}
 						function buildGroupsList(selector) {
 							$.getJSON( "/groupfeed", function( data ) {
 							  var items = [];
@@ -270,9 +287,7 @@
 						buildHtmlTable('#excelDataTable');
 						buildDeadlinesBox('#deadlinesbox');
 						buildGroupsList('#grouplist');
-						//$('#confirm-delete').modal({ backdrop: 'static', keyboard: false });
-
-					
+						buildKeysBox('#keylist');			
 					});
 					function deleteTask(id) {
 			            var xhr = new XMLHttpRequest();
@@ -563,7 +578,7 @@
 																		<label for="datepicker1">Date:</label>
 																	</div>
 																	<div class="col-xs-3">
-																		<input name="deadline_date" type="text" id="datepicker1" data-provide="datepicker" class="form-control" aria-label="">
+																		<input name="deadline_date" type="text" id="datepicker1" data-provide="datepicker" class="datepicker form-control" aria-label="">
 																	</div>
 																	<div class="col-xs-1">
 																		<label for="timepicker7">Time:</label>
@@ -676,6 +691,48 @@
 									<div class="panel-body">
 										<div id="deadlinesbox">
 										</div>
+									</div>
+								</div>
+								
+								<div class="panel panel-default">
+									<div class="panel-heading">Tasks</div>
+									<div class="panel-body">
+										<div id="keylist">
+										</div>
+										<a href="#" data-toggle="modal" data-target="#addKeyModal">Add Key</a>
+											<!-- Modal -->
+											<div id="addKeyModal" class="modal fade" role="dialog">
+												<div class="modal-dialog">
+													<!-- Modal content-->
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal">&times;</button>
+															<h4 class="modal-title">Key</h4>
+														</div>
+														<div class="modal-body">
+															<!-- Form within Modal -->
+															<form class="form-horizontal" role="form" method="post" action="/addkey">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<label for="sel2">Key Name:</label>
+																		<input type="text" name="name" id="key_name" class="form-control" aria-label=""/>
+																	</div>
+																</div>
+																<div class="col-xs-12">
+																	<label for="color">Colour:</label><br/>
+																	<input type='text' class="colorpicker" name="color" value="gray" class="form-control"/>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<button type="submit" class="btn btn-default">Submit</button>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+													<!-- //Modal Content -->
+												</div>
+											</div>
 									</div>
 								</div>
 						</div>

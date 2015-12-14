@@ -65,7 +65,7 @@ class Calendar(BaseHandler):
 			if userObj:
 				self.session['user'] = userid				
 			else:
-				userObj = User(key_name=userid, email=email)
+				userObj = User(key_name=userid, email=email, keys='[{"key":"other", "color":"gray"}]')
 				userObj.put()
 				self.session['user'] = userid
 				
@@ -580,6 +580,9 @@ class User(db.Model):
 		email = db.StringProperty(indexed=True)
 		name = db.StringProperty(indexed=False)
 		groups = db.ListProperty(db.Key)
+		
+		# Store key-colour pairs in a json string as GAE can't store a dictonary/hash-map
+		keys = db.StringProperty(indexed=False)
 
 
 class Group(db.Model):
@@ -992,8 +995,35 @@ class SetName(BaseHandler):
 		
 		self.redirect(self.request.host_url + "/calendar")
 
+class NewKey(BaseHandler):
+	def post(self):
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+		
+		# Convert user's key json string into dictonary
+		keys = json.loads(userObj.keys)
+		
+		key = {"key": self.request.get('name'), "color": self.request.get('color')}
+		keys.append(key)
+		
+		# Back to a JSON string
+		userObj.keys = json.dumps(keys)
+		userObj.put();
+		
+		self.redirect(self.request.host_url + "/calendar")
+		
+class GetKeys(BaseHandler):
+	def get(self):
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+		
+		# Convert user's key json string into dictonary
+		self.response.write(userObj.keys)
+		
 
 app = webapp2.WSGIApplication([
 
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys)
 ], debug=True, config=config)
