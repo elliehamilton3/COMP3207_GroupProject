@@ -246,6 +246,10 @@
 							    items.push( "<li><a href='/grouppage?group=" + val['key'] + "'>" + val['name']  + "</a></li>" );
 							  });
 							 
+								if(items.length == 0){
+									items.push( "<p>You have no groups!</p>" );
+								}
+							 
 							  $( "<ul/>", {
 							    "class": "",
 							    "id": "",
