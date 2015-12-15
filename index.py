@@ -24,7 +24,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 	extensions=['jinja2.ext.autoescape'],
 	autoescape=True)
 
-TEST_HTML = JINJA_ENVIRONMENT.get_template('calendar.html').render()
+#TEST_HTML = JINJA_ENVIRONMENT.get_template('calendar.html').render()
 SPLASH_HTML = JINJA_ENVIRONMENT.get_template('splash.html').render()
 class BaseHandler(webapp2.RequestHandler):
 		def dispatch(self):
@@ -63,30 +63,43 @@ class Calendar(BaseHandler):
 			userObj = db.get(id)
 
 			if userObj:
-				self.session['user'] = userid
-				# To get a value:
-				sess = self.session.get('user')
-				self.response.write(TEST_HTML)
+				self.session['user'] = userid				
 			else:
-				userObj = User(key_name=userid, email=email)
+				userObj = User(key_name=userid, email=email, keys='[{"key":"other", "color":"gray"}]')
 				userObj.put()
 				self.session['user'] = userid
-				# To get a value:
-				sess = self.session.get('user')
-				self.response.write(TEST_HTML)
-			
+				
+			template_values = {
+				'user': userObj,
+			}
+
+			template = JINJA_ENVIRONMENT.get_template('calendar.html')
+			self.response.write(template.render(template_values))
+
 			
 		except crypt.AppIdentityError:
 			# Invalid token
 			self.response.write(SPLASH_HTML)
 	def get(self):
+		
 		sess = self.session.get('user')
-		self.response.write(TEST_HTML)
+		
+		userid = self.session.get('user')
+		id = db.Key.from_path('User', userid)
+		userObj = db.get(id)
+		
+		template_values = {
+			'user': userObj,
+		}
+
+		template = JINJA_ENVIRONMENT.get_template('calendar.html')
+		self.response.write(template.render(template_values))
+
+		#self.response.write(TEST_HTML)
 
 class GroupCalendar(BaseHandler):
 	def get(self):
 		groupid = self.request.get("group")
-
 
 		# Get user details
 		userid = self.session.get('user')
@@ -512,19 +525,23 @@ def memberjsonfeed(group):
 		q = group.confirmed
 
 		for p in q:
-				
-				json_entry = {'email': p, 'status': 'Confirmed'}
+				q2 = User.all()
+				q2.filter("email =", p)
 
-				json_list.append(json_entry)
+				for p2 in q2.run():
+					json_entry = {'name': p2.name, 'email': p, 'status': 'Confirmed'}
+					json_list.append(json_entry)
 
 				
 		q = group.invited
 		
 		for p in q:
-				
-				json_entry = {'email': p, 'status': 'Invited'}
+				q2 = User.all()
+				q2.filter("email =", p)
 
-				json_list.append(json_entry)
+				for p2 in q2.run():
+					json_entry = {'name': p2.name, 'email': p, 'status': 'Invited'}
+					json_list.append(json_entry)
 		
 		# return json_list
 		return json.dumps(json_list)
@@ -563,6 +580,9 @@ class User(db.Model):
 		email = db.StringProperty(indexed=True)
 		name = db.StringProperty(indexed=False)
 		groups = db.ListProperty(db.Key)
+		
+		# Store key-colour pairs in a json string as GAE can't store a dictonary/hash-map
+		keys = db.StringProperty(indexed=False)
 
 
 class Group(db.Model):
@@ -1016,8 +1036,48 @@ class JoinGroup(BaseHandler):
 
 		# redirect to calendar
 		self.redirect(self.request.host_url + "/calendar")
+		
+class SetName(BaseHandler):
+	def post(self):
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+				
+		userObj.name = self.request.get('name')
+		
+		logging.warn(self.request.get('name'));
+		userObj.put()
+		
+		self.redirect(self.request.host_url + "/calendar")
 
+class NewKey(BaseHandler):
+	def post(self):
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+		
+		# Convert user's key json string into dictonary
+		keys = json.loads(userObj.keys)
+		
+		key = {"key": self.request.get('name'), "color": self.request.get('color')}
+		keys.append(key)
+		
+		# Back to a JSON string
+		userObj.keys = json.dumps(keys)
+		userObj.put();
+		
+		self.redirect(self.request.host_url + "/calendar")
+		
+class GetKeys(BaseHandler):
+	def get(self):
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+		
+		# Convert user's key json string into dictonary
+		self.response.write(userObj.keys)
+		
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys)
 ], debug=True, config=config)
