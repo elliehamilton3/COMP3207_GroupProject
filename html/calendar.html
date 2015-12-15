@@ -63,11 +63,6 @@
 						 return false;
 
 					});
-
-					//$('#timepicker6').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
-					//$('#timepicker7').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
-					//$('#timepicker8').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
-
 					
 					$( document ).ready(function() {
 					
@@ -278,7 +273,7 @@
 								}
 							 
 							  $( "<ul/>", {
-							    "class": "",
+							    "class": "list-group",
 							    "id": "",
 							    html: items.join( "" )
 							  }).appendTo(selector);
@@ -301,9 +296,18 @@
 						xhr.send('taskid=' + id);
 			        }
 					function cancelDeleteTask(id) {
+						var li = document.getElementById(id);
+						var checkbox = li.getElementsByTagName("input")[0];
+
+						console.log(checkbox.checked);
+						checkbox.checked = false;
+						console.log(checkbox.checked);
+						/*current = $("#" + id + " input").val();
+						console.log(current);
+						$("#" + id + " input").attr('checked', !current);
+						console.log($("#" + id + " input").val());*/
 						window.location.replace('/calendar');
 			        }					
-					
 			       
 				</script>
 				<style>
@@ -355,7 +359,7 @@
 		</head>
 
 
-		<body>
+	<body>
 		<div class="container">
 				<h2>Welcome back, {{ user.name }}</h2>
 				<div class="row">
@@ -434,7 +438,7 @@
 																	<div class="input-group" style-width:"100%">
 																		<div class="col-xs-6">
 																			<label for="enddate">End Date:</label><br/>
-																			<input name="end_date" id="enddate" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+																			<input name="end_date" id="enddate" type="text" data-provide="datepicker" placeholder="" class="form-control" aria-label="...">
 																		</div>
 																		<div class="col-xs-6">
 																			<label for="timepicker8">End Time:</label><br/>
@@ -452,96 +456,13 @@
 																<br/>
 																<div class="modal-footer">
 																	<button type="submit" class="btn btn-default">Submit</button>
-																</form><!-- //Form within Modal -->
+																</form>
 															</div>
 														</div>
 													</div>
-													<!-- //Modal Content -->
+													
 												</div>
 											</div>
-											<!-- //Modal -->
-
-											<!-- Edit Event Modal -->
-											<li><a href="#" data-toggle="modal" data-target="#editModuleModal">Edit Events</a></li>
-											<!-- Modal -->
-											<div id="editModuleModal" class="modal fade" role="dialog">
-												<div class="modal-dialog">
-													<!-- Modal content-->
-													<div class="modal-content">
-														<div class="modal-header">
-															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Add Events</h4>
-														</div>
-														<div class="modal-body">	
-															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/event">
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="eventname">Event Name:</label><br/>
-																		<input id="eventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<div class="form-group">
-																			<label for="eventtype">Event Type:</label><br/>
-																			<select id="eventtype" name="event_type" class="form-control">
-																				<option value="module">Module</option>
-																				<option value="society">Society</option>
-																				<option value="job">Job</option>
-																				<option value="other">Other</option>
-																			</select>
-																		</div>
-																	</div>
-																</div>
-																<div class="row" class="input-group">
-																	<div class="col-xs-12">
-																		<label for="eventlocation">Event Location:</label><br/>
-																		<input name="location" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="input-group" style-width:"100%">
-																		<div class="col-xs-6">
-																			<label for="startdate">Start Date:</label><br/>
-																			<input id="startdate" name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="">
-																		</div>
-																		<div class="col-xs-6">
-																			<label for="timepicker6">Start Time:</label><br/>
-																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
-																		</div>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="input-group" style-width:"100%">
-																		<div class="col-xs-6">
-																			<label for="enddate">End Date:</label><br/>
-																			<input name="end_date" id="enddate" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
-																		</div>
-																		<div class="col-xs-6">
-																			<label for="timepicker8">End Time:</label><br/>
-																			<input name="end_time" id="timepicker8" class="form-control" type="text"  data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false" class="input-small">
-																			<i class="icon-time"></i>
-																		</div>	
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="colorcode">Choose a colour code:</label><br/>
-																		<input type='text' class="colorpicker" name="color2" value="gray" class="form-control"/>
-																	</div>
-																</div>
-																<br/>
-																<div class="modal-footer">
-																	<button type="submit" class="btn btn-default">Submit</button>
-																</form><!-- //Form within Modal -->
-															</div>
-														</div>
-													</div>
-													<!-- //Modal Content -->
-												</div>
-											</div>
-											<!-- //Modal -->
 
 											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add Task</a></li>
 											<!-- Modal -->
@@ -678,17 +599,6 @@
 								</div>
 
 								<div class="panel panel-default">
-									<div class="panel-heading">Group Hub</div>
-									<div class="panel-body">
-										<ul>
-												<li><a href="#">Group 1</a></li>
-												<li><a href="#">Group 2</a></li>
-												<li><a href="#">Group 3</a></li>
-										</ul>
-									</div>
-								</div>
-
-								<div class="panel panel-default">
 									<div class="panel-heading">Tasks</div>
 									<div class="panel-body">
 										<div id="deadlinesbox">
@@ -741,6 +651,7 @@
 				</div>
 		</div>
 		<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<<<<<<< HEAD
 			<div class="modal-dialog" id="confirm-delete2">
 				<div class="modal-content">
             
@@ -780,6 +691,84 @@
                 
 					<div class="modal-footer" id="modal-footer">
 						<button type="submit" id="nameSubmit" class="btn btn-default">Continue</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	    <!-- Modal -->
+		<div id="editModuleModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Edit Event</h4>
+					</div>
+					<div class="modal-body">	
+						<!-- Form within Modal -->
+						<form class="form-horizontal" role="form" method="post" action="/editevent">
+							<div class="row">
+								<div class="col-xs-12">
+									<label for="eventname">Event Name:</label><br/>
+									<input id="editeventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+								</div>
+							</div>
+							<input type="hidden" name="event_id" id="editevent_id">
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="form-group">
+										<label for="eventtype">Event Type:</label><br/>
+										<select id="editeventtype" name="event_type" class="form-control">
+											<option value="module">Module</option>
+											<option value="society">Society</option>
+											<option value="job">Job</option>
+											<option value="other">Other</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row" class="input-group">
+								<div class="col-xs-12">
+									<label for="eventlocation">Event Location:</label><br/>
+									<input name="location" id="editeventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-group" style-width:"100%">
+									<div class="col-xs-6">
+										<label for="startdate">Start Date:</label><br/>
+										<input id="startdate editstartdate" name="start_date" type="text" data-provide="datepicker" placeholder="" class="form-control" aria-label="">
+									</div>
+									<div class="col-xs-6">
+										<label for="timepicker6">Start Time:</label><br/>
+										<input name="start_time" id="timepicker6 editstarttime" data-provide="timepicker" class="form-control" type="text" class="input-small" data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-group" style-width:"100%">
+									<div class="col-xs-6">
+										<label for="enddate">End Date:</label><br/>
+										<input name="end_date" id="enddate editenddate" type="text" data-provide="datepicker" placeholder="" class="form-control" aria-label="">
+									</div>
+									<div class="col-xs-6">
+										<label for="timepicker8">End Time:</label><br/>
+										<input name="end_time" id="timepicker8 editendtime" class="form-control" type="text"  data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false" class="input-small">
+										<i class="icon-time"></i>
+									</div>	
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12">
+									<label for="colorcode">Choose a colour code:</label><br/>
+									<input type='text' class="colorpicker" id="editeventcolor" name="color2" value="gray" class="form-control"/>
+								</div>
+							</div>
+							<br/>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-default">Submit</button>
+							</form><!-- //Form within Modal -->
+						</div>
 					</div>
 				</div>
 			</div>
