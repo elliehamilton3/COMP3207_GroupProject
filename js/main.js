@@ -117,6 +117,8 @@ $(document).ready(function() {
 	        "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
 	    ]
 	});
+	$('.datepicker').datepicker();
+
 	function buildHtmlTable(selector) {
 		$.getJSON( "/taskfeed", function( data ) {
 		  var items = [];
@@ -280,19 +282,22 @@ function createEditModal(eventid) {
 			$('#editeventname').val(val['name']);
 			$('#editeventtype').val(val['event_type']);
 			$('#editeventlocation').val(val['location']);
-			var startDate = val['start_time'].split("T")[0];
+			var startDate = val['start_time'].split("T")[0].split("/");
 			var startTime = val['start_time'].split("T")[1];
 
-			var endDate = val['end_time'].split("T")[0];
+			var endDate = val['end_time'].split("T")[0].split("/");
 			var endTime = val['end_time'].split("T")[1];
 			console.log(startDate);
 			var newdate = new Date();
+		
+			//$('.editstarttime').timepicker().timepicker("defaultTime",startTime);
+			$('.editstartdate').datepicker().datepicker("setDate", new Date(startDate[2],startDate[0],startDate[1]) );
+			console.log(startDate[2]);
+			console.log(startDate[0]);
+			console.log(startDate[1]);
+			$('.editenddate').datepicker().datepicker("setDate", new Date(endDate[2],endDate[0],endDate[1]) );
 
-			$("#editstartdate").val(startDate);
-			$('#editstarttime').attr('placeholder', startTime);
-
-			$('#editenddate').attr("placeholder", endDate);
-			$('#editendtime').val(endTime);
+			//$('.editendtime').timepicker().timepicker("defaultTime", endTime);
 			
 			$("#editeventcolor").spectrum({
 				color: val['color'],
