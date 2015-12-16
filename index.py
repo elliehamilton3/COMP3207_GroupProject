@@ -81,54 +81,59 @@ class Calendar(BaseHandler):
 			# Invalid token
 			self.response.write(SPLASH_HTML)
 	def get(self):
-		
-		sess = self.session.get('user')
-		
-		userid = self.session.get('user')
-		id = db.Key.from_path('User', userid)
-		userObj = db.get(id)
-		
-		template_values = {
-			'user': userObj,
-		}
+		if(self.session.get('user')):
+			sess = self.session.get('user')
+			
+			userid = self.session.get('user')
+			id = db.Key.from_path('User', userid)
+			userObj = db.get(id)
+			
+			template_values = {
+				'user': userObj,
+			}
 
-		template = JINJA_ENVIRONMENT.get_template('calendar.html')
-		self.response.write(template.render(template_values))
+			template = JINJA_ENVIRONMENT.get_template('calendar.html')
+			self.response.write(template.render(template_values))
 
-		#self.response.write(TEST_HTML)
+			#self.response.write(TEST_HTML)
+		else:
+			self.response.write(SPLASH_HTML)
 
 class GroupCalendar(BaseHandler):
 	def get(self):
-		groupid = self.request.get("group")
+		if(self.session.get('user')):
+			groupid = self.request.get("group")
 
-		# Get user details
-		userid = self.session.get('user')
-		id = db.Key.from_path('User', userid)
-		userObj = db.get(id)
-		
-		# Get user's groups
-		q = userObj.groups
-		logging.warn(q)
-		for p in q:
-			#logging.warn("here")
-			logging.warn(str(p))
-			#logging.warn(taskid)
-			#if str(p.key().id()) == str(taskid):
-			#	p.delete()
-			#	break;
-			if( str(p) == groupid ):
-				group = db.get(p)
-				#self.response.write(group.name)
-				template_values = {
-					'group': group,
-				}
+			# Get user details
+			userid = self.session.get('user')
+			id = db.Key.from_path('User', userid)
+			userObj = db.get(id)
+			
+			# Get user's groups
+			q = userObj.groups
+			logging.warn(q)
+			for p in q:
+				#logging.warn("here")
+				logging.warn(str(p))
+				#logging.warn(taskid)
+				#if str(p.key().id()) == str(taskid):
+				#	p.delete()
+				#	break;
+				if( str(p) == groupid ):
+					group = db.get(p)
+					#self.response.write(group.name)
+					template_values = {
+						'group': group,
+					}
 
-				template = JINJA_ENVIRONMENT.get_template('group-calendar.html')
-				self.response.write(template.render(template_values))
-				#self.response.write(TEST_HTML)
-				return;
-		
-		self.response.write("Error - group id invalid or you do not belong to this group")
+					template = JINJA_ENVIRONMENT.get_template('group-calendar.html')
+					self.response.write(template.render(template_values))
+					#self.response.write(TEST_HTML)
+					return;
+			
+			self.response.write("Error - group id invalid or you do not belong to this group")
+		else:
+			self.response.write(SPLASH_HTML)
 
 
 class Test(BaseHandler):
@@ -197,11 +202,14 @@ def jsonfeed(startDate, endDate, user):
 class Feed(BaseHandler):
 		def get(self):
 				# Get user
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-		
-				self.response.write(jsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+				if(self.session.get('user')):
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
+			
+					self.response.write(jsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+				else:
+					self.response.write(SPLASH_HTML)
 
 def groupeventjsonfeed(startDate, endDate, group):
 
@@ -260,34 +268,36 @@ def groupeventjsonfeed(startDate, endDate, group):
 class GroupEventFeed(BaseHandler):
 		def get(self):
 				# Get user
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-					logging.warn(p)
+				if(self.session.get('user')):
+					groupid = self.request.get('id')
+									
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
+					
+					logging.warn(groupid)
+					
+					# Security stuff
+					# Get user's groups
+					q = userObj.groups
+					for p in q:
+						logging.warn(p)
 
-					#logging.warn("here")
-					#logging.warn(p.key().id())
-					#logging.warn(taskid)
-					#if str(p.key().id()) == str(taskid):
-					#	p.delete()
-					#	break;
-					if( str(p) == groupid ):
-						group = db.get(p)
-						logging.warn("IT@S A MATCH")
-						self.response.write(groupeventjsonfeed(self.request.get("start"), self.request.get("end"), group))
+						#logging.warn("here")
+						#logging.warn(p.key().id())
+						#logging.warn(taskid)
+						#if str(p.key().id()) == str(taskid):
+						#	p.delete()
+						#	break;
+						if( str(p) == groupid ):
+							group = db.get(p)
+							logging.warn("IT@S A MATCH")
+							self.response.write(groupeventjsonfeed(self.request.get("start"), self.request.get("end"), group))
 
-						return;
-								
-# JSON Feed
+							return;
+				else:
+					self.response.write(SPLASH_HTML)
+
 
 def taskjsonfeed(startDate, endDate, user):
 
@@ -324,11 +334,14 @@ def taskjsonfeed(startDate, endDate, user):
 class TaskFeed(BaseHandler):
 		def get(self):
 				# Get user
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
+				if(self.session.get('user')):
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
 
-				self.response.write(taskjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+					self.response.write(taskjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+				else:
+					self.response.write(SPLASH_HTML)
 
 def grouptaskjsonfeed(startDate, endDate, group):
 
@@ -364,34 +377,36 @@ def grouptaskjsonfeed(startDate, endDate, group):
 
 class GroupTaskFeed(BaseHandler):
 		def get(self):
-
 				# Get user
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-						logging.warn(p)
+				if(self.session.get('user')):
+					groupid = self.request.get('id')
+									
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
+					
+					logging.warn(groupid)
+					
+					# Security stuff
+					# Get user's groups
+					q = userObj.groups
+					for p in q:
+							logging.warn(p)
 
-						#logging.warn("here")
-						#logging.warn(p.key().id())
-						#logging.warn(taskid)
-						#if str(p.key().id()) == str(taskid):
-						#	p.delete()
-						#	break;
-						if( str(p) == groupid ):
-								group = db.get(p)
-								logging.warn("IT@S A MATCH")
-								self.response.write(grouptaskjsonfeed(self.request.get("start"), self.request.get("end"), group))
+							#logging.warn("here")
+							#logging.warn(p.key().id())
+							#logging.warn(taskid)
+							#if str(p.key().id()) == str(taskid):
+							#	p.delete()
+							#	break;
+							if( str(p) == groupid ):
+									group = db.get(p)
+									logging.warn("IT@S A MATCH")
+									self.response.write(grouptaskjsonfeed(self.request.get("start"), self.request.get("end"), group))
 
-								return;
+									return;
+				else:
+					self.response.write(SPLASH_HTML)
 
 def taskboxjsonfeed(startDate, endDate, user):
 
@@ -426,12 +441,14 @@ def taskboxjsonfeed(startDate, endDate, user):
 class TaskBoxFeed(BaseHandler):
 		def get(self):
 				# Get user
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
+				if(self.session.get('user')):
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
 
-				self.response.write(taskboxjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
-
+					self.response.write(taskboxjsonfeed(self.request.get("start"), self.request.get("end"), userObj))
+				else:
+					self.response.write(SPLASH_HTML)
 
 def grouptaskboxjsonfeed(startDate, endDate, group):
 
@@ -466,32 +483,36 @@ def grouptaskboxjsonfeed(startDate, endDate, group):
 class GroupTaskBoxFeed(BaseHandler):
 		def get(self):
 				# Get user
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-						logging.warn(p)
+				if(self.session.get('user')):
+					groupid = self.request.get('id')
+									
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
+					
+					logging.warn(groupid)
+					
+					# Security stuff
+					# Get user's groups
+					q = userObj.groups
+					for p in q:
+							logging.warn(p)
 
-						#logging.warn("here")
-						#logging.warn(p.key().id())
-						#logging.warn(taskid)
-						#if str(p.key().id()) == str(taskid):
-						#	p.delete()
-						#	break;
-						if( str(p) == groupid ):
-								group = db.get(p)
-								logging.warn("IT@S A MATCH")
-								self.response.write(grouptaskboxjsonfeed(self.request.get("start"), self.request.get("end"), group))
+							#logging.warn("here")
+							#logging.warn(p.key().id())
+							#logging.warn(taskid)
+							#if str(p.key().id()) == str(taskid):
+							#	p.delete()
+							#	break;
+							if( str(p) == groupid ):
+									group = db.get(p)
+									logging.warn("IT@S A MATCH")
+									self.response.write(grouptaskboxjsonfeed(self.request.get("start"), self.request.get("end"), group))
 
-								return;
+									return;
+				else:
+					self.response.write(SPLASH_HTML)
+
 def groupjsonfeed(user):
 
 		json_list = []
@@ -513,11 +534,14 @@ def groupjsonfeed(user):
 class GroupFeed(BaseHandler):
 		def get(self):
 				# Get user
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
+				if(self.session.get('user')):
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
 
-				self.response.write(groupjsonfeed(userObj))				
+					self.response.write(groupjsonfeed(userObj))
+				else:
+					self.response.write(SPLASH_HTML)
 
 def memberjsonfeed(group):
 
@@ -549,32 +573,36 @@ def memberjsonfeed(group):
 
 class MemberFeed(BaseHandler):
 		def get(self):
-				groupid = self.request.get('id')
-								
-				userid = self.session.get('user')
-				id = db.Key.from_path('User', userid)
-				userObj = db.get(id)
-				
-				logging.warn(groupid)
-				
-				# Security stuff
-				# Get user's groups
-				q = userObj.groups
-				for p in q:
-						logging.warn(p)
+				if(self.session.get('user')):
+					groupid = self.request.get('id')
+									
+					userid = self.session.get('user')
+					id = db.Key.from_path('User', userid)
+					userObj = db.get(id)
+					
+					logging.warn(groupid)
+					
+					# Security stuff
+					# Get user's groups
+					q = userObj.groups
+					for p in q:
+							logging.warn(p)
 
-						#logging.warn("here")
-						#logging.warn(p.key().id())
-						#logging.warn(taskid)
-						#if str(p.key().id()) == str(taskid):
-						#	p.delete()
-						#	break;
-						if( str(p) == groupid ):
-								group = db.get(p)
-								logging.warn("IT@S A MATCH")
-								self.response.write(memberjsonfeed(group))
+							#logging.warn("here")
+							#logging.warn(p.key().id())
+							#logging.warn(taskid)
+							#if str(p.key().id()) == str(taskid):
+							#	p.delete()
+							#	break;
+							if( str(p) == groupid ):
+									group = db.get(p)
+									logging.warn("IT@S A MATCH")
+									self.response.write(memberjsonfeed(group))
 
-								return;	
+									return;	
+				else:
+					self.response.write(SPLASH_HTML)
+
 class User(db.Model):
 		#Model for representing a user.
 		email = db.StringProperty(indexed=True)
@@ -787,28 +815,31 @@ class RemoveEvent(BaseHandler):
 
 class GetEvent(BaseHandler):
 		def get(self):
-			json_list = []
-			event_id = self.request.get('eventid')
-			logging.warn(event_id)
+			if(self.session.get('user')):
+				json_list = []
+				event_id = self.request.get('eventid')
+				logging.warn(event_id)
 
-			user = self.session.get('user')
-			userKey = db.Key.from_path('User', user)
-			userObj = db.get(userKey)
+				user = self.session.get('user')
+				userKey = db.Key.from_path('User', user)
+				userObj = db.get(userKey)
 
-			q = userObj.event_user
-			for p in q.run():
-				if str(p.key().id()) == str(event_id):
-					start_time = p.start_time
-					end_time = p.end_time
+				q = userObj.event_user
+				for p in q.run():
+					if str(p.key().id()) == str(event_id):
+						start_time = p.start_time
+						end_time = p.end_time
 
-					start_time = start_time.strftime('%m') + "/" + start_time.strftime('%d') + "/" + start_time.strftime('%Y') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M');
-					end_time = end_time.strftime('%m') + "/" + end_time.strftime('%d') + "/" + end_time.strftime('%Y') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M');
-					
-					json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'color': p.color, 'event_type': p.event_type}
-					json_list.append(json_entry)
-					logging.warn(json_entry)
+						start_time = start_time.strftime('%m') + "/" + start_time.strftime('%d') + "/" + start_time.strftime('%Y') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M');
+						end_time = end_time.strftime('%m') + "/" + end_time.strftime('%d') + "/" + end_time.strftime('%Y') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M');
+						
+						json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'color': p.color, 'event_type': p.event_type}
+						json_list.append(json_entry)
+						logging.warn(json_entry)
 
-			self.response.write(json.dumps(json_list))
+				self.response.write(json.dumps(json_list))
+			else:
+				self.response.write(SPLASH_HTML)
 
 class EditEvent(BaseHandler):
 		def post(self):
@@ -845,51 +876,53 @@ class EditEvent(BaseHandler):
 
 class DragEvent(BaseHandler):
 	def get(self):
+		if(self.session.get('user')):
+			logging.debug("Event dragged start")
 
-		logging.debug("Event dragged start")
-
-		event_id = self.request.get('event_id')
-		start = self.request.get('start')
-		start = float(start) / 1000.00
-		start = datetime.fromtimestamp(start)
-		
-
-
-		all_day = self.request.get('all_day')
-
-		if(all_day == 'false'):
-			end = self.request.get('end')
-			end = float(end) / 1000.00
-			end = datetime.fromtimestamp(end)
+			event_id = self.request.get('event_id')
+			start = self.request.get('start')
+			start = float(start) / 1000.00
+			start = datetime.fromtimestamp(start)
 			
 
-		# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start and end date are " + start + " and " + end)
-		# else:
-		# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start date is " + start)
 
+			all_day = self.request.get('all_day')
 
-		# Now get the event from the db and then update properties
-		# eventKey = db.Key.from_path('Event', event_id)
-		# eventObj = db.get(eventKey)
-
-		user = self.session.get('user')
-		userKey = db.Key.from_path('User', user)
-		userObj = db.get(userKey)
-
-		q = userObj.event_user
-		for p in q.run():
-			if str(p.key().id()) == str(event_id):
-				p.start_time = start
+			if(all_day == 'false'):
+				end = self.request.get('end')
+				end = float(end) / 1000.00
+				end = datetime.fromtimestamp(end)
 				
-				if(all_day == 'false'):
-					p.end_time = end
-				else:
-					del p.end_time
 
-				p.put()
-				break;
-		# Redirect back to calendar
-		self.redirect(self.request.host_url + "/calendar#events")
+			# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start and end date are " + start + " and " + end)
+			# else:
+			# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start date is " + start)
+
+
+			# Now get the event from the db and then update properties
+			# eventKey = db.Key.from_path('Event', event_id)
+			# eventObj = db.get(eventKey)
+
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			q = userObj.event_user
+			for p in q.run():
+				if str(p.key().id()) == str(event_id):
+					p.start_time = start
+					
+					if(all_day == 'false'):
+						p.end_time = end
+					else:
+						del p.end_time
+
+					p.put()
+					break;
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/calendar#events")
+		else:
+			self.response.write(SPLASH_HTML)
 
 
 
@@ -1006,36 +1039,39 @@ class RemoveGroupTask(BaseHandler):
 class JoinGroup(BaseHandler):
 
 	def get(self):
-		groupid = self.request.get("groupid")
-		useremail = self.request.get("useremail")
-		userid = self.request.get("userid")
-		groupkey = self.request.get("groupkey")
-		group = db.get(groupkey)
+		if(self.session.get('user')):
+			groupid = self.request.get("groupid")
+			useremail = self.request.get("useremail")
+			userid = self.request.get("userid")
+			groupkey = self.request.get("groupkey")
+			group = db.get(groupkey)
 
-		confirmed = group.confirmed
-		confirmed.append(useremail)
-		group.confirmed = confirmed
+			confirmed = group.confirmed
+			confirmed.append(useremail)
+			group.confirmed = confirmed
 
-		invited = group.invited
+			invited = group.invited
 
-		if useremail in invited:
-			invited.remove(useremail)
-		group.invited = invited
+			if useremail in invited:
+				invited.remove(useremail)
+			group.invited = invited
 
-		key = group.put()
+			key = group.put()
 
-		# Update user's group list
-		q = User.all()
-		q.filter("email =", useremail)
+			# Update user's group list
+			q = User.all()
+			q.filter("email =", useremail)
 
-		for p in q.run():
-			logging.warn(group)
-			p.groups.append(key)
-			p.put()
+			for p in q.run():
+				logging.warn(group)
+				p.groups.append(key)
+				p.put()
 
-		# redirect to calendar
-		self.redirect(self.request.host_url + "/calendar#groups")
-		
+			# redirect to calendar
+			self.redirect(self.request.host_url + "/calendar#groups")
+		else:
+			self.response.write(SPLASH_HTML)
+
 class SetName(BaseHandler):
 	def post(self):
 		user = self.session.get('user')
@@ -1069,13 +1105,15 @@ class NewKey(BaseHandler):
 		
 class GetKeys(BaseHandler):
 	def get(self):
-		user = self.session.get('user')
-		userKey = db.Key.from_path('User', user)
-		userObj = db.get(userKey)
-		
-		# Convert user's key json string into dictonary
-		self.response.write(userObj.keys)
-		
+		if(self.session.get('user')):
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+			
+			# Convert user's key json string into dictonary
+			self.response.write(userObj.keys)
+		else:
+			self.response.write(SPLASH_HTML)
 
 app = webapp2.WSGIApplication([
 		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys)
