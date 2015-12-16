@@ -347,20 +347,25 @@ function deleteTask(id) {
 	xhr.open('POST', '/removetask');
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onload = function() {
-		window.location.replace('/calendar');
+		location.reload();
 	};
 	xhr.send('taskid=' + id);
 }
 function cancelDeleteTask(id) {
 	var li = document.getElementById(id);
 	var checkbox = li.getElementsByTagName("input")[0];
-
-	console.log(checkbox.checked);
 	checkbox.checked = false;
-	console.log(checkbox.checked);
-	/*current = $("#" + id + " input").val();
-	console.log(current);
-	$("#" + id + " input").attr('checked', !current);
-	console.log($("#" + id + " input").val());*/
-	window.location.replace('/calendar');
+	location.reload();
 }
+window.onload = function(){  
+
+    var url = document.location.toString();
+    if (url.match('#')) {
+	    $('.nav-pills a[href=#'+url.split('#')[1]+']').tab('show') ;
+	} 
+
+	// Change hash for page-reload
+	$('.nav-pills a').on('shown.bs.tab', function (e) {
+	    window.location.hash = e.target.hash;
+	});
+} 

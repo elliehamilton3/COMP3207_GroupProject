@@ -652,7 +652,7 @@ class NewGroup(BaseHandler):
 		userObj.put()
 		self.sendEmails(members, userObj, id, group_key)
 		# Redirect back to calendar
-		self.redirect(self.request.host_url + "/calendar")
+		self.redirect(self.request.host_url + "/calendar#groups")
 
 	def sendEmails(self, recipients, userObj, userId, group_key):
 		groupid = group_key.id()
@@ -731,7 +731,7 @@ class NewEvent(BaseHandler):
 				##event.group = db.get(groupId)
 				event.put()
 				# Redirect back to calendar
-				self.redirect(self.request.host_url + "/calendar")
+				self.redirect(self.request.host_url + "/calendar#events")
 
 class NewGroupEvent(BaseHandler):
 		def post(self):
@@ -783,7 +783,7 @@ class RemoveEvent(BaseHandler):
 			logging.debug("The event " + event_id + " should be deleted.")
 
 			# Redirect back to calendar
-			self.redirect(self.request.host_url + "/calendar")
+			self.redirect(self.request.host_url + "/calendar#events")
 
 class GetEvent(BaseHandler):
 		def get(self):
@@ -840,7 +840,7 @@ class EditEvent(BaseHandler):
 					break;
 
 			# Redirect back to calendar
-			self.redirect(self.request.host_url + "/calendar")
+			self.redirect(self.request.host_url + "/calendar#events")
 
 
 class DragEvent(BaseHandler):
@@ -889,7 +889,7 @@ class DragEvent(BaseHandler):
 				p.put()
 				break;
 		# Redirect back to calendar
-		self.redirect(self.request.host_url + "/calendar")
+		self.redirect(self.request.host_url + "/calendar#events")
 
 
 
@@ -926,7 +926,7 @@ class NewTask(BaseHandler):
 				##task.group = db.get(groupId)
 				task.put()
 				# Redirect back to calendar
-				self.redirect(self.request.host_url + "/calendar")
+				self.redirect(self.request.host_url + "/calendar#tasks")
 
 
 class NewGroupTask(BaseHandler):
@@ -1034,7 +1034,7 @@ class JoinGroup(BaseHandler):
 			p.put()
 
 		# redirect to calendar
-		self.redirect(self.request.host_url + "/calendar")
+		self.redirect(self.request.host_url + "/calendar#groups")
 		
 class SetName(BaseHandler):
 	def post(self):
@@ -1047,7 +1047,7 @@ class SetName(BaseHandler):
 		logging.warn(self.request.get('name'));
 		userObj.put()
 		
-		self.redirect(self.request.host_url + "/calendar")
+		self.redirect(self.request.host_url + "/calendar#events")
 
 class NewKey(BaseHandler):
 	def post(self):
@@ -1065,7 +1065,7 @@ class NewKey(BaseHandler):
 		userObj.keys = json.dumps(keys)
 		userObj.put();
 		
-		self.redirect(self.request.host_url + "/calendar")
+		self.redirect(self.request.host_url + "/calendar#events")
 		
 class GetKeys(BaseHandler):
 	def get(self):
