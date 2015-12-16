@@ -274,30 +274,25 @@ $(document).ready(function() {
 
 
 });
-function createEditModal(eventid) {        
-	console.log(eventid);
+function createEditModal(eventid) {
 	$.getJSON( "/getevent?eventid="+eventid, function( data ) {
 		$.each( data, function(key, val) {
-			console.log(val);
 			$('#editeventname').val(val['name']);
 			$('#editeventtype').val(val['event_type']);
 			$('#editeventlocation').val(val['location']);
 			var startDate = val['start_time'].split("T")[0].split("/");
 			var startTime = val['start_time'].split("T")[1];
+			var start = new Date(startDate);
 
 			var endDate = val['end_time'].split("T")[0].split("/");
 			var endTime = val['end_time'].split("T")[1];
-			console.log(startDate);
-			var newdate = new Date();
-		
-			//$('.editstarttime').timepicker().timepicker("defaultTime",startTime);
-			$('.editstartdate').datepicker().datepicker("setDate", new Date(startDate[2],startDate[0],startDate[1]) );
-			console.log(startDate[2]);
-			console.log(startDate[0]);
-			console.log(startDate[1]);
-			$('.editenddate').datepicker().datepicker("setDate", new Date(endDate[2],endDate[0],endDate[1]) );
+			var end = new Date(endDate);
+			
+			$('.editstartdate').datepicker().datepicker("setDate", start);
+			$('.editstarttime').timepicker({"defaultTime": startTime, minuteStep: 5, showMeridian: false, pick12HourFormat: false, format: 'HH:mm' });
 
-			//$('.editendtime').timepicker().timepicker("defaultTime", endTime);
+			$('.editenddate').datepicker().datepicker("setDate", end);
+			$('.editendtime').timepicker({"defaultTime": endTime, minuteStep: 5, showMeridian: false, pick12HourFormat: false, format: 'HH:mm' });
 			
 			$("#editeventcolor").spectrum({
 				color: val['color'],
@@ -341,7 +336,7 @@ function createEditModal(eventid) {
 			        "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
 			    ]
 			});
-
+			$('#editeventcolor').attr('value', val['color']);
 			$('#editevent_id').attr('value', eventid);
 			$('#editModuleModal').modal('toggle');
 		});

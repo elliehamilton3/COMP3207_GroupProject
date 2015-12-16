@@ -813,18 +813,17 @@ class GetEvent(BaseHandler):
 class EditEvent(BaseHandler):
 		def post(self):
 			event_id = self.request.get('event_id')
-
 			user = self.session.get('user')
 			userKey = db.Key.from_path('User', user)
 			userObj = db.get(userKey)
 
 			q = userObj.event_user
 			for p in q.run():
+				logging.warn("here 2")
 				if str(p.key().id()) == str(event_id):
 					sDate = self.request.get('start_date')
 					sTime = self.request.get('start_time')
 					startDatetime = sDate + " " + sTime
-					logging.warn(startDatetime)
 					startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
 					eDate = self.request.get('end_date')
 					eTime = self.request.get('end_time')
@@ -835,7 +834,7 @@ class EditEvent(BaseHandler):
 					p.end_time = endDatetime
 					p.location = self.request.get('location')
 					p.event_type = self.request.get('event_type')
-					p.color = self.request.get('color2')
+					p.color = self.request.get('color3')
 					p.user = userObj
 					p.put()
 					break;
