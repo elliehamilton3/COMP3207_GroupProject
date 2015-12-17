@@ -67,7 +67,7 @@ class Calendar(BaseHandler):
 			else:
 				userObj = User(key_name=userid, email=email)
 				userObj.put()
-				key = Key(name="Other", color="gray")
+				key = Key(name="Other", color="gray", user=userObj)
 				key.put()
 				self.session['user'] = userid
 				
@@ -1112,10 +1112,29 @@ class NewKey(BaseHandler):
 		#userObj.keys = json.dumps(keys)
 		#userObj.put()
 		
-		key = Key(name=self.request.get('name'), color=self.request.get('color'))
+		key = Key(name=self.request.get('name'), color=self.request.get('color'), user=userObj)
 		key.put()
 		
 		self.redirect(self.request.host_url + "/calendar#events")
+		
+class EditKey(BaseHandler):
+		def post(self):
+			key_id = self.request.get('key_id')
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			q = userObj.keys
+			for p in q.run():
+				if str(p.key()) == str(key_id):
+					p.color = self.request.get('color')
+					p.name = self.request.get('name')
+					p.put()
+					break;
+
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/calendar#events")
+
 		
 class GetKeys(BaseHandler):
 	def get(self):
@@ -1138,5 +1157,5 @@ class GetKeys(BaseHandler):
 			self.response.write(SPLASH_HTML)
 
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey)
 ], debug=True, config=config)

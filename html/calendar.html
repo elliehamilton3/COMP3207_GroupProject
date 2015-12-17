@@ -394,6 +394,40 @@
 													<!-- //Modal Content -->
 												</div>
 											</div>
+											<!-- Modal -->
+											<div id="editKeyModal" class="modal fade" role="dialog">
+												<div class="modal-dialog">
+													<!-- Modal content-->
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal">&times;</button>
+															<h4 class="modal-title">Edit Key</h4>
+														</div>
+														<div class="modal-body">
+															<!-- Form within Modal -->
+															<form class="form-horizontal" role="form" method="post" action="/editkey">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<input type="hidden" name="key_id" id="edit_key_id">
+																		<label for="sel2">Key Name:</label>
+																		<input type="text" name="name" id="edit_key_name" class="form-control" aria-label=""/>
+																	</div>
+																</div>
+																<div class="col-xs-12">
+																	<label for="color">Colour:</label><br/>
+																	<input type='text' class="colorpicker" id="edit_key_color" name="color" value="gray" class="form-control"/>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<button type="submit" class="btn btn-default">Submit</button>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+													<!-- //Modal Content -->
+												</div>
+											</div>
 									</div>
 								</div>
 						</div>
