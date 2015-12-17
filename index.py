@@ -65,8 +65,10 @@ class Calendar(BaseHandler):
 			if userObj:
 				self.session['user'] = userid				
 			else:
-				userObj = User(key_name=userid, email=email, keys='[{"key":"other", "color":"gray"}]')
+				userObj = User(key_name=userid, email=email)
 				userObj.put()
+				key = Key(name="Other", color="gray")
+				key.put()
 				self.session['user'] = userid
 				
 			template_values = {
@@ -163,14 +165,14 @@ def jsonfeed(startDate, endDate, user):
 				start_time = p.start_time
 				end_time = p.end_time
 				location = p.location
-				event_type = p.event_type
+				#event_type = p.event_type
 
-				color = p.color
+				#color = p.color
 				text_color = '#ffffff'
 				border_color = ''
 				color_int = ''
 
-				if(color is not None):
+				'''if(color is not None):
 					color_check = list(color)
 
 					try:
@@ -184,11 +186,12 @@ def jsonfeed(startDate, endDate, user):
 					if(color_int > 0xffffff/2):
 						text_color = '#000000'
 						border_color = '#bbbbbb'
-
+				'''
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
-				json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
+				#json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
+				json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': 'blue', 'textColor': text_color, 'borderColor': border_color, 'type': 'Work'}
 
 				# print json_entry
 
@@ -230,14 +233,14 @@ def groupeventjsonfeed(startDate, endDate, group):
 				start_time = p.start_time
 				end_time = p.end_time
 				location = p.location
-				event_type = p.event_type
+				#event_type = p.event_type
 
-				color = p.color
+				#color = p.color
 				text_color = '#ffffff'
 				border_color = ''
 				color_int = ''
 
-				if(color is not None):
+				'''if(color is not None):
 					color_check = list(color)
 					
 					try:
@@ -250,11 +253,12 @@ def groupeventjsonfeed(startDate, endDate, group):
 					if(color_int > 0xffffff/2):
 						text_color = '#000000'
 						border_color = '#bbbbbb'
-
+'''
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
-				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
+				#json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
+				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': 'blue', 'textColor': text_color, 'borderColor': border_color, 'type': 'Work'}
 
 				# print json_entry
 
@@ -308,7 +312,7 @@ def taskjsonfeed(startDate, endDate, user):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				color = p.color
+				#color = p.color
 				keyid = p.key().id()
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
@@ -323,7 +327,8 @@ def taskjsonfeed(startDate, endDate, user):
 						month = "Other"
 						deadlineStr = ""
 
-				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
+				#json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
+				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': 'red', 'id': keyid}
 
 				json_list.append(json_entry)
 
@@ -352,7 +357,7 @@ def grouptaskjsonfeed(startDate, endDate, group):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				color = p.color
+				#color = p.color
 				keyid = p.key().id()
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
@@ -367,7 +372,8 @@ def grouptaskjsonfeed(startDate, endDate, group):
 						month = "Other"
 						deadlineStr = ""
 
-				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
+				#json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
+				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': 'red', 'id': keyid}
 
 				json_list.append(json_entry)
 
@@ -417,7 +423,7 @@ def taskboxjsonfeed(startDate, endDate, user):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				color = p.color
+				#color = p.color
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
 				if deadlineTime == "00:00":
@@ -428,7 +434,8 @@ def taskboxjsonfeed(startDate, endDate, user):
 				deadlineFinal = datetime.strptime("12/31/2999 00:00", "%m/%d/%Y %H:%M")
 
 				if deadline < deadlineFinal:
-					json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
+					#json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
+					json_entry = {'title': title, 'datetime':deadlineStr, 'color': 'pink'}
 					json_list.append(json_entry)
 
 				if len(json_list) > 2:
@@ -459,7 +466,7 @@ def grouptaskboxjsonfeed(startDate, endDate, group):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				color = p.color
+				#color = p.color
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
 				if deadlineTime == "00:00":
@@ -470,7 +477,8 @@ def grouptaskboxjsonfeed(startDate, endDate, group):
 				deadlineFinal = datetime.strptime("12/31/2999 00:00", "%m/%d/%Y %H:%M")
 
 				if deadline < deadlineFinal:
-					json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
+					json_entry = {'title': title, 'datetime':deadlineStr, 'color': 'green'}
+					#json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
 					json_list.append(json_entry)
 
 				if len(json_list) > 2:
@@ -608,10 +616,6 @@ class User(db.Model):
 		email = db.StringProperty(indexed=True)
 		name = db.StringProperty(indexed=False)
 		groups = db.ListProperty(db.Key)
-		
-		# Store key-colour pairs in a json string as GAE can't store a dictonary/hash-map
-		keys = db.StringProperty(indexed=False)
-
 
 class Group(db.Model):
 	#Model for representing a group.
@@ -627,21 +631,27 @@ class Event(db.Model):
 		start_time = db.DateTimeProperty(auto_now_add=False)
 		end_time = db.DateTimeProperty(auto_now_add=False)
 		location = db.StringProperty(indexed=False)
-		color = db.StringProperty(indexed=False)
-		event_type = db.StringProperty(
-				choices=('module', 'sporting', 'society', 'job', 'other'))
+		#color = db.StringProperty(indexed=False)
+		#event_type = db.StringProperty(
+		#		choices=('module', 'sporting', 'society', 'job', 'other'))
 		user = db.ReferenceProperty(User, collection_name='event_user')
 		group = db.ReferenceProperty(Group, collection_name='event_group')
-
+		event_key = db.Key
 
 class Task(db.Model):
 		#Model for representing an individual task.
 		name = db.StringProperty(indexed=False)
 		deadline = db.DateTimeProperty(auto_now_add=False, indexed=True)
-		task_type = db.StringProperty(choices=('assignment', 'work', 'other'))
+		#task_type = db.StringProperty(choices=('assignment', 'work', 'other'))
 		user = db.ReferenceProperty(User, collection_name='task_user',indexed=True)
 		group = db.ReferenceProperty(Group, collection_name='task_group', indexed=True)
+		#color = db.StringProperty(indexed=False)
+		task_key = db.Key
+		
+class Key(db.Model):
+		name = db.StringProperty(indexed=False)
 		color = db.StringProperty(indexed=False)
+		user = db.ReferenceProperty(User, collection_name='keys', indexed=True)
 
 class URLInvite(db.Model):
 	key = db.StringProperty
@@ -750,8 +760,8 @@ class NewEvent(BaseHandler):
 				event.start_time = startDatetime
 				event.end_time = endDatetime
 				event.location = self.request.get('location')
-				event.event_type = self.request.get('event_type')
-				event.color = self.request.get('color2')
+				#event.event_type = self.request.get('event_type')
+				#event.color = self.request.get('color2')
 				userid = self.session.get('user')
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
@@ -777,8 +787,8 @@ class NewGroupEvent(BaseHandler):
 				event.start_time = startDatetime
 				event.end_time = endDatetime
 				event.location = self.request.get('location')
-				event.event_type = self.request.get('event_type')
-				event.color = self.request.get('color2')
+				#event.event_type = self.request.get('event_type')
+				#event.color = self.request.get('color2')
 				
 				group = db.get(self.request.get('id'))
 				event.group = group
@@ -833,7 +843,8 @@ class GetEvent(BaseHandler):
 						start_time = start_time.strftime('%m') + "/" + start_time.strftime('%d') + "/" + start_time.strftime('%Y') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M');
 						end_time = end_time.strftime('%m') + "/" + end_time.strftime('%d') + "/" + end_time.strftime('%Y') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M');
 						
-						json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'color': p.color, 'event_type': p.event_type}
+						#json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'color': p.color, 'event_type': p.event_type}
+						json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location}
 						json_list.append(json_entry)
 						logging.warn(json_entry)
 
@@ -864,8 +875,8 @@ class EditEvent(BaseHandler):
 					p.start_time = startDatetime
 					p.end_time = endDatetime
 					p.location = self.request.get('location')
-					p.event_type = self.request.get('event_type')
-					p.color = self.request.get('color3')
+					#p.event_type = self.request.get('event_type')
+					#p.color = self.request.get('color3')
 					p.user = userObj
 					p.put()
 					break;
@@ -949,9 +960,9 @@ class NewTask(BaseHandler):
 				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
 				task.deadline = deadline
 				task.name = self.request.get('task_name')
-				task.color = self.request.get('color')
+				#task.color = self.request.get('color')
 				logging.warn(self.request.get('color'))
-				task.task_type = self.request.get('task_type')
+				#task.task_type = self.request.get('task_type')
 				userid = self.session.get('user')
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
@@ -985,9 +996,9 @@ class NewGroupTask(BaseHandler):
 				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
 				task.deadline = deadline
 				task.name = self.request.get('task_name')
-				task.color = self.request.get('color')
-				logging.warn(self.request.get('color'))
-				task.task_type = self.request.get('task_type')
+				#task.color = self.request.get('color')
+				#logging.warn(self.request.get('color'))
+				#task.task_type = self.request.get('task_type')
 				
 				group = db.get(self.request.get('id'))
 				task.group = group
@@ -1092,26 +1103,37 @@ class NewKey(BaseHandler):
 		userObj = db.get(userKey)
 		
 		# Convert user's key json string into dictonary
-		keys = json.loads(userObj.keys)
+		#keys = json.loads(userObj.keys)
 		
-		key = {"key": self.request.get('name'), "color": self.request.get('color')}
-		keys.append(key)
+		#key = {"key": self.request.get('name'), "color": self.request.get('color')}
+		#keys.append(key)
 		
 		# Back to a JSON string
-		userObj.keys = json.dumps(keys)
-		userObj.put();
+		#userObj.keys = json.dumps(keys)
+		#userObj.put()
+		
+		key = Key(name=self.request.get('name'), color=self.request.get('color'))
+		key.put()
 		
 		self.redirect(self.request.host_url + "/calendar#events")
 		
 class GetKeys(BaseHandler):
 	def get(self):
 		if(self.session.get('user')):
+			json_list = []
+			
 			user = self.session.get('user')
 			userKey = db.Key.from_path('User', user)
 			userObj = db.get(userKey)
 			
-			# Convert user's key json string into dictonary
-			self.response.write(userObj.keys)
+			# Get user's keys
+			keys = userObj.keys;
+			
+			for p in keys.run():
+				json_entry = {'key': str(p.key()), 'name':p.name, 'color': p.color}
+				json_list.append(json_entry)
+			
+			self.response.write(json.dumps(json_list))
 		else:
 			self.response.write(SPLASH_HTML)
 

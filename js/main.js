@@ -265,9 +265,27 @@ $(document).ready(function() {
 		  
 		});
 	}
+	
+	function buildKeysBox(selector) {
+		$.getJSON( "/getkeys", function( data ) {
+			var items = [];
+			$.each( data, function( key, val ) {
+				items.push( "<li>" + val['key'] + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:block;"></span></li>' );
+			});
+				 
+			$( "<ul/>", {
+				"class": "",
+				"id": "",
+				html: items.join( "" )
+			}).appendTo(selector);
+			  
+		});
+	}
+
 	buildHtmlTable('#excelDataTable');
 	buildDeadlinesBox('#deadlinesbox');
 	buildGroupsList('#grouplist');
+	buildKeysBox('#keylist');
 	//$('#confirm-delete').modal({ backdrop: 'static', keyboard: false });
 
 
