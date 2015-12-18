@@ -165,14 +165,15 @@ def jsonfeed(startDate, endDate, user):
 				start_time = p.start_time
 				end_time = p.end_time
 				location = p.location
-				#event_type = p.event_type
-
-				#color = p.color
+				
+				keyObj = db.get(p.event_key.key())
+				
+				color = keyObj.color
 				text_color = '#ffffff'
 				border_color = ''
 				color_int = ''
 
-				'''if(color is not None):
+				if(color is not None):
 					color_check = list(color)
 
 					try:
@@ -186,12 +187,12 @@ def jsonfeed(startDate, endDate, user):
 					if(color_int > 0xffffff/2):
 						text_color = '#000000'
 						border_color = '#bbbbbb'
-				'''
+				
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
 				#json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
-				json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': 'blue', 'textColor': text_color, 'borderColor': border_color, 'type': 'Work'}
+				json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': keyObj.name}
 
 				# print json_entry
 
@@ -312,7 +313,10 @@ def taskjsonfeed(startDate, endDate, user):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				#color = p.color
+				
+				keyObj = db.get(p.task_key.key())
+				color = keyObj.color
+				
 				keyid = p.key().id()
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
@@ -327,8 +331,7 @@ def taskjsonfeed(startDate, endDate, user):
 						month = "Other"
 						deadlineStr = ""
 
-				#json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
-				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': 'red', 'id': keyid}
+				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
 
 				json_list.append(json_entry)
 
@@ -423,8 +426,10 @@ def taskboxjsonfeed(startDate, endDate, user):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				#color = p.color
-
+				
+				keyObj = db.get(p.task_key.key())
+				color = keyObj.color
+				
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
 				if deadlineTime == "00:00":
 						deadlineStr = deadline.strftime('%B') + " " + deadline.strftime('%d')
@@ -434,8 +439,7 @@ def taskboxjsonfeed(startDate, endDate, user):
 				deadlineFinal = datetime.strptime("12/31/2999 00:00", "%m/%d/%Y %H:%M")
 
 				if deadline < deadlineFinal:
-					#json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
-					json_entry = {'title': title, 'datetime':deadlineStr, 'color': 'pink'}
+					json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
 					json_list.append(json_entry)
 
 				if len(json_list) > 2:
@@ -623,7 +627,11 @@ class Group(db.Model):
 	description = db.TextProperty()
 	invited = db.ListProperty(unicode)
 	confirmed = db.ListProperty(unicode)
-
+	
+class Key(db.Model):
+		name = db.StringProperty(indexed=False)
+		color = db.StringProperty(indexed=False)
+		user = db.ReferenceProperty(User, collection_name='keys', indexed=True)
 
 class Event(db.Model):
 		#Model for representing an individual event.
@@ -636,7 +644,7 @@ class Event(db.Model):
 		#		choices=('module', 'sporting', 'society', 'job', 'other'))
 		user = db.ReferenceProperty(User, collection_name='event_user')
 		group = db.ReferenceProperty(Group, collection_name='event_group')
-		event_key = db.Key
+		event_key = db.ReferenceProperty(Key, collection_name='events', indexed=True)
 
 class Task(db.Model):
 		#Model for representing an individual task.
@@ -646,13 +654,8 @@ class Task(db.Model):
 		user = db.ReferenceProperty(User, collection_name='task_user',indexed=True)
 		group = db.ReferenceProperty(Group, collection_name='task_group', indexed=True)
 		#color = db.StringProperty(indexed=False)
-		task_key = db.Key
+		task_key = db.ReferenceProperty(Key, collection_name='tasks', indexed=True)
 		
-class Key(db.Model):
-		name = db.StringProperty(indexed=False)
-		color = db.StringProperty(indexed=False)
-		user = db.ReferenceProperty(User, collection_name='keys', indexed=True)
-
 class URLInvite(db.Model):
 	key = db.StringProperty
 	userid = db.StringProperty
@@ -744,27 +747,32 @@ class Invite(BaseHandler):
 
 class NewEvent(BaseHandler):
 		def post(self):
-				logging.warn("new event")
+				#logging.warn("new event")
 				event = Event()
+			
 				##id = db.Key.from_path('User', user.user_id())
 				##groupId = db.Key.from_path('Group', self.request.get('group'))
 				sDate = self.request.get('start_date')
 				sTime = self.request.get('start_time')
 				startDatetime = sDate + " " + sTime
-				startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+				startDatetime = datetime.strptime(startDatetime, "%d/%m/%Y %H:%M")
 				eDate = self.request.get('end_date')
 				eTime = self.request.get('end_time')
 				endDatetime = eDate + " " + eTime
-				endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+				endDatetime = datetime.strptime(endDatetime, "%d/%m/%Y %H:%M")
 				event.name = self.request.get('name')
 				event.start_time = startDatetime
 				event.end_time = endDatetime
 				event.location = self.request.get('location')
-				#event.event_type = self.request.get('event_type')
-				#event.color = self.request.get('color2')
+								
 				userid = self.session.get('user')
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
+					
+				keykey = self.request.get('event_type')				
+				key = db.Key(keykey)
+				event.event_key = key
+				
 				event.user = userObj
 				##event.group = db.get(groupId)
 				event.put()
@@ -843,8 +851,7 @@ class GetEvent(BaseHandler):
 						start_time = start_time.strftime('%m') + "/" + start_time.strftime('%d') + "/" + start_time.strftime('%Y') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M');
 						end_time = end_time.strftime('%m') + "/" + end_time.strftime('%d') + "/" + end_time.strftime('%Y') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M');
 						
-						#json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'color': p.color, 'event_type': p.event_type}
-						json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location}
+						json_entry = {'name': p.name, 'start_time':start_time, 'end_time': end_time, 'location': p.location, 'event_type': str(p.event_key.key())}
 						json_list.append(json_entry)
 						logging.warn(json_entry)
 
@@ -866,17 +873,21 @@ class EditEvent(BaseHandler):
 					sDate = self.request.get('start_date')
 					sTime = self.request.get('start_time')
 					startDatetime = sDate + " " + sTime
-					startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+					startDatetime = datetime.strptime(startDatetime, "%d/%m/%Y %H:%M")
 					eDate = self.request.get('end_date')
 					eTime = self.request.get('end_time')
 					endDatetime = eDate + " " + eTime
-					endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+					endDatetime = datetime.strptime(endDatetime, "%d/%m/%Y %H:%M")
 					
 					p.start_time = startDatetime
 					p.end_time = endDatetime
 					p.location = self.request.get('location')
-					#p.event_type = self.request.get('event_type')
-					#p.color = self.request.get('color3')
+					
+					
+					keykey = self.request.get('event_type')				
+					key = db.Key(keykey)
+					p.event_key = key
+					
 					p.user = userObj
 					p.put()
 					break;
@@ -957,12 +968,14 @@ class NewTask(BaseHandler):
 					deadlineDate =  "1/1/3000"
 					# no date do this
 				deadlineDatetime = deadlineDate + " " + deadlineTime
-				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
+				deadline = datetime.strptime(deadlineDatetime, "%d/%m/%Y %H:%M")
 				task.deadline = deadline
 				task.name = self.request.get('task_name')
-				#task.color = self.request.get('color')
-				logging.warn(self.request.get('color'))
-				#task.task_type = self.request.get('task_type')
+
+				keykey = self.request.get('task_type')				
+				key = db.Key(keykey)
+				task.task_key = key
+
 				userid = self.session.get('user')
 				id = db.Key.from_path('User', userid)
 				userObj = db.get(id)
