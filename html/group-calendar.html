@@ -51,6 +51,7 @@
 				<link rel='stylesheet' href='js/spectrum/spectrum.css' />
 				<!-- Drop Down Picker -->
 				<script>
+					// NOTE: DO NOT MOVE JAVASCRIPT USING VELOCITY SYNTAX (e.g. {{ group.key() }}) OUT OF HERE
 					$( document.body ).on( 'click', '.dropdown-menu li', function( event ) {
 
 						 var $target = $( event.currentTarget );
@@ -63,16 +64,11 @@
 						 return false;
 
 					});
-					$('.datepicker').datepicker();
-					//$('#timepicker6').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
-					//$('#timepicker7').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
-					//$('#timepicker8').timepicker({showInputs: false, minuteStep: 5, showMeridian: false, defaultTime:false, pick12HourFormat: false, format: 'HH:mm' });
-
 					
 					$( document ).ready(function() {
 							// Full calendar set up
+							$('.datepicker').datepicker({format: 'dd/mm/yyyy'});
 
-							console.log("DOCUMENT READY");
 							console.log("/group-event-feed?id={{ group.key() }}");
 							$('#calendar').fullCalendar({
 							   
@@ -110,8 +106,7 @@
 									// Make a qtip on the element
 									element.qtip({ 
 										content: {
-											text: event_type + "<br>" + event_time + "<br>" + event_loc + 
-											'<br><br> <button type="button" class="btn btn-default btn-xs">Edit</button> <button type="button" class="btn btn-danger btn-xs" onclick="deleteEvent(event_id)">Delete</button>',
+											text: event_type + "<br>" + event_time + "<br>" + event_loc + '<br><br> <button onclick="createEditModal('+event.id+')" type="button" class="btn btn-default btn-xs">Edit</button> <form role="form" method="post" action="/removegroupevent"><input type="hidden" name="event_id" value="' + event.id + '"><input type="hidden" name="group_id" value="{{ group.key() }}"><button type="submit" class="btn btn-danger btn-xs">Delete</button></form>',						
 											title: event.title
 										},
 										style: {
@@ -125,6 +120,14 @@
 											delay: 300
 										},
 									});
+								},
+								eventDrop: function(event, delta, revertFunc) {
+										var link = "/draggroupevent?group_id={{ group.key() }}&event_id=" + event.id;
+
+										link = link + "&all_day=" + event.allDay + "&start=" + event.start + "&end=" + event.end;
+
+										console.log(link);
+										window.location.replace(link);
 								}
 							});
 
@@ -320,11 +323,34 @@
 							  
 							});
 						}
+						
+							function getKeys() {
+								$.getJSON( "/getgroupkeys?id={{group.key()}}", function( data ) {
+									var items = [];
+									var modal_items = [];
+									$.each( data, function( key, val ) {
+										items.push( "<li>" + val['name'] + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:block;"></span><a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>' );
+										modal_items.push("<option value='" + val['key'] + "'>" + val['name'] + "</option>");
+									});
+										 
+									// Add to sidebar
+									$( "<ul/>", {
+										"class": "",
+										"id": "",
+										html: items.join( "" )
+									}).appendTo('#keylist');
+									
+									// Add to modals
+									$('#eventtype').append(modal_items.join(""));
+									$('#editeventtype').append(modal_items.join(""));
+									$('#tasktype').append(modal_items.join(""));
+								});
+							}
 
 						buildHtmlTable('#excelDataTable');
 						buildDeadlinesBox('#deadlinesbox');
 						buildMembersList('#memberlist');
-						//$('#confirm-delete').modal({ backdrop: 'static', keyboard: false });
+						getKeys();
 
 					
 					});
@@ -333,29 +359,105 @@
 						xhr.open('POST', '/removegrouptask');
 						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 						xhr.onload = function() {
-							window.location.replace('/grouppage?group={{ group.key() }}');
+							location.reload();
 						};
 						xhr.send('taskid=' + id + "&groupid={{ group.key() }}");
 			        }
 					function cancelDeleteTask(id) {
-						var li = document.getElementById(id);
-						var checkbox = li.getElementsByTagName("input")[0];
-
-						console.log(checkbox.checked);
-						checkbox.checked = false;
-						console.log(checkbox.checked);
-		
-		
-					
-						/*current = $("#" + id + " input").val();
-						console.log(current);
-						$("#" + id + " input").attr('checked', !current);
-						console.log($("#" + id + " input").val());*/
-			        }					
+						location.reload();
+					}
+					window.onload = function(){  
+						var url = document.location.toString();
+						if (url.match('#')) {
+							$('.nav-pills a[href=#'+url.split('#')[1]+']').tab('show') ;
+						} 
+						// Change hash for page-reload
+						$('.nav-pills a').on('shown.bs.tab', function (e) {
+							window.location.hash = e.target.hash;
+						});
+					}
 					
 					function deleteEvent(id) {
 						alert("Event DELETED: " + id);
 					}
+					
+					function createEditModal(eventid) {
+						$.getJSON( "/getgroupevent?groupid={{ group.key() }}&eventid="+eventid, function( data ) {
+							$.each( data, function(key, val) {
+								$('#editeventname').val(val['name']);
+								$('#editeventtype').val(val['event_type']);
+								$('#editeventlocation').val(val['location']);
+								var startDate = val['start_time'].split("T")[0].split("/");
+								var startTime = val['start_time'].split("T")[1];
+								var start = new Date(startDate);
+
+								var endDate = val['end_time'].split("T")[0].split("/");
+								var endTime = val['end_time'].split("T")[1];
+								var end = new Date(endDate);
+								
+								$('.editstartdate').datepicker({format: 'dd/mm/yyyy'}).datepicker("setDate", start);
+								$('.editstarttime').timepicker({"defaultTime": startTime, minuteStep: 5, showMeridian: false, pick12HourFormat: false, format: 'HH:mm' });
+
+								$('.editenddate').datepicker({format: 'dd/mm/yyyy'}).datepicker("setDate", end);
+								$('.editendtime').timepicker({"defaultTime": endTime, minuteStep: 5, showMeridian: false, pick12HourFormat: false, format: 'HH:mm' });
+								
+								$('#editevent_id').attr('value', eventid);
+								$('#editModuleModal').modal('toggle');
+							});
+						});
+					}
+					
+					function createEditKeyModal(key, name, color) {
+						$('#edit_key_name').val(name);
+						$('#edit_key_id').val(key);
+							
+						$("#edit_key_color").spectrum({
+							color: color,
+							showInput: true,
+							className: "full-spectrum",
+							showInitial: true,
+							showPalette: true,
+							showSelectionPalette: true,
+							maxSelectionSize: 10,
+							preferredFormat: "hex",
+							localStorageKey: "spectrum.demo",
+							move: function (color) {
+									
+							},
+							show: function () {
+							  
+							},
+							beforeShow: function () {
+								
+							},
+							hide: function () {
+								
+							},
+							change: function() {
+									
+							},
+							palette: [
+								["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
+								"rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
+								["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+								"rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"], 
+								["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)", 
+								"rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)", 
+								"rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)", 
+								"rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)", 
+								"rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)", 
+								"rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+								"rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+								"rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+								"rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)", 
+								"rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
+							]
+						});
+						$('#edit_key_color').attr('value', color);
+						$('#editKeyModal').modal('toggle');
+				}
+
+
 				</script>
 				<style>
 					.bootstrap-timepicker-widget.dropdown-menu.open{
@@ -455,12 +557,8 @@
 																<div class="row">
 																	<div class="col-xs-12">
 																		<div class="form-group">
-																			<label for="eventtype">Event Type:</label><br/>
+																			<label for="eventtype">Assigned to:</label><br/>
 																			<select id="eventtype" name="event_type" class="form-control">
-																				<option value="module">Module</option>
-																				<option value="society">Society</option>
-																				<option value="job">Job</option>
-																				<option value="other">Other</option>
 																			</select>
 																		</div>
 																	</div>
@@ -475,11 +573,11 @@
 																	<div class="input-group" style-width:"100%">
 																		<div class="col-xs-6">
 																			<label for="startdate">Start Date:</label><br/>
-																			<input id="startdate" name="start_date" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="">
+																			<input id="startdate" name="start_date" type="text" placeholder="Deadline Date" class="datepicker form-control" aria-label="">
 																		</div>
 																		<div class="col-xs-6">
 																			<label for="timepicker6">Start Time:</label><br/>
-																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
+																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
 																		</div>
 																	</div>
 																</div>
@@ -487,7 +585,7 @@
 																	<div class="input-group" style-width:"100%">
 																		<div class="col-xs-6">
 																			<label for="enddate">End Date:</label><br/>
-																			<input name="end_date" id="enddate" type="text" data-provide="datepicker" placeholder="Deadline Date" class="form-control" aria-label="...">
+																			<input name="end_date" id="enddate" type="text" placeholder="Deadline Date" class="datepicker form-control" aria-label="...">
 																		</div>
 																		<div class="col-xs-6">
 																			<label for="timepicker8">End Time:</label><br/>
@@ -496,15 +594,9 @@
 																		</div>	
 																	</div>
 																</div>
-																<div class="row">
-																	<div class="col-xs-12">
-																		<label for="colorcode">Choose a colour code:</label><br/>
-																		<input type='text' class="colorpicker" name="color2" value="gray" class="form-control"/>
-																		<input type='hidden' name="id" value="{{ group.key() }}" />
-																	</div>
-																</div>
 																<br/>
 																<div class="modal-footer">
+																	<input type='hidden' name="id" value="{{ group.key() }}" />
 																	<button type="submit" class="btn btn-default">Submit</button>
 																</form><!-- //Form within Modal -->
 															</div>
@@ -539,11 +631,7 @@
 																	<div class="col-xs-12">
 																		<div class="form-group">
 																		  	<label for="sel1">Task Type:</label>
-																		  	<select class="form-control" id="sel1" name="task_type">
-																		    	<option value="assignment">Assignment</option>
-																				<option value="work">Work</option>
-																				<option value="other">Other</option>
-																		  	</select>
+																		  	<select class="form-control" id="tasktype" name="task_type">																		  	</select>
 																		</div>
 																	</div>
 																</div>
@@ -552,7 +640,7 @@
 																		<label for="datepicker1">Date:</label>
 																	</div>
 																	<div class="col-xs-3">
-																		<input name="deadline_date" type="text" id="datepicker1" data-provide="datepicker" class="form-control" aria-label="">
+																		<input name="deadline_date" type="text" id="datepicker1" class="datepicker form-control" aria-label="">
 																	</div>
 																	<div class="col-xs-1">
 																		<label for="timepicker7">Time:</label>
@@ -564,13 +652,7 @@
 																</div><!-- /.row -->
 																<div class="row">
 																	<div class="col-xs-12">
-																		<label for="colorcode2">Choose a colour code:</label>
-																		<input id="colorcode2" type='text' class="colorpicker" name="color" value="gray" class="form-control"/>
 																		<input type='hidden' name="id" value="{{ group.key() }}" />
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col-xs-12">
 																		<button type="submit" class="btn btn-default">Submit</button>
 																	</div>
 																</div>
@@ -644,27 +726,139 @@
 										</div>
 									</div>
 								</div>
+								
+								<div class="panel panel-default">
+									<div class="panel-heading">Keys</div>
+									<div class="panel-body">
+										<div id="keylist">
+										</div>
+											<!-- Modal -->
+											<div id="editKeyModal" class="modal fade" role="dialog">
+												<div class="modal-dialog">
+													<!-- Modal content-->
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal">&times;</button>
+															<h4 class="modal-title">Edit Key</h4>
+														</div>
+														<div class="modal-body">
+															<!-- Form within Modal -->
+															<form class="form-horizontal" role="form" method="post" action="/editgroupkey">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<input type="hidden" name="key_id" id="edit_key_id">
+																		<label for="sel2">Key Name:</label>
+																		<input type="text" name="name" id="edit_key_name" class="form-control" aria-label="" disabled/>
+																	</div>
+																</div>
+																<div class="col-xs-12">
+																	<label for="color">Colour:</label><br/>
+																	<input type='text' class="colorpicker" id="edit_key_color" name="color" value="gray" class="form-control"/>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<input type='hidden' name="id" value="{{ group.key() }}" />
+																		<button type="submit" class="btn btn-default">Submit</button>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+													<!-- //Modal Content -->
+												</div>
+											</div>
+									</div>
+								</div>
+
 						</div>
 				</div>
 		</div>
 		<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" id="confirm-delete2">
-            <div class="modal-content">
-            
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
-                </div>
-            
-                <div class="modal-body">
-                    <p>Do you want to delete this task?</p>
-                </div>
-                
-                <div class="modal-footer" id="modal-footer">
-                    
-                </div>
-            </div>
-        </div>
-    </div>
+			<div class="modal-dialog" id="confirm-delete2">
+				<div class="modal-content">
+				
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+					</div>
+				
+					<div class="modal-body">
+						<p>Do you want to delete this task?</p>
+					</div>
+					
+					<div class="modal-footer" id="modal-footer">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="editModuleModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Edit Event</h4>
+					</div>
+					<div class="modal-body">	
+						<!-- Form within Modal -->
+						<form class="form-horizontal" role="form" method="post" action="/editgroupevent">
+							<div class="row">
+								<div class="col-xs-12">
+									<label for="eventname">Event Name:</label><br/>
+									<input id="editeventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+								</div>
+							</div>
+							<input type="hidden" name="event_id" id="editevent_id">
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="form-group">
+										<label for="eventtype">Assigned to:</label><br/>
+										<select id="editeventtype" name="event_type" class="form-control">
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row" class="input-group">
+								<div class="col-xs-12">
+									<label for="eventlocation">Event Location:</label><br/>
+									<input name="location" id="editeventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-group" style='width:"100%"'>
+									<div class="col-xs-6">
+										<label for="startdate">Start Date:</label><br/>
+										<input id="startdate" name="start_date" type="text" placeholder="" class="form-control editstartdate" aria-label="">
+									</div>
+									<div class="col-xs-6">
+										<label for="timepicker6">Start Time:</label><br/>
+										<input name="start_time" id="timepicker6 editstarttime" class="form-control editstarttime" type="text">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="input-group" style='width:"100%"'>
+									<div class="col-xs-6">
+										<label for="enddate">End Date:</label><br/>
+										<input name="end_date" id="enddate editenddate" type="text" placeholder="" class="form-control editenddate" aria-label="">
+									</div>
+									<div class="col-xs-6">
+										<label for="timepicker8">End Time:</label><br/>
+										<input name="end_time" id="timepicker8 editendtime" class="form-control editendtime" type="text" >
+										<i class="icon-time"></i>
+									</div>	
+								</div>
+							</div>
+							<br/>
+							<div class="modal-footer">
+								<input type='hidden' name="group_id" value="{{ group.key() }}" />
+								<button type="submit" class="btn btn-default">Submit</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

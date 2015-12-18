@@ -13,6 +13,7 @@ import webapp2
 from webapp2_extras import sessions
 import json
 import jinja2
+import random
 
 config = {}
 config['webapp2_extras.sessions'] = {
@@ -191,7 +192,6 @@ def jsonfeed(startDate, endDate, user):
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
-				#json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
 				json_entry = {'id': id, 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': keyObj.name}
 
 				# print json_entry
@@ -234,14 +234,14 @@ def groupeventjsonfeed(startDate, endDate, group):
 				start_time = p.start_time
 				end_time = p.end_time
 				location = p.location
-				#event_type = p.event_type
-
-				#color = p.color
+				keyObj = db.get(p.event_key.key())
+				
+				color = keyObj.color
 				text_color = '#ffffff'
 				border_color = ''
 				color_int = ''
 
-				'''if(color is not None):
+				if(color is not None):
 					color_check = list(color)
 					
 					try:
@@ -254,12 +254,11 @@ def groupeventjsonfeed(startDate, endDate, group):
 					if(color_int > 0xffffff/2):
 						text_color = '#000000'
 						border_color = '#bbbbbb'
-'''
+
 				start_time = start_time.strftime('%Y') + "-" + start_time.strftime('%m') + "-" + start_time.strftime('%d') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M') + ":" + "00";
 				end_time = end_time.strftime('%Y') + "-" + end_time.strftime('%m') + "-" + end_time.strftime('%d') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M') + ":" + "00";
 
-				#json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': event_type}
-				json_entry = {'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': 'blue', 'textColor': text_color, 'borderColor': border_color, 'type': 'Work'}
+				json_entry = {'id': p.key().id(), 'title': title, 'start':start_time, 'end': end_time, 'location': location, 'color': color, 'textColor': text_color, 'borderColor': border_color, 'type': keyObj.name}
 
 				# print json_entry
 
@@ -360,7 +359,10 @@ def grouptaskjsonfeed(startDate, endDate, group):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				#color = p.color
+				
+				keyObj = db.get(p.task_key.key())
+				color = keyObj.color
+				
 				keyid = p.key().id()
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
@@ -375,8 +377,7 @@ def grouptaskjsonfeed(startDate, endDate, group):
 						month = "Other"
 						deadlineStr = ""
 
-				#json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
-				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': 'red', 'id': keyid}
+				json_entry = {'month': month, 'title': title, 'datetime':deadlineStr, 'color': color, 'id': keyid}
 
 				json_list.append(json_entry)
 
@@ -470,7 +471,8 @@ def grouptaskboxjsonfeed(startDate, endDate, group):
 		for p in q.run():
 				title = p.name
 				deadline = p.deadline
-				#color = p.color
+				keyObj = db.get(p.task_key.key())
+				color = keyObj.color
 
 				deadlineTime = deadline.strftime('%H') + ":" + deadline.strftime('%M')
 				if deadlineTime == "00:00":
@@ -481,8 +483,7 @@ def grouptaskboxjsonfeed(startDate, endDate, group):
 				deadlineFinal = datetime.strptime("12/31/2999 00:00", "%m/%d/%Y %H:%M")
 
 				if deadline < deadlineFinal:
-					json_entry = {'title': title, 'datetime':deadlineStr, 'color': 'green'}
-					#json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
+					json_entry = {'title': title, 'datetime':deadlineStr, 'color': color}
 					json_list.append(json_entry)
 
 				if len(json_list) > 2:
@@ -632,7 +633,8 @@ class Key(db.Model):
 		name = db.StringProperty(indexed=False)
 		color = db.StringProperty(indexed=False)
 		user = db.ReferenceProperty(User, collection_name='keys', indexed=True)
-
+		group = db.ReferenceProperty(Group, collection_name='keys', indexed=True)
+		
 class Event(db.Model):
 		#Model for representing an individual event.
 		name = db.StringProperty(indexed=False)
@@ -686,25 +688,39 @@ class NewGroup(BaseHandler):
 				i = i + 1
 			else:
 				break
+		# TODO only add members that have accounts - as I limit them when sending emails
 		group.invited = members
 		group.confirmed = [userEmail]
 		group_key = group.put()
 		userObj.groups.append(group_key)
 		userObj.put()
-		self.sendEmails(members, userObj, id, group_key)
+		
+		# Random colour from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
+		color = "#%06x" % random.randint(0, 0xFFFFFF)
+		logging.warn(color)
+		key = Key(name=userObj.name + ' (' + userObj.email + ')', color=color, group=group)
+		key.put()
+		
+		self.sendEmails(members, userObj, id, group_key, group)
 		# Redirect back to calendar
 		self.redirect(self.request.host_url + "/calendar#groups")
 
-	def sendEmails(self, recipients, userObj, userId, group_key):
+	def sendEmails(self, recipients, userObj, userId, group_key, group):
 		groupid = group_key.id()
 		sender_address = userObj.email
 		for x in xrange (len(recipients)):
-			mail.send_mail(sender=sender_address,
-							to=recipients[x],
-							subject="You've been invited to a group!",
-							body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
-							)
-
+			q2 = User.all()
+			q2.filter("email =", recipients[x])
+			for p2 in q2.run():
+				# Make sure they have an account so the key has their name
+				mail.send_mail(sender=sender_address,
+					to=recipients[x],
+					subject="You've been invited to a group!",
+					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
+				)
+				key = Key(name=p2.name +  ' (' + p2.email + ')', colour="#%06x" % random.randint(0, 0xFFFFFF), group=group)
+				key.put()
+			
 class Invite(BaseHandler):
 	def post(self):
 	
@@ -727,21 +743,31 @@ class Invite(BaseHandler):
 			else:
 				break
 		group_key = group.put()
-		self.sendEmails(members, userObj, id, group_key)
+		
+		self.sendEmails(members, userObj, id, group_key, group)
 		# Redirect back to calendar
-		self.redirect(self.request.host_url + "/grouppage?group=" + str(group_key))
+		self.redirect(self.request.host_url + "/grouppage?group=" + str(group_key) + '#members')
 
 	# TODO - duplication is bad!
-	def sendEmails(self, recipients, userObj, userId, group_key):
+	def sendEmails(self, recipients, userObj, userId, group_key, group):
 		groupid = group_key.id()
 		sender_address = userObj.email
 		for x in xrange (len(recipients)):
-			mail.send_mail(sender=sender_address,
-							to=recipients[x],
-							subject="You've been invited to a group!",
-							body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
-							)
-							
+			q2 = User.all()
+			q2.filter("email =", recipients[x])
+			for p2 in q2.run():
+				# Make sure they have an account so the key has their name
+				mail.send_mail(sender=sender_address,
+					to=recipients[x],
+					subject="You've been invited to a group!",
+					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
+				)
+				# Random colour from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
+				color = "#%06x" % random.randint(0, 0xFFFFFF)
+				logging.warn(color)
+				key = Key(name=p2.name +  ' (' + p2.email + ')', color=color, group=group)
+				key.put()
+			
 							
 # EVENT METHODS
 
@@ -786,24 +812,26 @@ class NewGroupEvent(BaseHandler):
 				sDate = self.request.get('start_date')
 				sTime = self.request.get('start_time')
 				startDatetime = sDate + " " + sTime
-				startDatetime = datetime.strptime(startDatetime, "%m/%d/%Y %H:%M")
+				startDatetime = datetime.strptime(startDatetime, "%d/%m/%Y %H:%M")
 				eDate = self.request.get('end_date')
 				eTime = self.request.get('end_time')
 				endDatetime = eDate + " " + eTime
-				endDatetime = datetime.strptime(endDatetime, "%m/%d/%Y %H:%M")
+				endDatetime = datetime.strptime(endDatetime, "%d/%m/%Y %H:%M")
 				event.name = self.request.get('name')
 				event.start_time = startDatetime
 				event.end_time = endDatetime
 				event.location = self.request.get('location')
-				#event.event_type = self.request.get('event_type')
-				#event.color = self.request.get('color2')
+
+				keykey = self.request.get('event_type')				
+				key = db.Key(keykey)
+				event.event_key = key
 				
 				group = db.get(self.request.get('id'))
 				event.group = group
 				##event.group = db.get(groupId)
 				event.put()
 				# Redirect back to calendar
-				self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id')))
+				self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id') + '#events'))
 				
 class RemoveEvent(BaseHandler):
 
@@ -831,6 +859,42 @@ class RemoveEvent(BaseHandler):
 			# Redirect back to calendar
 			self.redirect(self.request.host_url + "/calendar#events")
 
+class RemoveGroupEvent(BaseHandler):
+
+		def post(self):
+			logging.debug("Starting to delete an event.")
+
+			event_id = self.request.get('event_id')
+			logging.debug("The event to be deleted is: " + event_id)
+
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			# Security stuff - make sure they belong to the group their accessing
+			q = userObj.groups
+			groupid = self.request.get('group_id')
+
+			for p in q:
+				logging.warn(str(p))
+				logging.warn(groupid)
+			
+				if( str(p) == groupid ):
+					group = db.get(p)
+					q2 = group.event_group
+					for p2 in q2.run():
+						logging.warn("here")
+						logging.warn(p2.key().id())
+						logging.warn(event_id)
+						if str(p2.key().id()) == str(event_id):
+							p2.delete()
+							break;
+
+			logging.debug("The event " + event_id + " should be deleted.")
+
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('group_id')) + '#events')
+			
 class GetEvent(BaseHandler):
 		def get(self):
 			if(self.session.get('user')):
@@ -859,6 +923,44 @@ class GetEvent(BaseHandler):
 			else:
 				self.response.write(SPLASH_HTML)
 
+class GetGroupEvent(BaseHandler):
+		def get(self):
+			if(self.session.get('user')):
+				json_list = []
+				event_id = self.request.get('eventid')
+				logging.warn(event_id)
+
+				user = self.session.get('user')
+				userKey = db.Key.from_path('User', user)
+				userObj = db.get(userKey)
+
+				# Security stuff - make sure they belong to the group their accessing
+				q = userObj.groups
+				groupid = self.request.get('groupid')
+
+				for p in q:
+			
+					if( str(p) == groupid ):
+						group = db.get(p)
+						q2 = group.event_group
+						for p2 in q2.run():
+				
+							if str(p2.key().id()) == str(event_id):
+								start_time = p2.start_time
+								end_time = p2.end_time
+
+								start_time = start_time.strftime('%m') + "/" + start_time.strftime('%d') + "/" + start_time.strftime('%Y') + "T" + start_time.strftime('%H') + ":" + start_time.strftime('%M');
+								end_time = end_time.strftime('%m') + "/" + end_time.strftime('%d') + "/" + end_time.strftime('%Y') + "T" + end_time.strftime('%H') + ":" + end_time.strftime('%M');
+								
+								json_entry = {'name': p2.name, 'start_time':start_time, 'end_time': end_time, 'location': p2.location, 'event_type': str(p2.event_key.key())}
+								json_list.append(json_entry)
+								logging.warn(json_entry)
+
+				self.response.write(json.dumps(json_list))
+			else:
+				self.response.write(SPLASH_HTML)
+				
+				
 class EditEvent(BaseHandler):
 		def post(self):
 			event_id = self.request.get('event_id')
@@ -895,6 +997,42 @@ class EditEvent(BaseHandler):
 			# Redirect back to calendar
 			self.redirect(self.request.host_url + "/calendar#events")
 
+class EditGroupEvent(BaseHandler):
+		def post(self):
+			event_id = self.request.get('event_id')
+			
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+			
+			group = db.get(self.request.get('group_id'))
+			
+			q = group.event_group
+			for p in q.run():
+				if str(p.key().id()) == str(event_id):
+					sDate = self.request.get('start_date')
+					sTime = self.request.get('start_time')
+					startDatetime = sDate + " " + sTime
+					startDatetime = datetime.strptime(startDatetime, "%d/%m/%Y %H:%M")
+					eDate = self.request.get('end_date')
+					eTime = self.request.get('end_time')
+					endDatetime = eDate + " " + eTime
+					endDatetime = datetime.strptime(endDatetime, "%d/%m/%Y %H:%M")
+					
+					p.start_time = startDatetime
+					p.end_time = endDatetime
+					p.location = self.request.get('location')
+					
+					keykey = self.request.get('event_type')				
+					key = db.Key(keykey)
+					p.event_key = key
+					
+					p.user = userObj
+					p.put()
+					break;
+
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('group_id')) + '#events')
 
 class DragEvent(BaseHandler):
 	def get(self):
@@ -943,6 +1081,58 @@ class DragEvent(BaseHandler):
 					break;
 			# Redirect back to calendar
 			self.redirect(self.request.host_url + "/calendar#events")
+		else:
+			self.response.write(SPLASH_HTML)
+
+class DragGroupEvent(BaseHandler):
+	def get(self):
+		if(self.session.get('user')):
+			logging.debug("Event dragged start")
+
+			event_id = self.request.get('event_id')
+			start = self.request.get('start')
+			start = float(start) / 1000.00
+			start = datetime.fromtimestamp(start)
+			
+
+
+			all_day = self.request.get('all_day')
+
+			if(all_day == 'false'):
+				end = self.request.get('end')
+				end = float(end) / 1000.00
+				end = datetime.fromtimestamp(end)
+				
+
+			# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start and end date are " + start + " and " + end)
+			# else:
+			# 	logging.debug("An event " + event_id + " has been dragged. All day is " + all_day + " and the new start date is " + start)
+
+
+			# Now get the event from the db and then update properties
+			# eventKey = db.Key.from_path('Event', event_id)
+			# eventObj = db.get(eventKey)
+
+			user = self.session.get('user')
+			userKey = db.Key.from_path('User', user)
+			userObj = db.get(userKey)
+
+			group = db.get(self.request.get('group_id'))
+			
+			q = group.event_group
+			for p in q.run():
+				if str(p.key().id()) == str(event_id):
+					p.start_time = start
+					
+					if(all_day == 'false'):
+						p.end_time = end
+					else:
+						del p.end_time
+
+					p.put()
+					break;
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('group_id')) + '#events')
 		else:
 			self.response.write(SPLASH_HTML)
 
@@ -1006,19 +1196,20 @@ class NewGroupTask(BaseHandler):
 					deadlineDate =  "1/1/3000"
 					# no date do this
 				deadlineDatetime = deadlineDate + " " + deadlineTime
-				deadline = datetime.strptime(deadlineDatetime, "%m/%d/%Y %H:%M")
+				deadline = datetime.strptime(deadlineDatetime, "%d/%m/%Y %H:%M")
 				task.deadline = deadline
 				task.name = self.request.get('task_name')
-				#task.color = self.request.get('color')
-				#logging.warn(self.request.get('color'))
-				#task.task_type = self.request.get('task_type')
+				
+				keykey = self.request.get('task_type')				
+				key = db.Key(keykey)
+				task.task_key = key
 				
 				group = db.get(self.request.get('id'))
 				task.group = group
 				
 				task.put()
 				# Redirect back to calendar
-				self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id')))
+				self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id')) + '#tasks')
 				
 
 				
@@ -1148,6 +1339,32 @@ class EditKey(BaseHandler):
 			# Redirect back to calendar
 			self.redirect(self.request.host_url + "/calendar#events")
 
+class EditGroupKey(BaseHandler):
+		def post(self):
+			key_id = self.request.get('key_id')
+			groupid = self.request.get('id')
+									
+			userid = self.session.get('user')
+			id = db.Key.from_path('User', userid)
+			userObj = db.get(id)
+							
+			# Security stuff - make sure they belong to the group their accessing
+			q = userObj.groups
+			json_list = []
+			for p in q:
+				if( str(p) == groupid ):
+					group = db.get(p)
+					keys = group.keys
+			
+					for p in keys.run():
+						if str(p.key()) == str(key_id):
+							p.color = self.request.get('color')
+							p.put()
+							break;
+
+			# Redirect back to calendar
+			self.redirect(self.request.host_url + "/grouppage?group=" + str(self.request.get('id')))
+
 		
 class GetKeys(BaseHandler):
 	def get(self):
@@ -1169,6 +1386,33 @@ class GetKeys(BaseHandler):
 		else:
 			self.response.write(SPLASH_HTML)
 
+class GetGroupKeys(BaseHandler):
+	def get(self):
+		if(self.session.get('user')):
+			groupid = self.request.get('id')
+									
+			userid = self.session.get('user')
+			id = db.Key.from_path('User', userid)
+			userObj = db.get(id)
+							
+			# Security stuff - make sure they belong to the group their accessing
+			q = userObj.groups
+			json_list = []
+			for p in q:
+				if( str(p) == groupid ):
+					group = db.get(p)
+					keys = group.keys
+			
+					for p in keys.run():
+						json_entry = {'key': str(p.key()), 'name':p.name, 'color': p.color}
+						json_list.append(json_entry)
+
+			self.response.write(json.dumps(json_list))
+	
+		else:
+			self.response.write(SPLASH_HTML)
+			
+			
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey), ('/getgroupkeys', GetGroupKeys), ('/removegroupevent', RemoveGroupEvent),('/getgroupevent', GetGroupEvent),('/editgroupevent', EditGroupEvent), ('/draggroupevent', DragGroupEvent),('/editgroupkey', EditGroupKey)
 ], debug=True, config=config)
