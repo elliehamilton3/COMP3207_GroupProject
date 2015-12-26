@@ -329,7 +329,7 @@
 									var items = [];
 									var modal_items = [];
 									$.each( data, function( key, val ) {
-										items.push( "<li>" + val['name'] + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:block;"></span><a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>' );
+										items.push( "<li>" + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:inline-block;margin-right:5px;"></span>' + val['name'] + '<a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>' );
 										modal_items.push("<option value='" + val['key'] + "'>" + val['name'] + "</option>");
 									});
 										 
@@ -508,18 +508,54 @@
 		</head>
 
 
-		<body>
-		<div class="container">
+		<body class="group-page">
+
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button> -->
+					<a class="navbar-brand" href="#">Sort My Life Out</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#events" data-toggle="tab">
+							<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>	Calendar
+						</a></li>
+						<li class=""><a href="#tasks" data-toggle="tab">
+							<span class="glyphicon glyphicon-inbox" aria-hidden="true"></span>	Tasks
+						</a></li>
+						<li><a>
+							<span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>
+							Group name: {{ group.name }}
+						</a></li>
+						
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class=""><a href="/calendar#groups">
+							<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>	Back to main site
+						</a></li>
+					</ul>
+				</div><!--/.navbar-collapse -->
+			</div>
+		</nav>
+
+
+		<div class="container main">
 				<div class="row">
-						<div class="col-xs-12">
+<!-- 						<div class="col-xs-12">
 							<h2>Group name: {{ group.name }}</h2>
-						</div>
+						</div> -->
 						<div class="col-xs-9">
-						    <ul class="nav nav-pills nav-justified">
+<!-- 						    <ul class="nav nav-pills nav-justified">
 						        <li class="nav active"><a href="#events" data-toggle="tab">Calendar</a></li>
 						        <li class="nav"><a href="#tasks" data-toggle="tab">Tasks</a></li>
 						        <li class="nav"><a href="#members" data-toggle="tab">Members</a></li>
-						    </ul>
+						    </ul> -->
 							
 							<br/>
 							<!-- Tab panes -->
@@ -531,8 +567,8 @@
 						</div>
 						<div class="col-xs-3">
 
-								<div class="panel panel-default">
-									<div class="panel-heading">Add/edit contents</div>
+								<div class="panel panel-default" id="panel-add">
+									<div class="panel-heading">Add new items</div>
 									<div class="panel-body">
 										<ul>
 											<li><a href="#" data-toggle="modal" data-target="#addModuleModal">Add Events</a></li>

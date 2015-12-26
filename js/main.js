@@ -73,7 +73,7 @@ $(document).ready(function() {
 	        	window.location.replace(link);
 	        // }
     	}
-    })
+    });
 	$(".colorpicker").spectrum({
 	    color: "gray",
 	    showInput: true,
@@ -271,7 +271,7 @@ $(document).ready(function() {
 			var items = [];
 			var modal_items = [];
 			$.each( data, function( key, val ) {
-				items.push( "<li>" + val['name'] + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:block;"></span><a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>' );
+				items.push( "<li>" + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:inline-block;margin-right:5px;"></span>' + val['name'] + '<a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>' );
 				modal_items.push("<option value='" + val['key'] + "'>" + val['name'] + "</option>");
 			});
 				 

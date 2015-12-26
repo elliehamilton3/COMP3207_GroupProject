@@ -58,6 +58,9 @@
 
 				<script src="js/main.js"></script>
 
+				<!-- Google Font -->
+				<link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,900' rel='stylesheet' type='text/css'>
+
 				<style>
 					.bootstrap-timepicker-widget.dropdown-menu.open{
 						z-index: 1500;
@@ -132,21 +135,27 @@
 							<span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>	Groups
 						</a></li>
 					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a>
+							<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+							Welcome back, {{ user.name }}
+						</a></li>
+					</ul>
 				</div><!--/.navbar-collapse -->
 			</div>
 		</nav>
 
-		<div class="container">
-				<h2>Welcome back, {{ user.name }}</h2>
+		<div class="container main">
+				<!-- <h2>Welcome back, {{ user.name }}</h2> -->
 				<div class="row">
 						<div class="col-xs-9">
-						    <ul class="nav nav-pills nav-justified">
+<!-- 						    <ul class="nav nav-pills nav-justified">
 						        <li class="nav active"><a href="#events" data-toggle="tab">Calendar</a></li>
 						        <li class="nav"><a href="#tasks" data-toggle="tab">Tasks</a></li>
 						        <li class="nav"><a href="#groups" data-toggle="tab">Groups</a></li>
-						    </ul>
+						    </ul> 
 							
-							<br/>
+							<br/>-->
 							<!-- Tab panes -->
 						    <div class="tab-content">
 						        <div class="tab-pane fade in active" id="events"><div id="calendar"></div></div>
@@ -156,11 +165,11 @@
 						</div>
 						<div class="col-xs-3">
 
-								<div class="panel panel-default">
-									<div class="panel-heading">Add/edit contents</div>
+								<div class="panel panel-default" id="panel-add">
+									<div class="panel-heading">Add new items</div>
 									<div class="panel-body">
 										<ul>
-											<li><a href="#" data-toggle="modal" data-target="#addModuleModal">Add Events</a></li>
+											<li><a href="#" data-toggle="modal" data-target="#addModuleModal" title="Add event">Add Event</a></li>
 											<!-- Modal -->
 											<div id="addModuleModal" class="modal fade" role="dialog">
 												<div class="modal-dialog">
@@ -357,19 +366,19 @@
 								</div>
 
 								<div class="panel panel-default">
-									<div class="panel-heading">Tasks</div>
+									<div class="panel-heading">Deadlines</div>
 									<div class="panel-body">
 										<div id="deadlinesbox">
 										</div>
 									</div>
 								</div>
 								
-								<div class="panel panel-default">
+								<div class="panel panel-default" id="keylist-panel">
 									<div class="panel-heading">Keys</div>
 									<div class="panel-body">
 										<div id="keylist">
 										</div>
-										<a href="#" data-toggle="modal" data-target="#addKeyModal">Add Key</a>
+										<a id="add-key" href="#" data-toggle="modal" data-target="#addKeyModal">Add Key</a>
 											<!-- Modal -->
 											<div id="addKeyModal" class="modal fade" role="dialog">
 												<div class="modal-dialog">
