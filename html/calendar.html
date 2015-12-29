@@ -40,6 +40,111 @@
 					});
 				</script>
 
+				<!-- Validation for input fields -->
+				<Script>
+					function validateEventInputs() {
+    					var addEventEventName = document.forms["addEventForm"]["eventName"].value;
+    					var addEventLocation = document.forms["addEventForm"]["eventLocation"].value;
+    					var addEventStartDate = document.forms["addEventForm"]["start_date"].value;
+    					var addEventEndDate = document.forms["addEventForm"]["end_date"].value;
+    					var addEventStartTime = document.forms["addEventForm"]["start_time"].value;
+    					var addEventEndTime = document.forms["addEventForm"]["end_time"].value;
+
+    					if (addEventEventName == null || addEventEventName == "") {
+        					alert("Event name must be filled out");
+        					return false;
+    					}
+    					if (addEventEventName > 255) {
+        					alert("Event name is too long, please enter a shorter name");
+        					return false;
+    					}
+    					if (addEventLocation == null || addEventLocation == "") {
+        					alert("Event location must be filled out");
+        					return false;
+    					} 
+    					if (addEventLocation > 255) {
+        					alert("Event location is too long, please enter a shorter location name");
+        					return false;
+    					}
+    					if (addEventStartDate == null || addEventStartDate == "") {
+        					alert("Start date must be selected");
+        					return false;
+    					} 
+    					if (addEventEndDate == null || addEventEndDate == "") {
+        					alert("End date must be selected");
+        					return false;
+    					} 
+    					if (addEventStartDate > addEventEndDate) {
+        					alert("End date should be greater than Start date");
+       						return false;
+    					}
+    					if (addEventStartTime == null || addEventStartTime == "") {
+        					alert("Start time must be selected");
+        					return false;
+    					} 
+    					if (addEventEndTime == null || addEventEndTime == "") {
+        					alert("End time must be selected");
+        					return false;
+    					} 
+    					if (addEventStartDate == addEventEndDate && addEventStartTime>addEventEndTime){
+    						alert("If the start date and the end date are the same, the start time must be before the end time");
+    						return false;
+    					}
+    					
+    				}
+
+    				function validateTaskInputs() {
+    					var addTaskTaskName = document.forms["addTaskForm"]["taskName"].value;
+    					var addTaskDeadlineDate = document.forms["addTaskForm"]["deadline_date"].value;
+    					var addTaskDeadlineTime = document.forms["addTaskForm"]["deadline_time"].value;
+
+    					if (addTaskTaskName == null || addTaskTaskName == "") {
+        					alert("Event name must be filled out");
+        					return false;
+    					}
+    					if (addTaskTaskName > 255) {
+        					alert("Event name is too long, please enter a shorter name");
+        					return false;
+    					}
+    					if (addTaskDeadlineDate == null || addTaskDeadlineDate == "") {
+        					alert("Date must be selected");
+        					return false;
+        				}
+        				if (addTaskDeadlineTime == null || addTaskDeadlineTime == "") {
+        					alert("Time must be selected");
+        					return false;
+        				}
+        				
+    				}
+    							
+    				function validateAddGroupInputs() { 	
+    					var addGroupGroupName = document.forms["addGroupForm"]["group_name"].value;
+    					var addGroupDescription = document.forms["addGroupForm"]["group_description"].value;
+    					
+
+    					if (addGroupGroupName == null || addGroupGroupName == "") {
+        					alert("Group name must be filled out");
+        					return false;
+    					}
+    					if (addGroupGroupName > 255) {
+        					alert("Group name is too long, please enter a shorter name");
+        					return false;
+    					}  					
+    					if (addGroupDescription == null || addGroupDescription == "") {
+        					alert("Group description must be filled out");
+        					return false;
+    					}
+    					if (addGroupDescription > 255) {
+        					alert("Group description is too long, please enter a shorter name");
+        					return false;
+    					} 
+    				}		
+    				
+			    	
+				</script>
+				<!-- //Validation for input fields -->
+
+
 				<!-- DatePicker -->
 				<link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.css' />
 				<link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.min.css' />
@@ -181,11 +286,11 @@
 														</div>
 														<div class="modal-body">	
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/event">
+															<form name="addEventForm" class="form-horizontal" role="form" method="post" action="/event" onsubmit="return validateEventInputs()">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="eventname">Event Name:</label><br/>
-																		<input id="eventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+																		<input id="eventname" type="text" name="eventName" placeholder="Event Name" class="form-control" aria-label="">
 																	</div>
 																</div>
 																<div class="row">
@@ -200,7 +305,7 @@
 																<div class="row" class="input-group">
 																	<div class="col-xs-12">
 																		<label for="eventlocation">Event Location:</label><br/>
-																		<input name="location" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+																		<input name="eventLocation" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
 																	</div>
 																</div>
 																<div class="row">
@@ -253,11 +358,11 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/task">
+															<form name="addTaskForm" class="form-horizontal" role="form" method="post" action="/task" onsubmit="return validateTaskInputs()">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Task Name:</label>
-																		<input type="text" name="task_name" id="sel2" class="form-control" aria-label=""/>
+																		<input type="text" name="taskName" id="sel2" class="form-control" aria-label=""/>
 																	</div>
 																</div>
 																<div class="row">
@@ -310,7 +415,7 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/group">
+															<form name="addGroupForm" class="form-horizontal" role="form" onsubmit="validateAddGroupInputs()" method="post" action="/group">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Group Name:</label>
@@ -329,7 +434,7 @@
 																		<div class="row" style="">
 																			<div class="col-xs-12">
 																				<div class="input-group">
-																					<input type="text" id="emailBox" value="" class="form-control" placeholder="example@email.com">
+																					<input type="text" name="member_email" id="emailBox" value="" class="form-control" placeholder="example@email.com">
 																					<span class="input-group-btn">
 																						<button class="btn btn-default" type="button" onclick="addInput()">Add</button>
 																					</span>
@@ -343,10 +448,24 @@
 																			var textbox = document.getElementById("emailBox");
 																			function addInput()
 																			{
-																				document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
-																				textbox.value = '';
-																				countBox++;
-																			}
+																				var addGroupMemberEmail = document.forms["addGroupForm"]["member_email"].value;
+																				var filter = "/^[A-Za-z0-9._%+-]+@gmail.com$/"/
+																				if (filter.test(addGroupMemberEmail)){ 
+        																				document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
+																						textbox.value = '';
+																						countBox++;
+
+
+    																				}else{
+        																				alert("Email must be a gmail or googlemail email address"); 
+        																				return false; 	
+    
+        																				
+        																			}
+    																			   																				
+    																			}
+
+
 																		</script>
 																	</div>
 																</div>
@@ -461,11 +580,11 @@
 					</div>
 					<div class="modal-body">	
 						<!-- Form within Modal -->
-						<form class="form-horizontal" role="form" method="post" action="/editevent">
+						<form class="form-horizontal" role="form" method="post" action="/editevent" onsubmit="validateEventInputs()">
 							<div class="row">
 								<div class="col-xs-12">
 									<label for="eventname">Event Name:</label><br/>
-									<input id="editeventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+									<input id="editeventname" type="text" name="eventName" placeholder="Event Name" class="form-control" aria-label="">
 								</div>
 							</div>
 							<input type="hidden" name="event_id" id="editevent_id">
@@ -481,7 +600,7 @@
 							<div class="row" class="input-group">
 								<div class="col-xs-12">
 									<label for="eventlocation">Event Location:</label><br/>
-									<input name="location" id="editeventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+									<input name="eventLocation" id="editeventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
 								</div>
 							</div>
 							<div class="row">

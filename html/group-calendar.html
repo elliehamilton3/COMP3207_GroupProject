@@ -35,6 +35,89 @@
 					}
 				</script>
 
+				<!-- Validation for input fields -->
+				<Script>
+					function validateEventInputs() {
+    					var addEventEventName = document.forms["addEventForm"]["eventName"].value;
+    					var addEventLocation = document.forms["addEventForm"]["eventLocation"].value;
+    					var addEventStartDate = document.forms["addEventForm"]["start_date"].value;
+    					var addEventEndDate = document.forms["addEventForm"]["end_date"].value;
+    					var addEventStartTime = document.forms["addEventForm"]["start_time"].value;
+    					var addEventEndTime = document.forms["addEventForm"]["end_time"].value;
+
+    					if (addEventEventName == null || addEventEventName == "") {
+        					alert("Event name must be filled out");
+        					return false;
+    					}
+    					if (addEventEventName > 255) {
+        					alert("Event name is too long, please enter a shorter name");
+        					return false;
+    					}
+    					if (addEventLocation == null || addEventLocation == "") {
+        					alert("Event location must be filled out");
+        					return false;
+    					} 
+    					if (addEventLocation > 255) {
+        					alert("Event location is too long, please enter a shorter location name");
+        					return false;
+    					}
+    					if (addEventStartDate == null || addEventStartDate == "") {
+        					alert("Start date must be selected");
+        					return false;
+    					} 
+    					if (addEventEndDate == null || addEventEndDate == "") {
+        					alert("End date must be selected");
+        					return false;
+    					} 
+    					if (addEventStartDate > addEventEndDate) {
+        					alert("End date should be greater than Start date");
+       						return false;
+    					}
+    					if (addEventStartTime == null || addEventStartTime == "") {
+        					alert("Start time must be selected");
+        					return false;
+    					} 
+    					if (addEventEndTime == null || addEventEndTime == "") {
+        					alert("End time must be selected");
+        					return false;
+    					} 
+    					if (addEventStartDate == addEventEndDate && addEventStartTime>addEventEndTime){
+    						alert("If the start date and the end date are the same, the start time must be before the end time");
+    						return false;
+    					}
+    					
+    				}
+
+    				function validateTaskInputs() {
+    					var addTaskTaskName = document.forms["addTaskForm"]["taskName"].value;
+    					var addTaskDeadlineDate = document.forms["addTaskForm"]["deadline_date"].value;
+    					var addTaskDeadlineTime = document.forms["addTaskForm"]["deadline_time"].value;
+
+    					if (addTaskTaskName == null || addTaskTaskName == "") {
+        					alert("Event name must be filled out");
+        					return false;
+    					}
+    					if (addTaskTaskName > 255) {
+        					alert("Event name is too long, please enter a shorter name");
+        					return false;
+    					}
+    					if (addTaskDeadlineDate == null || addTaskDeadlineDate == "") {
+        					alert("Date must be selected");
+        					return false;
+        				}
+        				if (addTaskDeadlineTime == null || addTaskDeadlineTime == "") {
+        					alert("Time must be selected");
+        					return false;
+        				}
+        				
+    				}
+    							
+    				
+    				
+			    	
+				</script>
+				<!-- //Validation for input fields -->
+
 				<!-- DatePicker -->
 				<link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.css' />
 				<link rel='stylesheet' href='js/datepicker/css/bootstrap-datepicker.min.css' />
@@ -583,17 +666,17 @@
 														</div>
 														<div class="modal-body">	
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/groupevent">
+															<form name="addEventForm" class="form-horizontal" role="form" method="post" action="/event" onsubmit="return validateEventInputs()">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="eventname">Event Name:</label><br/>
-																		<input id="eventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+																		<input id="eventname" type="text" name="eventName" placeholder="Event Name" class="form-control" aria-label="">
 																	</div>
 																</div>
 																<div class="row">
 																	<div class="col-xs-12">
 																		<div class="form-group">
-																			<label for="eventtype">Assigned to:</label><br/>
+																			<label for="eventtype">Event Type:</label><br/>
 																			<select id="eventtype" name="event_type" class="form-control">
 																			</select>
 																		</div>
@@ -602,18 +685,19 @@
 																<div class="row" class="input-group">
 																	<div class="col-xs-12">
 																		<label for="eventlocation">Event Location:</label><br/>
-																		<input name="location" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+																		<input name="eventLocation" id="eventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
 																	</div>
 																</div>
 																<div class="row">
 																	<div class="input-group" style-width:"100%">
 																		<div class="col-xs-6">
 																			<label for="startdate">Start Date:</label><br/>
-																			<input id="startdate" name="start_date" type="text" placeholder="Deadline Date" class="datepicker form-control" aria-label="">
+																			<input id="startdate" name="start_date" type="text" class="datepicker form-control" aria-label="">
+
 																		</div>
 																		<div class="col-xs-6">
 																			<label for="timepicker6">Start Time:</label><br/>
-																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
+																			<input name="start_time" id="timepicker6" data-provide="timepicker" class="form-control" type="text" class="input-small" data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
 																		</div>
 																	</div>
 																</div>
@@ -621,7 +705,7 @@
 																	<div class="input-group" style-width:"100%">
 																		<div class="col-xs-6">
 																			<label for="enddate">End Date:</label><br/>
-																			<input name="end_date" id="enddate" type="text" placeholder="Deadline Date" class="datepicker form-control" aria-label="...">
+																			<input name="end_date" id="enddate" type="text" class="datepicker" placeholder="" class="form-control" aria-label="...">
 																		</div>
 																		<div class="col-xs-6">
 																			<label for="timepicker8">End Time:</label><br/>
@@ -632,16 +716,14 @@
 																</div>
 																<br/>
 																<div class="modal-footer">
-																	<input type='hidden' name="id" value="{{ group.key() }}" />
 																	<button type="submit" class="btn btn-default">Submit</button>
-																</form><!-- //Form within Modal -->
+																</form>
 															</div>
 														</div>
 													</div>
-													<!-- //Modal Content -->
+													
 												</div>
 											</div>
-											<!-- //Modal -->
 
 											<li><a href="#" data-toggle="modal" data-target="#addAssignmentModal">Add Task</a></li>
 											<!-- Modal -->
@@ -656,39 +738,39 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/grouptask">
+															<form name="addTaskForm" class="form-horizontal" role="form" method="post" action="/task" onsubmit="return validateTaskInputs()">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Task Name:</label>
-																		<input type="text" name="task_name" id="sel2" class="form-control" aria-label=""/>
+																		<input type="text" name="taskName" id="sel2" class="form-control" aria-label=""/>
 																	</div>
 																</div>
 																<div class="row">
 																	<div class="col-xs-12">
 																		<div class="form-group">
 																		  	<label for="sel1">Task Type:</label>
-																		  	<select class="form-control" id="tasktype" name="task_type">																		  	</select>
+																		  	<select class="form-control" id="tasktype" name="task_type">
+																		  	</select>
 																		</div>
 																	</div>
 																</div>
 																<div class="row">
-																	<div class="col-xs-1">
+																	<div class="col-xs-2">
 																		<label for="datepicker1">Date:</label>
 																	</div>
-																	<div class="col-xs-3">
-																		<input name="deadline_date" type="text" id="datepicker1" class="datepicker form-control" aria-label="">
+																	<div class="col-xs-4">
+																		<input name="deadline_date" type="text" id="datepicker1" class="datepicker" class="form-control" aria-label="">
 																	</div>
-																	<div class="col-xs-1">
+																	<div class="col-xs-2">
 																		<label for="timepicker7">Time:</label>
 																	</div>
-																	<div class="col-xs-3">
+																	<div class="col-xs-4">
 																		<input name="deadline_time" id="timepicker7" class="form-control" type="text"  data-provide="timepicker" data-template="dropdown" data-minute-step="5" data-show-meridian="false">
 																	</div>
 																	
 																</div><!-- /.row -->
 																<div class="row">
 																	<div class="col-xs-12">
-																		<input type='hidden' name="id" value="{{ group.key() }}" />
 																		<button type="submit" class="btn btn-default">Submit</button>
 																	</div>
 																</div>
@@ -711,14 +793,14 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/invite">
+															<form name ="addGroupForm" class="form-horizontal" role="form" method="post" action="/invite">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Member Email:</label>
 																		<div class="row" style="">
 																			<div class="col-xs-12">
 																				<div class="input-group">
-																					<input type="text" id="emailBox" value="" class="form-control" placeholder="example@email.com">
+																					<input type="text" name="member_email" id="emailBox" value="" class="form-control" placeholder="example@email.com">
 																					<span class="input-group-btn">
 																						<button class="btn btn-default" type="button" onclick="addInput()">Add</button>
 																					</span>
@@ -732,10 +814,22 @@
 																			var textbox = document.getElementById("emailBox");
 																			function addInput()
 																			{
-																				document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
-																				textbox.value = '';
-																				countBox++;
-																			}
+																				var addGroupMemberEmail = document.forms["addGroupForm"]["member_email"].value;
+																				var filter = /^([\w-\.]+@(?!gmail.com)(?!googlemail.com)([\w-]+\.)+[\w-]{2,4})?$/
+																				if (!filter.test(addGroupMemberEmail)){ 
+        																				document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
+																						textbox.value = '';
+																						countBox++;
+
+
+    																				}else{
+        																				alert("Email must be a gmail or googlemail email address"); 
+        																				return false; 	
+    
+        																				
+        																			}
+    																			   																				
+    																			}
 																		</script>
 																	</div>
 																</div>
@@ -838,11 +932,11 @@
 					</div>
 					<div class="modal-body">	
 						<!-- Form within Modal -->
-						<form class="form-horizontal" role="form" method="post" action="/editgroupevent">
+						<form class="form-horizontal" role="form" method="post" action="/editgroupevent" onsubmit="validateEventInputs()">
 							<div class="row">
 								<div class="col-xs-12">
 									<label for="eventname">Event Name:</label><br/>
-									<input id="editeventname" type="text" name="name" placeholder="Event Name" class="form-control" aria-label="">
+									<input id="editeventname" type="text" name="eventName" placeholder="Event Name" class="form-control" aria-label="">
 								</div>
 							</div>
 							<input type="hidden" name="event_id" id="editevent_id">
@@ -858,7 +952,7 @@
 							<div class="row" class="input-group">
 								<div class="col-xs-12">
 									<label for="eventlocation">Event Location:</label><br/>
-									<input name="location" id="editeventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
+									<input name="eventLocation" id="editeventlocation" type="text" placeholder="Location - Building/Room Number" class="form-control" aria-label="">
 								</div>
 							</div>
 							<div class="row">
