@@ -1,7 +1,8 @@
 /*Custom CSS*/
 
-body {
-  font-family: 'Roboto', sans-serif;
+head, body {
+  /*font-family: 'Roboto', sans-serif;*/
+  font: 200 Helvetica, Verdana, sans-serif;
 }
 
 .main.container {
@@ -140,7 +141,7 @@ body {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3c5599', endColorstr='#ff2e4174', GradientType=0);
 
-
+  font: 200 15px Helvetica, Verdana, sans-serif;
   color: #d5d5e5;
 }
 
@@ -213,6 +214,70 @@ body {
 /*To change the padding of events on month calendar*/
 .fc-day-grid-event.fc-h-event.fc-event.fc-start.fc-end {
 	padding: 4px;
+}
+
+/*Additional Custom CSS*/
+
+#groups-list a, #groups-list li {
+	color: black;
+  font: 200 20px Helvetica, Verdana, sans-serif;
+  text-decoration: none;
+}
+#groups-list li:hover{
+  background-color: rgb(180,180,180);
+  color: white;
+}
+
+.no-tasks {
+  color: black;
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+  font: 200 20px Helvetica, Verdana, sans-serif;
+}
+
+
+.add-items-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.add-items-list li {
+  font: 200 15px Helvetica, Verdana, sans-serif;
+  border-bottom: 1px solid #ccc;
+}
+.no-border {
+  border-bottom: none!important;
+}
+.add-items-list li a {
+  text-decoration: none;
+  color: #000;
+
+  -webkit-transition: font-size 0.3s ease;
+  -moz-transition: font-size 0.3s ease;
+  -o-transition: font-size 0.3s ease;
+  -ms-transition: font-size 0.3s ease;
+  transition: font-size 0.3s ease;
+  display: block;
+  width: 100%;
+}
+.add-items-list li a:hover {
+  font-size: 25px;
+}
+
+#add-key {
+  color: black;
+  font: 200 15px Helvetica, Verdana, sans-serif;
+  text-decoration: none;
+
+  -webkit-transition: font-size 0.3s ease;
+  -moz-transition: font-size 0.3s ease;
+  -o-transition: font-size 0.3s ease;
+  -ms-transition: font-size 0.3s ease;
+  transition: font-size 0.3s ease;
+}
+#add-key:hover {
+  font-size: 25px;
 }
 
 

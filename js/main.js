@@ -131,7 +131,7 @@ $(document).ready(function() {
 			items.push( "<li class='list-group-item' id='"+ val['id'] +"' data-style='button' data-color='"+ val['color'] +"'style='color:"+ val['color'] + "'>" + val['datetime'] + " " + val['title']  + "</li>" );
 		  });
 			if(items.length == 0){
-				items.push( "<p>You have no tasks to do!</p>" );
+				items.push( "<p class='no-tasks'>You have no tasks to do!</p>" );
 			}
 		  $( "<ul/>", {
 		    "class": "list-group checked-list-box",
@@ -249,16 +249,16 @@ $(document).ready(function() {
 		$.getJSON( "/groupfeed", function( data ) {
 		  var items = [];
 		  $.each( data, function( key, val ) {
-		    items.push( "<li><a href='/grouppage?group=" + val['key'] + "'>" + val['name']  + "</a></li>" );
+		    items.push( "<a href='/grouppage?group=" + val['key'] + "'><li class='list-group-item'>" + val['name']  + "</li></a>" );
 		  });
 		 
 			if(items.length == 0){
-				items.push( "<p>You have no groups!</p>" );
+				items.push( "<li class='list-group-item'>You have no groups!</li>" );
 			}
 		 
 		  $( "<ul/>", {
 		    "class": "list-group",
-		    "id": "",
+		    "id": "groups-list",
 		    html: items.join( "" )
 		  }).appendTo(selector);
 
