@@ -786,10 +786,10 @@ class NewEvent(BaseHandler):
 				eTime = self.request.get('end_time')
 				endDatetime = eDate + " " + eTime
 				endDatetime = datetime.strptime(endDatetime, "%d/%m/%Y %H:%M")
-				event.name = self.request.get('name')
+				event.name = self.request.get('eventName')
 				event.start_time = startDatetime
 				event.end_time = endDatetime
-				event.location = self.request.get('location')
+				event.location = self.request.get('eventLocation')
 								
 				userid = self.session.get('user')
 				id = db.Key.from_path('User', userid)
@@ -817,10 +817,10 @@ class NewGroupEvent(BaseHandler):
 				eTime = self.request.get('end_time')
 				endDatetime = eDate + " " + eTime
 				endDatetime = datetime.strptime(endDatetime, "%d/%m/%Y %H:%M")
-				event.name = self.request.get('name')
+				event.name = self.request.get('eventName')
 				event.start_time = startDatetime
 				event.end_time = endDatetime
-				event.location = self.request.get('location')
+				event.location = self.request.get('eventLocation')
 
 				keykey = self.request.get('event_type')				
 				key = db.Key(keykey)
@@ -970,7 +970,6 @@ class EditEvent(BaseHandler):
 
 			q = userObj.event_user
 			for p in q.run():
-				logging.warn("here 2")
 				if str(p.key().id()) == str(event_id):
 					sDate = self.request.get('start_date')
 					sTime = self.request.get('start_time')
@@ -983,7 +982,8 @@ class EditEvent(BaseHandler):
 					
 					p.start_time = startDatetime
 					p.end_time = endDatetime
-					p.location = self.request.get('location')
+					p.location = self.request.get('eventLocation')
+					p.name = self.request.get('eventName')
 					
 					
 					keykey = self.request.get('event_type')				
@@ -1021,7 +1021,8 @@ class EditGroupEvent(BaseHandler):
 					
 					p.start_time = startDatetime
 					p.end_time = endDatetime
-					p.location = self.request.get('location')
+					p.location = self.request.get('eventLocation')
+					p.name = self.request.get('eventName')
 					
 					keykey = self.request.get('event_type')				
 					key = db.Key(keykey)
@@ -1160,7 +1161,7 @@ class NewTask(BaseHandler):
 				deadlineDatetime = deadlineDate + " " + deadlineTime
 				deadline = datetime.strptime(deadlineDatetime, "%d/%m/%Y %H:%M")
 				task.deadline = deadline
-				task.name = self.request.get('task_name')
+				task.name = self.request.get('taskName')
 
 				keykey = self.request.get('task_type')				
 				key = db.Key(keykey)
@@ -1198,7 +1199,7 @@ class NewGroupTask(BaseHandler):
 				deadlineDatetime = deadlineDate + " " + deadlineTime
 				deadline = datetime.strptime(deadlineDatetime, "%d/%m/%Y %H:%M")
 				task.deadline = deadline
-				task.name = self.request.get('task_name')
+				task.name = self.request.get('taskName')
 				
 				keykey = self.request.get('task_type')				
 				key = db.Key(keykey)

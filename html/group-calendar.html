@@ -36,14 +36,20 @@
 				</script>
 
 				<!-- Validation for input fields -->
-				<Script>
-					function validateEventInputs() {
-    					var addEventEventName = document.forms["addEventForm"]["eventName"].value;
-    					var addEventLocation = document.forms["addEventForm"]["eventLocation"].value;
-    					var addEventStartDate = document.forms["addEventForm"]["start_date"].value;
-    					var addEventEndDate = document.forms["addEventForm"]["end_date"].value;
-    					var addEventStartTime = document.forms["addEventForm"]["start_time"].value;
-    					var addEventEndTime = document.forms["addEventForm"]["end_time"].value;
+				<script>
+					function validateEventInputs($edit) {
+    					if( $edit ) {
+							$form = document.forms["editEventForm"];
+						} else {
+							$form = document.forms["addEventForm"];
+						}
+						
+						var addEventEventName = $form["eventName"].value;
+    					var addEventLocation = $form["eventLocation"].value;
+    					var addEventStartDate = $form["start_date"].value;
+    					var addEventEndDate = $form["end_date"].value;
+    					var addEventStartTime = $form["start_time"].value;
+    					var addEventEndTime = $form["end_time"].value;
 
     					if (addEventEventName == null || addEventEventName == "") {
         					alert("Event name must be filled out");
@@ -69,8 +75,9 @@
         					alert("End date must be selected");
         					return false;
     					} 
+						
     					if (addEventStartDate > addEventEndDate) {
-        					alert("End date should be greater than Start date");
+        					alert("End date should be after the start date");
        						return false;
     					}
     					if (addEventStartTime == null || addEventStartTime == "") {
@@ -94,27 +101,23 @@
     					var addTaskDeadlineTime = document.forms["addTaskForm"]["deadline_time"].value;
 
     					if (addTaskTaskName == null || addTaskTaskName == "") {
-        					alert("Event name must be filled out");
+        					alert("Task name must be filled out");
         					return false;
     					}
     					if (addTaskTaskName > 255) {
-        					alert("Event name is too long, please enter a shorter name");
+        					alert("Task name is too long, please enter a shorter name");
         					return false;
     					}
-    					if (addTaskDeadlineDate == null || addTaskDeadlineDate == "") {
+    					/*if (addTaskDeadlineDate == null || addTaskDeadlineDate == "") {
         					alert("Date must be selected");
         					return false;
         				}
         				if (addTaskDeadlineTime == null || addTaskDeadlineTime == "") {
         					alert("Time must be selected");
         					return false;
-        				}
+        				}*/
         				
     				}
-    							
-    				
-    				
-			    	
 				</script>
 				<!-- //Validation for input fields -->
 
@@ -666,7 +669,7 @@
 														</div>
 														<div class="modal-body">	
 															<!-- Form within Modal -->
-															<form name="addEventForm" class="form-horizontal" role="form" method="post" action="/event" onsubmit="return validateEventInputs()">
+															<form name="addEventForm" class="form-horizontal" role="form" method="post" action="/groupevent" onsubmit="return validateEventInputs(false)">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="eventname">Event Name:</label><br/>
@@ -716,6 +719,7 @@
 																</div>
 																<br/>
 																<div class="modal-footer">
+																	<input type='hidden' name="id" value="{{ group.key() }}" />
 																	<button type="submit" class="btn btn-default">Submit</button>
 																</form>
 															</div>
@@ -738,7 +742,7 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form name="addTaskForm" class="form-horizontal" role="form" method="post" action="/task" onsubmit="return validateTaskInputs()">
+															<form name="addTaskForm" class="form-horizontal" role="form" method="post" action="/grouptask" onsubmit="return validateTaskInputs()">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Task Name:</label>
@@ -770,6 +774,7 @@
 																	
 																</div><!-- /.row -->
 																<div class="modal-footer">
+																	<input type='hidden' name="id" value="{{ group.key() }}" />
 																	<button type="submit" class="btn btn-default">Submit</button>
 																</div>
 															</form>
@@ -854,7 +859,7 @@
 								</div>
 								
 								<div class="panel panel-default">
-									<div class="panel-heading">Keys</div>
+									<div class="panel-heading">Members</div>
 									<div class="panel-body">
 										<div id="keylist">
 										</div>
@@ -928,7 +933,7 @@
 					</div>
 					<div class="modal-body">	
 						<!-- Form within Modal -->
-						<form class="form-horizontal" role="form" method="post" action="/editgroupevent" onsubmit="validateEventInputs()">
+						<form class="form-horizontal" role="form" method="post" action="/editgroupevent" onsubmit="return validateEventInputs(true)">
 							<div class="row">
 								<div class="col-xs-12">
 									<label for="eventname">Event Name:</label><br/>
