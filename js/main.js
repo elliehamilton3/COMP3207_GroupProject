@@ -23,9 +23,18 @@ $(document).ready(function() {
 
 			var start_hour = start_date.getHours();
 			var start_minute = start_date.getMinutes();
-
+ 
 			var end_hour = end_date.getHours();
 			var end_minute = end_date.getMinutes();
+			
+			// If the minute is < 10, it is missing the leading 0
+			if( start_minute < 10 ) {
+				start_minute = "0" + start_minute;				
+			}
+			
+			if( end_minute < 10 ) {
+				end_minute = "0" + end_minute;
+			}
 
 			var event_type = "Type: " + event.type
 			var event_time = "Time: " + start_hour + ":" + start_minute + " to "  + end_hour + ":" + end_minute

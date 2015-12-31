@@ -453,23 +453,16 @@
 																			function addInput()
 																			{
 																				var addGroupMemberEmail = document.forms["addGroupForm"]["member_email"].value;
-																				var filter = "/^[A-Za-z0-9._%+-]+@gmail.com$/"/
+																				var filter = /^(([a-zA-Z0-9_.-])+@(gmail\.com|googlemail\.com))?$/
 																				if (filter.test(addGroupMemberEmail)){ 
-        																				document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
-																						textbox.value = '';
-																						countBox++;
-
-
-    																				}else{
-        																				alert("Email must be a gmail or googlemail email address"); 
-        																				return false; 	
-    
-        																				
-        																			}
-    																			   																				
-    																			}
-
-
+        																			document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
+																					textbox.value = '';
+																					countBox++;
+    																			}else{
+        																			alert("Email must be a gmail or googlemail email address"); 
+        																			return false; 													
+																				}																			
+    																		}
 																		</script>
 																	</div>
 																</div>
