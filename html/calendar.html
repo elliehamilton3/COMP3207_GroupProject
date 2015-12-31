@@ -81,7 +81,14 @@
         					return false;
     					} 
 						
-    					if (addEventStartDate > addEventEndDate) {
+						var split = addEventStartDate.split("/");
+						var startDate = new Date(split[2], split[1] - 1, split[0]);
+						
+						var split = addEventEndDate.split("/");
+						var endDate = new Date(split[2], split[1] - 1, split[0]);
+						
+						
+						if (startDate > endDate) {
         					alert("End date should be after the start date");
        						return false;
     					}
@@ -147,7 +154,24 @@
     					} 
     				}		
     				
-			    	
+			    	function validateKeyInputs($edit) {
+    					if( $edit ) {
+							$form = document.forms["editKeyForm"];
+						} else {
+							$form = document.forms["addKeyForm"];
+						}
+						
+						var keyName = $form["name"].value;
+
+    					if (keyName == null || keyName == "") {
+        					alert("Key name must be filled out");
+        					return false;
+    					}
+    					if (keyName > 255) {
+        					alert("Key name is too long, please enter a shorter name");
+        					return false;
+    					}
+					}
 				</script>
 				<!-- //Validation for input fields -->
 
@@ -504,7 +528,7 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/addkey">
+															<form class="form-horizontal" id="addKeyForm" role="form" method="post" action="/addkey" onsubmit="return validateKeyInputs(false)">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<label for="sel2">Key Name:</label>
@@ -537,7 +561,7 @@
 														</div>
 														<div class="modal-body">
 															<!-- Form within Modal -->
-															<form class="form-horizontal" role="form" method="post" action="/editkey">
+															<form class="form-horizontal" id="editKeyForm" role="form" method="post" action="/editkey" onsubmit="return validateKeyInputs(true)">
 																<div class="row">
 																	<div class="col-xs-12">
 																		<input type="hidden" name="key_id" id="edit_key_id">

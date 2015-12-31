@@ -76,7 +76,14 @@
         					return false;
     					} 
 						
-    					if (addEventStartDate > addEventEndDate) {
+						var split = addEventStartDate.split("/");
+						var startDate = new Date(split[2], split[1] - 1, split[0]);
+						
+						var split = addEventEndDate.split("/");
+						var endDate = new Date(split[2], split[1] - 1, split[0]);
+						
+						
+						if (startDate > endDate) {
         					alert("End date should be after the start date");
        						return false;
     					}
@@ -180,6 +187,16 @@
 									var end_hour = end_date.getHours();
 									var end_minute = end_date.getMinutes();
 
+									// If the minute is < 10, it is missing the leading 0
+									if( start_minute < 10 ) {
+										start_minute = "0" + start_minute;				
+									}
+									
+									if( end_minute < 10 ) {
+										end_minute = "0" + end_minute;
+									}
+
+									
 									var event_type = "Type: " + event.type
 									var event_time = "Time: " + start_hour + ":" + start_minute + " to "  + end_hour + ":" + end_minute
 									var event_loc = "Location: " + event.location
