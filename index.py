@@ -1455,6 +1455,73 @@ class Logout(BaseHandler):
 	def get(self):
 		self.redirect(users.create_logout_url(self.request.host_url, _auth_domain=None))
 		
+class LeaveGroup(BaseHandler):
+	def post(self):
+		userKey = db.Key.from_path('User', self.session.get('user'))
+		user = db.get(userKey)
+		
+		group = db.get(self.request.get('groupid'))
+		
+		# Shouldn't need to check, but better safe then sorry
+		if user.email in group.confirmed:
+			# Remove user from group's confirmed list
+			group.confirmed.remove(user.email)
+			group.put()
+			
+		# Remove group from user's group list
+		if group.key() in user.groups:
+			user.groups.remove(group.key())
+			user.put()
+			
+		# Find the user's group key
+		q = group.keys
+		keyName = user.name + ' (' + user.email + ')' 
+		for p in q: 
+			if p.name == keyName:
+				# Delete all events with this key
+				q2 = Event.all()
+				q2.filter("event_key =", p)
+				for p2 in q2:
+					p2.delete()
+				# and the tasks
+				q2 = Task.all()
+				q2.filter("task_key =", p)
+				for p2 in q2:
+					p2.delete()
+
+				# now delete the key
+				p.delete()
+				
+
+class DeleteKey(BaseHandler):
+	def post(self):
+		logging.warn("Deleting key")
+		userKey = db.Key.from_path('User', self.session.get('user'))
+		user = db.get(userKey)
+			
+		# Find the key
+		q = user.keys
+		for p in q:
+			logging.warn("loop " + p.name) 
+			if str(p.key()) == self.request.get('keyid'):
+				logging.warn("match")
+				# Delete all events with this key
+				q2 = Event.all()
+				q2.filter("event_key =", p)
+				for p2 in q2:
+					logging.warn("deleting event with name " + p2.name)
+					p2.delete()
+				# and the tasks
+				q2 = Task.all()
+				q2.filter("task_key =", p)
+				for p2 in q2:
+					logging.warn("deleting task with name " + p2.name)
+					p2.delete()
+
+				# now delete the key
+				logging.warn("deleting key now")
+				p.delete()		
+			
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey), ('/getgroupkeys', GetGroupKeys), ('/removegroupevent', RemoveGroupEvent),('/getgroupevent', GetGroupEvent),('/editgroupevent', EditGroupEvent), ('/draggroupevent', DragGroupEvent),('/editgroupkey', EditGroupKey), ('/checkuser', UserCheck), ('/logout', Logout), ('/editgroup', EditGroup)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey), ('/getgroupkeys', GetGroupKeys), ('/removegroupevent', RemoveGroupEvent),('/getgroupevent', GetGroupEvent),('/editgroupevent', EditGroupEvent), ('/draggroupevent', DragGroupEvent),('/editgroupkey', EditGroupKey), ('/checkuser', UserCheck), ('/logout', Logout), ('/editgroup', EditGroup), ('/leavegroup', LeaveGroup), ('/deletekey', DeleteKey)
 ], debug=True, config=config)

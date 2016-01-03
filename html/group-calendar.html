@@ -489,17 +489,7 @@
 					function cancelDeleteTask(id) {
 						location.reload();
 					}
-					window.onload = function(){  
-						var url = document.location.toString();
-						if (url.match('#')) {
-							$('.nav-pills a[href=#'+url.split('#')[1]+']').tab('show') ;
-						} 
-						// Change hash for page-reload
-						$('.nav-pills a').on('shown.bs.tab', function (e) {
-							window.location.hash = e.target.hash;
-						});
-					}
-					
+										
 					function deleteEvent(id) {
 						alert("Event DELETED: " + id);
 					}
@@ -580,6 +570,28 @@
 						$('#editKeyModal').modal('toggle');
 				}
 
+				function leaveGroup() {
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', '/leavegroup');
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.onload = function() {
+						window.location.replace('/calendar');
+					};
+					xhr.send('groupid={{ group.key() }}');
+				}
+				window.onload = function(){  
+
+					var url = document.location.toString();
+					if (url.match('#')) {
+						$('.nav a[href=#'+url.split('#')[1]+']').tab('show') ;
+					} 
+
+					// Change hash for page-reload
+					$('.nav a').on('shown.bs.tab', function (e) {
+						window.location.hash = e.target.hash;
+					});
+				} 
+					
 
 				</script>
 				<style>
@@ -693,9 +705,9 @@
 								<div class="panel-heading">Group Details</div>
 									<div class="panel-body">
 										<p><b>Description: </b>{{ group.description }}</p>
-										<a href="#" data-toggle="modal" data-target="#editGroupModal">Edit Group</a></li>
-											<!-- Modal -->
-											<div id="editGroupModal" class="modal fade" role="dialog">
+										<a href="#" data-toggle="modal" data-target="#editGroupModal">Edit Group</a>
+										<!-- Modal -->
+										<div id="editGroupModal" class="modal fade" role="dialog">
 												<div class="modal-dialog">
 													<!-- Modal content-->
 													<div class="modal-content">
@@ -728,7 +740,7 @@
 													<!-- //Modal Content -->
 												</div>
 											</div>
-										
+										<a href="#" data-toggle="modal" data-target="#confirm-leave">Leave Group</a>
 									</div>
 								</div>
 								
@@ -1087,6 +1099,26 @@
 								<button type="submit" class="btn btn-default">Submit</button>
 							</div>
 						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="confirm-leave" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog" id="confirm-leave2">
+				<div class="modal-content">
+            
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+					</div>
+            
+					<div class="modal-body">
+						<p>By leaving, you will no longer be able to access this group. Also, all your assigned tasks and events will be deleted.</p>
+					</div>
+                
+					<div class="modal-footer" id="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<a class="btn btn-danger btn-ok" id="leavegroup" onclick="leaveGroup()">Leave</a>
 					</div>
 				</div>
 			</div>

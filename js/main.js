@@ -279,8 +279,15 @@ $(document).ready(function() {
 		$.getJSON( "/getkeys", function( data ) {
 			var items = [];
 			var modal_items = [];
+			var skip = true;
 			$.each( data, function( key, val ) {
-				items.push( "<li>" + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:inline-block;margin-right:5px;"></span>' + val['name'] + '<a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>' );
+				if( skip ) {
+					// Hacky way to make sure they don't delete all their keys - first should be default "Other"
+					items.push( "<li>" + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:inline-block;margin-right:5px;"></span>' + val['name'] + '<a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a></li>');
+					skip = false;
+				} else {
+					items.push( "<li>" + ' <span style="background-color:' + val['color'] + ';width:25px;height:10px;display:inline-block;margin-right:5px;"></span>' + val['name'] + '<a onClick="createEditKeyModal(\'' + val['key'] + "','" + val['name'] + "','" + val['color'] +'\')">Edit</a><a onClick="createDeleteKeyModal(\'' + val['key'] + '\')">Delete</a></li>');
+				}
 				modal_items.push("<option value='" + val['key'] + "'>" + val['name'] + "</option>");
 			});
 				 
@@ -383,6 +390,12 @@ function createEditKeyModal(key, name, color) {
 		$('#editKeyModal').modal('toggle');
 }
 
+function createDeleteKeyModal(key) {
+	$('#confirm-key-delete-modal-footer').empty().append('<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><a class="btn btn-danger btn-ok" id="keydelete" onclick="deleteKey(\''+key+'\')">Delete</a>');
+	$('#confirm-key-delete').modal('toggle');	                
+}
+
+
 function deleteTask(id) {
     var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/removetask');
@@ -397,6 +410,16 @@ function cancelDeleteTask(id) {
 	var checkbox = li.getElementsByTagName("input")[0];
 	checkbox.checked = false;
 	location.reload();
+}
+
+function deleteKey(id) {
+    var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/deletekey');
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onload = function() {
+		location.reload();
+	};
+	xhr.send('keyid=' + id);
 }
 window.onload = function(){  
 
