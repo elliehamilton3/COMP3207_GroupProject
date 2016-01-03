@@ -1495,31 +1495,25 @@ class LeaveGroup(BaseHandler):
 
 class DeleteKey(BaseHandler):
 	def post(self):
-		logging.warn("Deleting key")
 		userKey = db.Key.from_path('User', self.session.get('user'))
 		user = db.get(userKey)
 			
 		# Find the key
 		q = user.keys
 		for p in q:
-			logging.warn("loop " + p.name) 
 			if str(p.key()) == self.request.get('keyid'):
-				logging.warn("match")
 				# Delete all events with this key
 				q2 = Event.all()
 				q2.filter("event_key =", p)
 				for p2 in q2:
-					logging.warn("deleting event with name " + p2.name)
 					p2.delete()
 				# and the tasks
 				q2 = Task.all()
 				q2.filter("task_key =", p)
 				for p2 in q2:
-					logging.warn("deleting task with name " + p2.name)
 					p2.delete()
 
 				# now delete the key
-				logging.warn("deleting key now")
 				p.delete()		
 			
 app = webapp2.WSGIApplication([
