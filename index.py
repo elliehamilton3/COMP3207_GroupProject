@@ -1255,7 +1255,7 @@ class RemoveGroupTask(BaseHandler):
 class JoinGroup(BaseHandler):
 
 	def get(self):
-		if(self.session.get('user')):
+		if self.session.get('user'):
 			groupid = self.request.get("groupid")
 			useremail = self.request.get("useremail")
 			userid = self.request.get("userid")
@@ -1412,8 +1412,38 @@ class GetGroupKeys(BaseHandler):
 	
 		else:
 			self.response.write(SPLASH_HTML)
-			
+
+# Checks a user with a given email exists
+class UserCheck(BaseHandler):
+	def post(self):
+		email = self.request.get('email')
+		# Check the user isn't inviting themselves
+		user = self.session.get('user')
+		userKey = db.Key.from_path('User', user)
+		userObj = db.get(userKey)
+		
+		if( userObj.email == email):
+			self.response.write("You can't invite yourself!")
+		else:
+			q = User.all()
+			q.filter("email =", email)
+			if q.count(limit=1):
+				# If we have a group id, check if the user is in it
+				if self.request.get("group"):
+					groupkey = self.request.get("group")
+					group = db.get(groupkey)
+				
+					if email in group.invited:
+						self.response.write("User has already been invited")
+					elif email in group.confirmed:
+						self.response.write("User already in group")
+					else:
+						self.response.write(True)
+				else:
+					self.response.write(True)
+			else:
+				self.response.write("No user found with that email address")
 			
 app = webapp2.WSGIApplication([
-		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey), ('/getgroupkeys', GetGroupKeys), ('/removegroupevent', RemoveGroupEvent),('/getgroupevent', GetGroupEvent),('/editgroupevent', EditGroupEvent), ('/draggroupevent', DragGroupEvent),('/editgroupkey', EditGroupKey)
+		('/', Test),('/calendar', Calendar),('/event', NewEvent),('/feed', Feed), ('/taskfeed', TaskFeed),('/taskboxfeed', TaskBoxFeed),('/removetask', RemoveTask),('/getevent', GetEvent),('/editevent', EditEvent),('/task', NewTask),('/group', NewGroup),('/joingroup', JoinGroup),('/removeevent', RemoveEvent), ('/dragevent', DragEvent), ('/grouppage', GroupCalendar), ('/groupevent', NewGroupEvent), ('/group-event-feed', GroupEventFeed), ('/grouptask', NewGroupTask), ('/group-task-feed', GroupTaskFeed), ('/removegrouptask', RemoveGroupTask), ('/grouptaskboxfeed', GroupTaskBoxFeed), ('/groupfeed', GroupFeed), ('/memberfeed', MemberFeed), ('/invite', Invite), ('/name', SetName), ('/addkey', NewKey), ('/getkeys', GetKeys), ('/editkey', EditKey), ('/getgroupkeys', GetGroupKeys), ('/removegroupevent', RemoveGroupEvent),('/getgroupevent', GetGroupEvent),('/editgroupevent', EditGroupEvent), ('/draggroupevent', DragGroupEvent),('/editgroupkey', EditGroupKey), ('/checkuser', UserCheck)
 ], debug=True, config=config)

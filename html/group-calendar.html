@@ -832,19 +832,45 @@
 																		<script>																			
 																			var countBox = 1;															
 																			var textbox = document.getElementById("emailBox");
+																			var emails = new Array();
 																			function addInput()
 																			{
 																				var addGroupMemberEmail = document.forms["addGroupForm"]["member_email"].value;
-																				var filter = /^(([a-zA-Z0-9_.-])+@(gmail\.com|googlemail\.com))?$/
-																				if (!filter.test(addGroupMemberEmail)){ 
-        																			document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>'
-																					textbox.value = '';
-																					countBox++;
-    																			}else{
-        																			alert("Email must be a gmail or googlemail email address"); 
-        																			return false; 													
-																				}																			
-    																		}
+																				if( addGroupMemberEmail != null && addGroupMemberEmail != '' ) {
+																					var filter = /^(([a-zA-Z0-9_.-])+@(gmail\.com|googlemail\.com))?$/
+																					if (filter.test(addGroupMemberEmail)){ 
+																						// Check if they've already input that user
+																						if( $.inArray(addGroupMemberEmail, emails) > -1 ) {
+																							alert("You've already added that user!");
+																							return false;
+																						} else {
+																							// Check the user has an account, and if they're already in the group
+																							var xhr = new XMLHttpRequest();
+																							xhr.open('POST', '/checkuser');
+																							xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+																							xhr.onload = function() {
+																								console.log(xhr.responseText);
+																								if( xhr.responseText === "True" ) {
+																									document.getElementById('addedEmails').innerHTML+='<input type="text" name="email' + countBox + '" value="' + textbox.value + '" class="form-control" readonly>';
+																									emails.push(textbox.value);
+																									textbox.value = '';
+																									countBox++;
+																								} else {
+																									alert(xhr.responseText);
+																									return false;
+																								} 
+																							};
+																							xhr.send('email=' + addGroupMemberEmail + '&group={{ group.key() }}');
+																						}
+																					}else{
+																						alert("Email must be a gmail or googlemail email address"); 
+																						return false; 													
+																					}																			
+																				} else {
+																					alert("You didn't enter a value!");
+																					return false;
+																				}
+																			}
 																		</script>
 																	</div>
 																</div>
