@@ -533,10 +533,8 @@ def groupjsonfeed(user):
 
 		for p in q:
 				group = db.get(p)
-				
-				name = group.name
 
-				json_entry = {'key': str(group.key()), 'name': name}
+				json_entry = {'key': str(group.key()), 'name': group.name, 'description': group.description}
 
 				json_list.append(json_entry)
 
@@ -688,7 +686,7 @@ class NewGroup(BaseHandler):
 				i = i + 1
 			else:
 				break
-		# TODO only add members that have accounts - as I limit them when sending emails
+		
 		group.invited = members
 		group.confirmed = [userEmail]
 		group_key = group.put()
@@ -703,7 +701,7 @@ class NewGroup(BaseHandler):
 		
 		self.sendEmails(members, userObj, id, group_key, group)
 		# Redirect back to calendar
-		self.redirect(self.request.host_url + "/calendar#groups")
+		self.redirect(self.request.host_url + "/grouppage?group=" + str(group_key))
 
 	def sendEmails(self, recipients, userObj, userId, group_key, group):
 		groupid = group_key.id()
@@ -718,7 +716,7 @@ class NewGroup(BaseHandler):
 					subject="You've been invited to a group!",
 					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 				)
-				key = Key(name=p2.name +  ' (' + p2.email + ')', colour="#%06x" % random.randint(0, 0xFFFFFF), group=group)
+				key = Key(name=p2.name +  ' (' + p2.email + ')', color="#%06x" % random.randint(0, 0xFFFFFF), group=group)
 				key.put()
 			
 class Invite(BaseHandler):

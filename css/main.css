@@ -280,9 +280,10 @@ head, body {
   font-size: 25px;
 }
 
-
-
-
+.group-desc {
+	margin-left:15px;
+	font-size:15px;
+}
 
 
 

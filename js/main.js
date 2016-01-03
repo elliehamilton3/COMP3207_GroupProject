@@ -258,7 +258,7 @@ $(document).ready(function() {
 		$.getJSON( "/groupfeed", function( data ) {
 		  var items = [];
 		  $.each( data, function( key, val ) {
-		    items.push( "<a href='/grouppage?group=" + val['key'] + "'><li class='list-group-item'>" + val['name']  + "</li></a>" );
+		    items.push( "<a href='/grouppage?group=" + val['key'] + "'><li class='list-group-item'>" + val['name']  + "<p class='group-desc'>" + val['description'] + '</p></li></a>' );
 		  });
 		 
 			if(items.length == 0){
