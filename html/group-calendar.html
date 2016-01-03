@@ -55,7 +55,7 @@
         					alert("Event name must be filled out");
         					return false;
     					}
-    					if (addEventEventName > 255) {
+    					if (addEventEventName.length > 255) {
         					alert("Event name is too long, please enter a shorter name");
         					return false;
     					}
@@ -63,7 +63,7 @@
         					alert("Event location must be filled out");
         					return false;
     					} 
-    					if (addEventLocation > 255) {
+    					if (addEventLocation.length > 255) {
         					alert("Event location is too long, please enter a shorter location name");
         					return false;
     					}
@@ -111,7 +111,7 @@
         					alert("Task name must be filled out");
         					return false;
     					}
-    					if (addTaskTaskName > 255) {
+    					if (addTaskTaskName.length > 255) {
         					alert("Task name is too long, please enter a shorter name");
         					return false;
     					}
@@ -123,8 +123,28 @@
         					alert("Time must be selected");
         					return false;
         				}*/
-        				
-    				}
+        			}
+					function validateEditGroupInputs() { 	
+						var editGroupGroupName = document.forms["editGroupForm"]["group_name"].value;
+						var editGroupDescription = document.forms["editGroupForm"]["group_description"].value;		
+
+						if (editGroupGroupName == null || editGroupGroupName == "") {
+							alert("Group name must be filled out");
+							return false;
+						}
+						if (editGroupGroupName.length > 255) {
+							alert("Group name is too long, please enter a shorter name");
+							return false;
+						}  					
+						if (editGroupDescription == null || editGroupDescription == "") {
+							alert("Group description must be filled out");
+							return false;
+						}
+						if (editGroupDescription.length  > 255) {
+							alert("Group description is too long, please enter a shorter name");
+							return false;
+						} 
+    				}		
 				</script>
 				<!-- //Validation for input fields -->
 
@@ -669,10 +689,46 @@
 						    </div>
 						</div>
 						<div class="col-xs-3">
-								<div class="panel panel-default">
-									<div class="panel-heading">Description</div>
+							<div class="panel panel-default">
+								<div class="panel-heading">Group Details</div>
 									<div class="panel-body">
-										<p>{{ group.description }}</p>
+										<p><b>Description: </b>{{ group.description }}</p>
+										<a href="#" data-toggle="modal" data-target="#editGroupModal">Edit Group</a></li>
+											<!-- Modal -->
+											<div id="editGroupModal" class="modal fade" role="dialog">
+												<div class="modal-dialog">
+													<!-- Modal content-->
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal">&times;</button>
+															<h4 class="modal-title">Edit Group</h4>
+														</div>
+														<div class="modal-body">
+															<!-- Form within Modal -->
+															<form name="editGroupForm" class="form-horizontal" role="form" onsubmit="return validateEditGroupInputs()" method="post" action="/editgroup">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<label for="sel2">Group Name:</label>
+																		<input type="text" name="group_name" id="sel2" class="form-control" aria-label="" value="{{group.name}}"/>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-xs-12">
+																		<label for="sel2">Description:</label>
+																		<input type="text" name="group_description" id="sel2" class="form-control" aria-label="" value="{{group.description}}"/>
+																	</div>
+																</div>
+																<div class="modal-footer">
+																	<input type='hidden' name="id" value="{{ group.key() }}" />
+																	<button type="submit" class="btn btn-default">Submit</button>
+																</div>
+															</form>
+														</div>
+													</div>
+													<!-- //Modal Content -->
+												</div>
+											</div>
+										
 									</div>
 								</div>
 								
