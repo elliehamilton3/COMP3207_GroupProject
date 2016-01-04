@@ -94,7 +94,14 @@
 						  background-color: #eee;
 					}
 				</style>
-
+				<script>
+					// Needs to be within the HTML
+					$(document).ready(function() {
+						{% if user.name == None %}
+							$('#nameModal').modal('show');
+						{% endif %}
+					});
+				</script>
 		</head>
 
 

@@ -5,13 +5,6 @@ function signOut() {
 	});
 }
 
-// Needs to be within the HTML
-$(document).ready(function() {
-	{% if user.name == None %}
-		$('#nameModal').modal('show');
-	{% endif %}
-});
-
 function validateEventInputs($edit) {
 	if( $edit ) {
 		$form = document.forms["editEventForm"];
