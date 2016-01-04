@@ -252,7 +252,7 @@ head, body {
 .add-items-list li a {
   text-decoration: none;
   color: #000;
-  outline: none;
+
   -webkit-transition: font-size 0.3s ease;
   -moz-transition: font-size 0.3s ease;
   -o-transition: font-size 0.3s ease;
@@ -269,7 +269,7 @@ head, body {
   color: black;
   font: 200 15px Helvetica, Verdana, sans-serif;
   text-decoration: none;
-  outline: none;
+
   -webkit-transition: font-size 0.3s ease;
   -moz-transition: font-size 0.3s ease;
   -o-transition: font-size 0.3s ease;
