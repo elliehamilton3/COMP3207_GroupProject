@@ -10,10 +10,6 @@ handlers:
   upload: favicon\.ico
   secure: optional
 
-- url: /less
-  static_dir: less
-  secure: optional
-
 - url: /img
   static_dir: img
   secure: optional
