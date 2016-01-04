@@ -25,21 +25,21 @@ handlers:
 - url: /js
   static_dir: js
   secure: optional
- 
+
 - url: /php
   static_dir: php
   secure: optional
-  
+
 - url: /fonts
   static_dir: fonts
   secure: optional
 
-- url: .*
-  script: index.app
+- url: /libraries
+  static_dir: libraries
   secure: optional
 
-- url: /splash
-  script: splash.app
+- url: .*
+  script: index.app
   secure: optional
 
 libraries:
