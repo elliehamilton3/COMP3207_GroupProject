@@ -1,5 +1,6 @@
 indexes:
 - kind: Task
   properties:
-  - name: user
+  - name: group
   - name: deadline
+  - name: user
