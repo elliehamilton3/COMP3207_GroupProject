@@ -68,19 +68,12 @@ $(document).ready(function() {
 		},
 
 		eventDrop: function(event, delta, revertFunc) {
-	        // alert(event.title + " was dropped on " + event.start.format());
-
-	        // if (!confirm("Are you sure about this change?")) {
-	        //     revertFunc();
-	        // } else {
-
 	        	var link = "/dragevent?event_id=" + event.id;
 
 	        	link = link + "&all_day=" + event.allDay + "&start=" + event.start + "&end=" + event.end;
 
 	        	console.log(link);
 	        	window.location.replace(link);
-	        // }
     	}
     });
 	$(".colorpicker").spectrum({
@@ -309,11 +302,8 @@ $(document).ready(function() {
 	buildDeadlinesBox('#deadlinesbox');
 	buildGroupsList('#grouplist');
 	getKeys();
-	//$('#confirm-delete').modal({ backdrop: 'static', keyboard: false });
-
-
-
 });
+
 function createEditModal(eventid) {
 	$.getJSON( "/getevent?eventid="+eventid, function( data ) {
 		$.each( data, function(key, val) {

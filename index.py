@@ -148,13 +148,7 @@ def jsonfeed(startDate, endDate, user):
 
 		json_list = []
 		q = user.event_user
-		# # Query interface constructs a query using instance methods
-		#q = Event.all()
-		# # q.filter("last_name =", "Smith")
-		# # q.filter("height <=", max_height)
-		# # q.order("-height")
-
-		# # Query is not executed until results are accessed
+		
 		for p in q.run():
 
 				# for entry in entries:
@@ -217,13 +211,7 @@ def groupeventjsonfeed(startDate, endDate, group):
 
 		json_list = []
 		q = group.event_group
-		# # Query interface constructs a query using instance methods
-		#q = Event.all()
-		# # q.filter("last_name =", "Smith")
-		# # q.filter("height <=", max_height)
-		# # q.order("-height")
-
-		# # Query is not executed until results are accessed
+		
 		for p in q.run():
 				logging.warn(p)
 
@@ -683,7 +671,7 @@ class NewGroup(BaseHandler):
 		userObj.groups.append(group_key)
 		userObj.put()
 		
-		# Random colour from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
+		# Random colour based on http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
 		color = "#%06x" % random.randint(0, 0xFFFFFF)
 		logging.warn(color)
 		key = Key(name=userObj.name + ' (' + userObj.email + ')', color=color, group=group)
@@ -752,7 +740,7 @@ class Invite(BaseHandler):
 					subject="You've been invited to a group!",
 					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 				)
-				# Random colour from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
+				# Random colour based on http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
 				color = "#%06x" % random.randint(0, 0xFFFFFF)
 				logging.warn(color)
 				key = Key(name=p2.name +  ' (' + p2.email + ')', color=color, group=group)
@@ -1310,16 +1298,6 @@ class NewKey(BaseHandler):
 		user = self.session.get('user')
 		userKey = db.Key.from_path('User', user)
 		userObj = db.get(userKey)
-		
-		# Convert user's key json string into dictonary
-		#keys = json.loads(userObj.keys)
-		
-		#key = {"key": self.request.get('name'), "color": self.request.get('color')}
-		#keys.append(key)
-		
-		# Back to a JSON string
-		#userObj.keys = json.dumps(keys)
-		#userObj.put()
 		
 		key = Key(name=self.request.get('name'), color=self.request.get('color'), user=userObj)
 		key.put()
