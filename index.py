@@ -53,9 +53,9 @@ class Calendar(BaseHandler):
 			logging.warn('posted')
 			token = self.request.get('idtoken')
 			email = self.request.get('email')
-			idinfo = client.verify_id_token(token, '110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com')
+			idinfo = client.verify_id_token(token, '1002977968239-avli3origo5g35bv5fbjliio4tueei7h.apps.googleusercontent.com')
 			# If multiple clients access the backend server:
-			if idinfo['aud'] not in ['110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com']:
+			if idinfo['aud'] not in ['1002977968239-avli3origo5g35bv5fbjliio4tueei7h.apps.googleusercontent.com']:
 				raise crypt.AppIdentityError("Unrecognized client.")
 			if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
 				raise crypt.AppIdentityError("Wrong issuer.")
@@ -693,7 +693,7 @@ class NewGroup(BaseHandler):
 				mail.send_mail(sender=sender_address,
 					to=recipients[x],
 					subject="You've been invited to a group!",
-					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
+					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://sort-my-life-out.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 				)
 				key = Key(name=p2.name +  ' (' + p2.email + ')', color="#%06x" % random.randint(0, 0xFFFFFF), group=group)
 				key.put()
@@ -738,7 +738,7 @@ class Invite(BaseHandler):
 				mail.send_mail(sender=sender_address,
 					to=recipients[x],
 					subject="You've been invited to a group!",
-					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://testproj-1113.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
+					body= "You have been invited to a group on Sort My Life Out, confirm you want to join by clicking the link: http://sort-my-life-out.appspot.com/joingroup?groupid=%s&useremail=%s&groupkey=%s" % (str(groupid), recipients[x], group_key)
 				)
 				# Random colour based on http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
 				color = "#%06x" % random.randint(0, 0xFFFFFF)
