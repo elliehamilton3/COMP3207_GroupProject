@@ -32,27 +32,7 @@
 		<![endif]-->
 		<script src="https://apis.google.com/js/platform.js" async defer></script>
 		<meta name="google-signin-client_id" content="110052355668-ill69eihnsdnai3piq6445qvc0e19et6.apps.googleusercontent.com">
-
-		<script>
-			function onSignIn(googleUser) {
-				var profile = googleUser.getBasicProfile();
-				var id_token = googleUser.getAuthResponse().id_token;
-				console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-				console.log('Name: ' + profile.getName());
-				console.log('Image URL: ' + profile.getImageUrl());
-				console.log('Email: ' + profile.getEmail());
-				
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', '/calendar');
-				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				xhr.onload = function() {
-					window.location.replace('/calendar');
-
-				};
-				xhr.send('idtoken=' + id_token + '&email=' + profile.getEmail());
-			}
-
-		</script>
+		<script src='js/splash.js'></script>
 		<style>
 			.center{
 				width:150px;
