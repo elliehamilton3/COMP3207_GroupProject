@@ -1441,6 +1441,8 @@ class EditGroup(BaseHandler):
 #Logout		
 class Logout(BaseHandler):
 	def get(self):
+		# Remove user cookie
+		self.session['user'] = '';
 		self.redirect(users.create_logout_url(self.request.host_url, _auth_domain=None))
 		
 #Leave a group
